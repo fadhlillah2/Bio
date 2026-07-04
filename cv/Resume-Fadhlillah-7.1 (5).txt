@@ -1,0 +1,55 @@
+                                             FADHLILLAH
+                          Jakarta, ID • email • phone • LinkedIn • GitHub
+
+OBJECTIVE
+Backend Software Engineer (5+ yrs), deep in Java/Spring Boot and adaptable across Python, Node,
+and Go. Builds Spring Boot microservices serving 2M+ req/day and ships fast via AI-augmented
+workflows, building LLM-integrated products end-to-end (RAG, chatbots, internal automation).
+Equally at home in regulated enterprise systems and fast-moving AI builds.
+
+EXPERIENCE
+BANK DANAMON                                                                             JAKARTA, ID
+Software Engineer                                                                 Aug 2023 – Present
+● Built SFTP automation platform in 10 days against a 17-day plan using AI-augmented engineering
+● Automated technical documentation with LLMs, cutting cycle time from 40 hours to 4 hours
+● Built and operate Spring Boot microservices serving 2M+ req/day at sub-200ms response times
+● Designed and maintained internal web and mobile apps supporting core banking operations
+
+IDSTAR                                                                                   JAKARTA, ID
+Backend Software Engineer | Remote                                               Mar 2023 – Jul 2023
+● Developed and optimized 40+ RESTful APIs for OML Innovoice using Spring Boot and session
+  management
+● Implemented enterprise SSO (OAuth 2.0/JWT) and session tracking to enforce authenticated access
+
+FREELANCE                                                                                JAKARTA, ID
+Full Stack Developer | Remote                                                    Apr 2022 – Feb 2023
+● Built Kafka-based notification system for real-time event processing
+● Integrated 3+ third-party systems via RESTful APIs
+● Developed AI chatbot with OpenAI integration on MERN stack
+● Deployed containerized services to AWS ECS with Redis caching
+
+ASSIST.ID                                                                                   RIAU, ID
+Backend Software Engineer                                                        Jul 2020 – Feb 2023
+● Designed and built 100+ RESTful APIs for IBBR and warehouse health-facility management systems
+● Resolved ~100 technical issues monthly through root-cause analysis, maintaining 99.5% uptime
+● Accelerated report generation by 700% via database optimization and materialized views
+● Integrated 40+ third-party APIs for payments, logistics, and notifications
+
+SKILLS
+Languages    : Java, Python, JavaScript/TypeScript, Golang
+Databases    : PostgreSQL, MySQL, Microsoft SQL Server, MongoDB, Redis, Flyway
+Frameworks   : Spring Boot, Quarkus, Node.js, Express.js, Flask, Gin, Flutter, Angular
+Architecture : Microservices, RESTful API, Event-Driven Architecture, SOA, Hexagonal Architecture
+DevOps/Cloud : Docker, Kubernetes, Jenkins, CI/CD, Maven, Git, AWS (EC2, S3, Lambda), Apache Tomcat
+Messaging    : Apache Kafka, RabbitMQ, gRPC, WebSocket
+Security     : OAuth 2.0, JWT, SSO, AES-256, TripleDES, OWASP Top 10
+Tools        : IntelliJ IDEA, VS Code, Cursor AI, Postman, DBeaver, Jira
+
+EDUCATION
+GADJAH MADA UNIVERSITY                                                                YOGYAKARTA, ID
+Bachelor, Mathematics and Computer Science                                       Mar 2016 – May 2020
+
+PROJECTS & CERTIFICATIONS
+● High-Precision-Contract-Advisor-RAG (Top 50 LLaMA Hackathon), SFTP Automation App (Java),
+  Simulation Systems
+● freeCodeCamp, HackerRank, Digital Talent Scholarship, Progate Certified
