@@ -14,7 +14,7 @@
 
 ## Who I Am
 
-Backend Software Engineer (5+ yrs) specializing in **Java/Spring Boot**, adaptable across Python and Node. I operate microservices serving **2M+ requests/day** in a regulated enterprise environment and ship fast with AI-augmented engineering — a production SFTP platform delivered in **10 days against a 17-day plan**. I build LLM-integrated products end-to-end: **RAG systems, AI chatbots, internal automation** — **Top 50 at the LLaMA Hackathon**.
+Backend Software Engineer (6 yrs) specializing in **Java/Spring Boot**, adaptable across Python and Node. I operate microservices serving **2M+ requests/day** in a regulated enterprise environment and ship fast with AI-augmented engineering — a production SFTP platform delivered in **10 days against a 17-day plan**. I build LLM-integrated products end-to-end: **RAG systems, AI chatbots, internal automation** — **Top 50 at the LLaMA Hackathon**.
 
 **Highlights:**
 - **2M+ requests/day at sub-200ms** — 12 Spring Boot microservices (hexagonal architecture), 500k+ daily transactions
