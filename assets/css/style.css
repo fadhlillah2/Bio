@@ -1329,3 +1329,139 @@ section {
     font-size: 12.5px;
   }
 }
+
+/*--------------------------------------------------------------
+# Theme v3 — dark console, end to end (sync 2026-07)
+# Tokens: bg #060d18 · bg-alt #0a1424 · panel #0b1626 · line #1b2c44
+#         text #c7d3e3 · head #f2f7fd · muted #93a5bc · cyan #2fb4f2/#4db8ff · amber #ffc46b
+--------------------------------------------------------------*/
+body {
+  background: #060d18;
+  color: #c7d3e3;
+}
+
+a { color: #4db8ff; }
+a:hover { color: #7ccdff; }
+
+.section-bg { background: #0a1424; }
+
+.section-title h2 { color: #f2f7fd; }
+.section-title h2::after { background: #2fb4f2; }
+.section-title p { color: #93a5bc; }
+
+/* About */
+.about .content h3 { color: #f2f7fd; }
+.about .content ul i { color: #4db8ff; }
+.about .content ul strong { color: #f2f7fd; }
+
+/* Facts — numbers wear the metric amber from the hero terminal */
+.facts .count-box i { color: #4db8ff; }
+.facts .count-box span { color: #ffc46b; }
+.facts .count-box p { color: #93a5bc; }
+.facts .count-box p strong { color: #dbe6f3; }
+
+/* Skills */
+.skills .progress .skill { color: #dbe6f3; }
+.skills .progress-bar-wrap { background: #12203a; }
+.skills .progress-bar { background-color: #2fb4f2; }
+
+/* Resume timeline */
+.resume .resume-title { color: #f2f7fd; }
+.resume .resume-item { border-left: 2px solid #1b2c44; }
+.resume .resume-item h4 { color: #4db8ff; }
+.resume .resume-item h5 { background: #12203a; color: #ffc46b; }
+.resume .resume-item::before {
+  background: #060d18;
+  border: 2px solid #2fb4f2;
+}
+
+/* Portfolio */
+.portfolio #portfolio-flters li { color: #c7d3e3; }
+.portfolio #portfolio-flters li:hover,
+.portfolio #portfolio-flters li.filter-active { color: #4db8ff; }
+.portfolio .portfolio-wrap {
+  background: #0b1626;
+  border: 1px solid #1b2c44;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.portfolio .portfolio-wrap::before { background: rgba(6, 13, 24, 0.55); }
+
+/* Services */
+.services .icon-box {
+  background: #0b1626;
+  border: 1px solid #1b2c44;
+  border-radius: 10px;
+  box-shadow: none;
+}
+.services .icon { background: #12203a; }
+.services .icon i { color: #4db8ff; }
+.services .icon-box:hover .icon { background: #2fb4f2; }
+.services .icon-box:hover .icon i { color: #04121f; }
+.services .title a { color: #f2f7fd; }
+.services .title a:hover { color: #4db8ff; }
+.services .description { color: #93a5bc; }
+
+/* Testimonials */
+.testimonials .testimonial-item p {
+  background: #0b1626;
+  border: 1px solid #1b2c44;
+  color: #c7d3e3;
+}
+.testimonials .testimonial-item p::after { border-color: #0b1626 transparent transparent transparent; }
+.testimonials .testimonial-item h3 { color: #f2f7fd; }
+.testimonials .testimonial-item h4 { color: #93a5bc; }
+.testimonials .testimonial-item .quote-icon-left,
+.testimonials .testimonial-item .quote-icon-right { color: #2fb4f2; }
+.testimonials .swiper-pagination .swiper-pagination-bullet { background: #1b2c44; opacity: 1; }
+.testimonials .swiper-pagination .swiper-pagination-bullet-active { background: #2fb4f2; }
+
+/* Contact — the conversion moment: give it a quiet lift */
+.contact { background: linear-gradient(180deg, #0a1424 0%, #0c1a2e 100%); }
+.contact .info {
+  background: #0b1626;
+  border: 1px solid #1b2c44;
+  border-radius: 10px;
+  box-shadow: none;
+}
+.contact .info i { background: #12203a; color: #4db8ff; }
+.contact .info h4 { color: #f2f7fd; }
+.contact .info p { color: #93a5bc; }
+.contact .info .email:hover i,
+.contact .info .address:hover i,
+.contact .info .phone:hover i { background: #2fb4f2; color: #04121f; }
+.contact .info iframe { border-radius: 8px; filter: saturate(0.85); }
+.contact .php-email-form {
+  background: #0b1626;
+  border: 1px solid #1b2c44;
+  border-radius: 10px;
+  box-shadow: none;
+}
+.contact .php-email-form label { color: #dbe6f3; }
+.contact .php-email-form input,
+.contact .php-email-form textarea {
+  background: #0a1424;
+  border: 1px solid #1b2c44;
+  color: #e6edf6;
+  border-radius: 6px;
+}
+.contact .php-email-form input:focus,
+.contact .php-email-form textarea:focus {
+  background: #0a1424;
+  border-color: #2fb4f2;
+  color: #e6edf6;
+  box-shadow: none;
+}
+.contact .php-email-form input::placeholder,
+.contact .php-email-form textarea::placeholder { color: #5f7189; }
+.contact .php-email-form button[type="submit"] {
+  background: #149ddd;
+  font-weight: 600;
+  border-radius: 6px;
+}
+.contact .php-email-form button[type="submit"]:hover { background: #2fb4f2; }
+
+/* Footer & chrome */
+#footer { background: #040b14; color: #93a5bc; }
+.back-to-top { background: #149ddd; }
+.back-to-top:hover { background: #2fb4f2; }
