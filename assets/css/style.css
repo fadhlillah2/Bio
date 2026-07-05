@@ -1072,3 +1072,153 @@ section {
     padding-right: 20px 15px;
   }
 }
+
+/*--------------------------------------------------------------
+# Hero v2 — terminal / API-response hero (sync 2026-07)
+# Scoped overrides; template rules above left untouched.
+--------------------------------------------------------------*/
+#hero {
+  background: #060d18;
+  height: auto;
+  min-height: 100vh;
+  padding: 96px 15px 48px;
+}
+
+#hero:before {
+  background: radial-gradient(900px 520px at 68% 18%, rgba(20, 157, 221, 0.12), transparent 60%);
+}
+
+#hero .hero-container {
+  max-width: 720px;
+  width: 100%;
+  text-align: center;
+}
+
+#hero .hero-eyebrow {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: #7d8da3;
+  margin: 0 0 14px;
+}
+
+#hero h1 {
+  letter-spacing: 2px;
+}
+
+#hero .hero-role {
+  font-size: 20px;
+  color: #bcc9da;
+  margin-bottom: 36px;
+}
+
+#hero .hero-sep {
+  color: #149ddd;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+#hero .term {
+  width: min(640px, 100%);
+  margin: 0 auto;
+  text-align: left;
+  background: #0b1626;
+  border: 1px solid #1b2c44;
+  border-radius: 10px;
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(20, 157, 221, 0.06);
+  overflow: hidden;
+}
+
+#hero .term-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 14px;
+  background: #0e1b30;
+  border-bottom: 1px solid #1b2c44;
+}
+
+#hero .term-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+}
+
+#hero .term-dot-r { background: #ff5f57; }
+#hero .term-dot-y { background: #febc2e; }
+#hero .term-dot-g { background: #28c840; }
+
+#hero .term-title {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  color: #7d8da3;
+  margin-left: 8px;
+}
+
+#hero .term-body {
+  margin: 0;
+  padding: 18px 20px 20px;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: #e6edf6;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+#hero .tl {
+  display: block;
+  opacity: 0;
+  transform: translateY(3px);
+  animation: hero-tl-in 0.3s ease forwards;
+  animation-delay: calc(0.2s + var(--i) * 0.09s);
+}
+
+@keyframes hero-tl-in {
+  to { opacity: 1; transform: none; }
+}
+
+#hero .tk { color: #4db8ff; }
+#hero .ts { color: #dbe6f3; }
+#hero .tm { color: #ffc46b; }
+#hero .tp { color: #59718f; }
+#hero .tc { color: #6ee7b7; }
+#hero .tmut { color: #7d8da3; }
+
+#hero .term-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 15px;
+  background: #6ee7b7;
+  vertical-align: -2px;
+  animation: hero-blink 1.1s steps(1) infinite;
+}
+
+@keyframes hero-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #hero .tl {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  #hero .term-cursor {
+    animation: none;
+  }
+}
+
+@media (max-width: 768px) {
+  #hero {
+    padding: 84px 12px 40px;
+  }
+  #hero .hero-role {
+    font-size: 16px;
+    margin-bottom: 26px;
+  }
+  #hero .term-body {
+    font-size: 12px;
+    padding: 14px 14px 16px;
+  }
+}
