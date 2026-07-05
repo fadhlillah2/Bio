@@ -29,7 +29,8 @@ linkedin: v1 export (pdf + txt) ──► v2 draft (txt, current)
 ## Rules
 
 - **Update the site only from current files.** Archive files are provenance, not sources.
-- `.txt` files paired with a PDF are verbatim transcripts of that PDF.
+- `.txt` files paired with a PDF are verbatim-wording transcripts of that PDF
+  (layout may be reformatted for readability — see each file's header note).
 - v8.0 and v2 passed a claim-by-claim anti-fabrication audit against the archive sources:
   every metric stands alone exactly as sourced — never merge separate metrics into one
   composite claim, and never use a stronger verb than the source.
