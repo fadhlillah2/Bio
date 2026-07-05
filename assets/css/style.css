@@ -1222,3 +1222,110 @@ section {
     padding: 14px 14px 16px;
   }
 }
+
+/*--------------------------------------------------------------
+# Hero v2.1 — boot sequence, CTA, signature background
+--------------------------------------------------------------*/
+#hero {
+  background:
+    radial-gradient(rgba(125, 141, 163, 0.07) 1px, transparent 1px) 0 0 / 22px 22px,
+    #060d18;
+}
+
+/* Default (no JS / reduced motion): everything visible, no animation.
+   Motion is an enhancement: JS staggers .tl-on per line; transition animates it. */
+#hero .tl {
+  animation: none;
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Boot: JS is typing the command — hide the response lines. */
+#hero .term.is-boot .tl:not(.tl-cmd) {
+  opacity: 0;
+  transform: translateY(3px);
+}
+
+/* Line revealed: end state lives in the class, not in an animation. */
+#hero .term.is-boot .tl.tl-on {
+  opacity: 1;
+  transform: none;
+}
+
+#hero .hero-cta {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+#hero .btn-term {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13.5px;
+  padding: 11px 20px;
+  border: 1px solid #1b2c44;
+  border-radius: 8px;
+  color: #bcc9da;
+  background: rgba(11, 22, 38, 0.7);
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+#hero .btn-term:hover {
+  border-color: #149ddd;
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+#hero .btn-term:focus-visible {
+  outline: 2px solid #4db8ff;
+  outline-offset: 2px;
+}
+
+#hero .btn-term-primary {
+  background: #149ddd;
+  border-color: #149ddd;
+  color: #04121f;
+  font-weight: 600;
+}
+
+#hero .btn-term-primary:hover {
+  background: #2fb4f2;
+  border-color: #2fb4f2;
+  color: #04121f;
+}
+
+#hero .btn-term-icon {
+  padding: 11px 14px;
+  font-size: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #hero .term.is-boot .tl:not(.tl-cmd),
+  #hero .term.is-live .tl:not(.tl-cmd) {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  #hero .btn-term,
+  #hero .btn-term:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
+@media (max-width: 768px) {
+  #hero .hero-cta {
+    gap: 10px;
+    margin-top: 22px;
+  }
+  #hero .btn-term {
+    padding: 10px 16px;
+    font-size: 12.5px;
+  }
+}
