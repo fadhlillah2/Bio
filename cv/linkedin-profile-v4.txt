@@ -13,6 +13,16 @@ kalau mau dipush belakangan): headline baru; About resequence (AI+skala sebelum
 Yang TERNYATA SUDAH ada di live (tidak perlu aksi): Open to Work aktif
 (Central Jakarta | Hybrid · Remote); employment type Freelance; section
 Projects (termasuk link llama-docs-auditor); Featured (2 rekomendasi + 2 sert.).
+SKILLS-TAG DELTA (rekomendasi, belum diterapkan — LinkedIn Recruiter memfilter
+lewat widget Skills, bukan teks bullet; tag berikut TERBUKTI dari bullet sendiri):
+- Spring Boot ("Built and operate Spring Boot microservices...")
+- Apache Kafka ("Set up Apache Kafka for real-time event processing")
+- PostgreSQL ("Handled Postgres migration using Flyway")
+- MongoDB ("MongoDB materialized views"), Redis ("Added Redis caching")
+- AWS ("Deployed Docker containers to AWS ECS")
+- OAuth 2.0 / JWT ("Implemented OAuth 2.0, JWT, and AES-256")
+- Microservices ("Running 12 microservices"), REST APIs ("40+ RESTful APIs")
+- Docker sudah ada; tambah juga: Quarkus, GraphQL, FastAPI (semua ada di bullet)
 ================================================================================
 
 HEADLINE

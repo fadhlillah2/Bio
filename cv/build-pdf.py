@@ -39,7 +39,7 @@ p.body { text-align: justify; }
 
 def linkify(escaped: str) -> str:
     return re.sub(
-        r"((?:github\.com|linkedin\.com|leetcode\.com|fadhlillah2\.github\.io)/[\w./-]+|[\w.]+@gmail\.com)",
+        r"((?:github\.com|linkedin\.com|leetcode\.com|wa\.me|fadhlillah2\.github\.io)/[\w./-]+|[\w.]+@gmail\.com)",
         lambda m: '<a href="{}{}">{}</a>'.format(
             "mailto:" if "@" in m.group(1) else "https://", m.group(1), m.group(1)
         ),

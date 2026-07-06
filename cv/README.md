@@ -13,6 +13,9 @@ that is not on LinkedIn). Files at this level are **current**; `archive/` is the
 | [`resume-v8.3.txt`](resume-v8.3.txt) | Resume v8.3 — **full mirror** of the live profile (2 pages): LinkedIn headline, About verbatim, all bullets per role incl. the reminder-service / ai-chatbot-mern media blocks, all 8 certifications with credential IDs, all 6 projects, top-visible skills, both recommendations. User-confirmed facts absent from LinkedIn (JUnit 5/Mockito, 5-person team scope, "alongside Assist.id") were **removed** per the mirror decision. |
 | [`resume-v8.3.pdf`](resume-v8.3.pdf) | Resume v8.3 PDF (2 pages, typeset) — the distributable. Generated via `build-pdf.py cv/resume-v8.3.txt 2`; extracted text verified identical to the .txt. |
 | [`build-pdf.py`](build-pdf.py) | PDF generator: parses the resume .txt, typesets it (Arial, A4), prints via Chrome headless, verifies the PDF text is character-identical to the .txt and fits `max_pages` (2nd CLI arg, default 1). Run: `uv run --with pypdf python3 cv/build-pdf.py cv/resume-vX.Y.txt [max_pages]` |
+| [`resume-1pager-v1.0.txt`](resume-1pager-v1.0.txt) / `.pdf` | **Recruiter/ATS edition** — curated 1-page resume (v8.2 lineage refreshed), NOT the LinkedIn mirror. Full keyword SKILLS block, user-confirmed facts (JUnit 5/Mockito, 5-person team scope, "alongside Assist.id"), open-to line, searchable-as aliases. |
+| [`consulting-onepager-v1.0.txt`](consulting-onepager-v1.0.txt) / `.pdf` | **Consulting one-pager (EN)** for CEOs/CTOs/business owners buying software development — outcomes in business language, services, verifiable proof links, engagement process. Linked from the site's Services section. |
+| [`consulting-onepager-id-v1.0.txt`](consulting-onepager-id-v1.0.txt) / `.pdf` | **Consulting one-pager (Bahasa Indonesia)** — faithful translation of the EN one-pager (same claims; numbers/URLs/nouns verbatim). |
 
 Known scrape limit: LinkedIn only exposes the top ~10 Skills entries to the scraper (each role
 shows "+N skills" tags that cannot be expanded) — the resume SKILLS section mirrors what is
@@ -33,8 +36,10 @@ verifiably visible.
 ## Version lineage
 
 ```
-resume:   v7.1 ──► v8.0 ──► v8.1 ──► v8.2 (curated 1-page) ──► v8.3 (full LinkedIn mirror, 2 pages)
-linkedin: v1 export ──► v2 draft ──► v3 draft (never published) ──► v4 LIVE snapshot (current SoT)
+resume:      v7.1 ──► v8.0 ──► v8.1 ──► v8.2 (curated 1-page) ──► v8.3 (full LinkedIn mirror, 2 pages)
+1pager:      resume-1pager v1.0 (recruiter/ATS edition, v8.2 lineage — parallel artifact, not a mirror)
+consulting:  consulting-onepager v1.0 (EN) ⇄ v1.0 (ID)
+linkedin:    v1 export ──► v2 draft ──► v3 draft (never published) ──► v4 LIVE snapshot (current SoT)
 ```
 
 ## Rules
@@ -52,7 +57,13 @@ linkedin: v1 export ──► v2 draft ──► v3 draft (never published) ─�
 - On version bump, also update the direct-PDF links outside this repo: the **Resume badge in the
   GitHub profile README** (repo `fadhlillah2/fadhlillah2`) points to
   `https://fadhlillah2.github.io/Bio/cv/resume-vX.Y.pdf` and will 404 if left stale.
-- Version scheme: resume = `vX.Y`, LinkedIn profile = `vN`. Bump on any content change.
+- Version scheme: resume = `vX.Y`, LinkedIn profile = `vN`, 1-pagers = `v1.0`-style per artifact.
+  Bump on any content change.
+- **Artifact roles:** `resume-v8.3` = official CV (LinkedIn mirror, locked to live profile);
+  `resume-1pager` = recruiter/ATS edition (curated; may use user-confirmed + archive-audited facts;
+  must never *contradict* LinkedIn); `consulting-onepager` (EN+ID) = business-buyer artifact
+  (site-Services wording + resume-sourced metrics only; keep EN/ID in lock-step — same claims,
+  translated wording only). Regenerate each PDF via `build-pdf.py` on any change.
 - New version → add it here, move the superseded files to `archive/`, update this README.
 - The site (`index.html`): career-claim content (hero/meta headline, About, Resume section) is
   synced verbatim to the mirror resume (done 2026-07-06). Site-only sections (Facts, Services,
