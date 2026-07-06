@@ -15,17 +15,17 @@ from pathlib import Path
 CHROME = "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
 
 CSS = """
-@page { size: A4; margin: 8.5mm 12mm; }
+@page { size: A4; margin: 7.5mm 12mm; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: Arial, Helvetica, sans-serif; font-size: 9pt; line-height: 1.22; color: #1a1a1a; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 8.8pt; line-height: 1.17; color: #1a1a1a; }
 a { color: inherit; text-decoration: none; }
 h1 { font-size: 19pt; letter-spacing: 3px; text-align: center; }
 .hl { text-align: center; font-weight: bold; font-size: 9.4pt; margin-top: 1mm; }
 .ct { text-align: center; font-size: 8.6pt; color: #444; }
 h2 { font-size: 9.8pt; letter-spacing: 1.2px; border-bottom: 1px solid #999;
-     padding-bottom: 0.5mm; margin: 2.2mm 0 1mm; }
+     padding-bottom: 0.5mm; margin: 2mm 0 0.9mm; }
 .crow, .trow { display: flex; justify-content: space-between; }
-.crow { margin-top: 1.3mm; }
+.crow { margin-top: 1.2mm; }
 .crow .c { font-weight: bold; }
 .crow .loc, .trow .d { color: #444; font-size: 8.6pt; }
 .trow .t { font-style: italic; }

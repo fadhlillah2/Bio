@@ -14,13 +14,13 @@
 
 ## Who I Am
 
-Backend Software Engineer (6 yrs) specializing in **Java/Spring Boot**, adaptable across Python and Node. I operate microservices serving **2M+ requests/day** in a regulated enterprise environment and ship fast with AI-augmented engineering — a production SFTP platform delivered in **10 days against a 17-day plan**. I build LLM-integrated products end-to-end: **RAG systems, AI chatbots, internal automation** — **Top 50 at the LLaMA Hackathon**.
+Backend Software Engineer (6+ yrs) specializing in **Java/Spring Boot**, adaptable across Python, Node, and Go. I operate microservices serving **2M+ requests/day** in a regulated enterprise environment and ship fast with AI-augmented engineering — a production SFTP platform delivered in **10 days against a 17-day plan**. I build LLM-integrated products end-to-end: **RAG systems, AI chatbots, internal automation** — **Top 50 at the LLaMA Hackathon**.
 
 **Highlights:**
 - **2M+ requests/day at sub-200ms** — 12 Spring Boot microservices (hexagonal architecture), 500k+ daily transactions
 - **$10M+ daily volume** — financial systems with consistent 48-hour reporting SLAs
 - **700% faster reports** — query tuning & materialized views on a healthcare platform (99.5% uptime, 100+ APIs)
-- **Top 50, LLaMA Hackathon** — High-Precision Contract-Advisor RAG
+- **Top 50, LLaMA Hackathon** — [High-Precision Contract-Advisor RAG](https://github.com/fadhlillah2/llama-docs-auditor) (LangChain, ChromaDB, Groq, EasyOCR)
 
 ---
 
@@ -28,13 +28,14 @@ Backend Software Engineer (6 yrs) specializing in **Java/Spring Boot**, adaptabl
 
 | | |
 |---|---|
-| **AI/LLM** | RAG, LLM integration (OpenAI, LLaMA), AI chatbots, AI-augmented engineering (Cursor AI) |
+| **AI/LLM** | RAG (LangChain, ChromaDB), LLM integration (OpenAI, LLaMA, Groq), AI chatbots, AI-augmented engineering (Cursor AI) |
 | **Languages** | Java, Python, JavaScript/TypeScript, Go |
 | **Backend** | Spring Boot, Quarkus, FastAPI, Flask, Node.js, Express.js |
+| **Testing** | JUnit 5, Mockito |
 | **Architecture** | Microservices, REST, GraphQL, Event-Driven, Hexagonal Architecture |
 | **Databases** | PostgreSQL, MySQL, Microsoft SQL Server, MongoDB, Redis |
 | **Messaging** | Apache Kafka, RabbitMQ, gRPC, WebSocket |
-| **DevOps/Cloud** | Docker, Kubernetes, Jenkins, CI/CD, Flyway, AWS (ECS, EC2, S3), Azure |
+| **DevOps/Cloud** | Docker, Kubernetes, Jenkins, CI/CD, Flyway, Maven, Git, AWS (ECS, EC2, S3), Azure |
 | **Security** | OAuth 2.0, JWT, SSO, AES-256, OWASP Top 10 |
 
 ---
