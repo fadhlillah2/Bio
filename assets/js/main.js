@@ -94,6 +94,7 @@
     select('body').classList.toggle('mobile-nav-active')
     this.classList.toggle('bi-list')
     this.classList.toggle('bi-x')
+    this.setAttribute('aria-expanded', select('body').classList.contains('mobile-nav-active'))
   })
 
   /**
@@ -109,6 +110,7 @@
         let navbarToggle = select('.mobile-nav-toggle')
         navbarToggle.classList.toggle('bi-list')
         navbarToggle.classList.toggle('bi-x')
+        navbarToggle.setAttribute('aria-expanded', 'false')
       }
       scrollto(this.hash)
     }
