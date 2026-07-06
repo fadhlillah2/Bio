@@ -1,4 +1,4 @@
-<h1 align="center">Fadhlillah — Backend Software Engineer · AI-Native Engineer</h1>
+<h1 align="center">Fadhlillah — Software Engineer · AI Native Engineer</h1>
 
 <div align="center">
 
@@ -14,7 +14,7 @@
 
 ## Who I Am
 
-Backend Software Engineer (6+ yrs) specializing in **Java/Spring Boot**, adaptable across Python, Node, and Go. I operate microservices serving **2M+ requests/day** in a regulated enterprise environment and ship fast with AI-augmented engineering — a production SFTP platform delivered in **10 days against a 17-day plan**. I build LLM-integrated products end-to-end: **RAG systems, AI chatbots, internal automation** — **Top 50 at the LLaMA Hackathon**.
+Backend Software Engineer (6+ yrs) — deep in **Java/Spring Boot**, adaptable across the languages, domains and paradigms around it. Builds Spring Boot microservices serving **2M+ requests/day**, shipping in Python, Node, and Go across healthcare, F&B, and fintech as each problem demands. Adopted AI-augmented workflows early — a production SFTP platform delivered in **10 days against a 17-day plan** — and lifted reporting speed **700%** via query and data-model optimization on a healthcare platform. Builds LLM-integrated products end to end: **RAG systems, AI chatbots, internal automation**. **Top 50 at the LLaMA Hackathon** — equally at home in regulated enterprise systems and fast-moving AI builds.
 
 **Highlights:**
 - **2M+ requests/day at sub-200ms** — 12 Spring Boot microservices (hexagonal architecture), 500k+ daily transactions
@@ -31,7 +31,6 @@ Backend Software Engineer (6+ yrs) specializing in **Java/Spring Boot**, adaptab
 | **AI/LLM** | RAG (LangChain, ChromaDB), LLM integration (OpenAI, LLaMA, Groq), AI chatbots, AI-augmented engineering (Cursor AI) |
 | **Languages** | Java, Python, JavaScript/TypeScript, Go |
 | **Backend** | Spring Boot, Quarkus, FastAPI, Flask, Node.js, Express.js |
-| **Testing** | JUnit 5, Mockito |
 | **Architecture** | Microservices, REST, GraphQL, Event-Driven, Hexagonal Architecture |
 | **Databases** | PostgreSQL, MySQL, Microsoft SQL Server, MongoDB, Redis |
 | **Messaging** | Apache Kafka, RabbitMQ, gRPC, WebSocket |

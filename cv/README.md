@@ -51,5 +51,7 @@ linkedin: v1 export ──► v2 draft ──► v3 draft (never published) ─�
   whenever the .txt changes.
 - Version scheme: resume = `vX.Y`, LinkedIn profile = `vN`. Bump on any content change.
 - New version → add it here, move the superseded files to `archive/`, update this README.
-- The site (`index.html`) keeps its curated presentation; it must never *contradict* the live
-  profile, but may present a curated subset plus repo-verifiable detail (e.g. the RAG stack).
+- The site (`index.html`): career-claim content (hero/meta headline, About, Resume section) is
+  synced verbatim to the mirror resume (done 2026-07-06). Site-only sections (Facts, Services,
+  Portfolio, Skills grid) may add repo-verifiable detail (e.g. the RAG stack) but must never
+  *contradict* the live profile.
