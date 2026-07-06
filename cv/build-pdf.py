@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Typeset resume PDF from the canonical .txt — wording is preserved verbatim.
 
-Usage:  uv run --with pypdf python3 cv/build-pdf.py cv/resume-vX.Y.txt
-Output: cv/resume-vX.Y.pdf (A4, 1 page) via Windows Chrome headless print-to-pdf,
+Usage:  uv run --with pypdf python3 cv/build-pdf.py cv/resume-vX.Y.txt [max_pages]
+Output: cv/resume-vX.Y.pdf (A4) via Windows Chrome headless print-to-pdf,
         then verifies the PDF's extracted text is character-identical to the .txt
-        (whitespace/bullet markers aside) and that it stays on one page.
+        (whitespace/bullet markers aside) and fits max_pages (default 1).
 """
 import html
 import re
@@ -23,8 +23,8 @@ h1 { font-size: 19pt; letter-spacing: 3px; text-align: center; }
 .hl { text-align: center; font-weight: bold; font-size: 9.4pt; margin-top: 1mm; }
 .ct { text-align: center; font-size: 8.6pt; color: #444; }
 h2 { font-size: 9.8pt; letter-spacing: 1.2px; border-bottom: 1px solid #999;
-     padding-bottom: 0.5mm; margin: 2mm 0 0.9mm; }
-.crow, .trow { display: flex; justify-content: space-between; }
+     padding-bottom: 0.5mm; margin: 2mm 0 0.9mm; break-after: avoid; }
+.crow, .trow { display: flex; justify-content: space-between; break-after: avoid; }
 .crow { margin-top: 1.2mm; }
 .crow .c { font-weight: bold; }
 .crow .loc, .trow .d { color: #444; font-size: 8.6pt; }
@@ -123,6 +123,7 @@ def wsl_to_win(p: Path) -> str:
 
 def main():
     txt_path = Path(sys.argv[1])
+    max_pages = int(sys.argv[2]) if len(sys.argv) > 2 else 1
     txt = txt_path.read_text(encoding="utf-8")
     html_path = txt_path.with_suffix(".print.html")
     pdf_path = txt_path.with_suffix(".pdf")
@@ -143,9 +144,9 @@ def main():
     if a != b:
         k = next((j for j, (x, y) in enumerate(zip(a, b)) if x != y), min(len(a), len(b)))
         sys.exit(f"FAIL wording mismatch at char {k}: txt=...{a[k:k+60]!r} pdf=...{b[k:k+60]!r}")
-    if pages != 1:
-        sys.exit(f"FAIL {pages} pages (must be 1)")
-    print(f"OK {pdf_path.name}: 1 page, text verified identical to {txt_path.name}")
+    if pages > max_pages:
+        sys.exit(f"FAIL {pages} pages (must be <= {max_pages})")
+    print(f"OK {pdf_path.name}: {pages} page(s), text verified identical to {txt_path.name}")
 
 
 if __name__ == "__main__":
