@@ -1,0 +1,76 @@
+                                             FADHLILLAH
+ AI-Native Backend Engineer | Java · Spring Boot · Microservices @ 2M+ req/day | LLM · RAG · Python
+                    Jakarta, ID | +62 851-5704-3131 | fadhlillah949699@gmail.com
+          linkedin.com/in/fadhlillah2 | github.com/fadhlillah2 | fadhlillah2.github.io/Bio
+
+SUMMARY
+Backend Software Engineer (6 yrs) specializing in Java/Spring Boot, adaptable across Python and
+Node. Operates microservices serving 2M+ requests/day in a regulated enterprise environment and
+ships fast with AI-augmented engineering — a production SFTP platform delivered in 10 days against a
+17-day plan. Builds LLM-integrated products end-to-end (RAG systems, AI chatbots, internal
+automation); Top 50 at the LLaMA Hackathon.
+
+EXPERIENCE
+BANK DANAMON                                                                             JAKARTA, ID
+Software Engineer                                                                 Aug 2023 – Present
+- Built and operate Spring Boot microservices serving 2M+ requests/day at sub-200ms; run 12
+  microservices (hexagonal architecture) handling 500k+ daily transactions
+- Share service ownership within a 5-person engineering team; informally mentor 5 engineers
+- Support financial systems processing $10M+ daily volume, consistently meeting 48-hour reporting
+  SLAs
+- Built a production SFTP automation platform in 10 days against a 17-day plan using AI-augmented
+  engineering
+- Automated technical documentation with LLMs (cycle time 40 hours to 4) and generated test cases
+  (JUnit 5, Mockito) reaching 95% coverage on core modules, cutting test-prep time 65%
+- Implemented OAuth 2.0, JWT, and AES-256 encryption; passed internal security audits
+
+IDSTAR                                                                                   JAKARTA, ID
+Backend Software Engineer | Remote                                               Mar 2023 – Jul 2023
+- Developed and optimized 40+ RESTful APIs for the OML Innovoice platform using Spring Boot
+- Cut unauthorized access by 95% by adding multi-layer authentication; implemented enterprise SSO
+  (OAuth 2.0/JWT) and session tracking; managed sessions with Redis
+- Hardened the app against OWASP Top 10 (input validation, SQL injection); Dockerized services on
+  Azure; held code quality at 90+ via SonarLint and peer reviews
+
+FREELANCE & PERSONAL PROJECTS                                                                 REMOTE
+Full Stack Developer (alongside Assist.id)                                       Apr 2022 – Feb 2023
+- Developed a context-aware AI chatbot on the MERN stack with OpenAI integration
+- Built a Kafka-based notification system (email + SMS) syncing orders across POS and Kitchen
+  Display systems via REST
+- Wrote REST and GraphQL APIs with Spring Boot and FastAPI; deployed Docker containers to AWS ECS
+- Built an event-driven simulation app on Quarkus microservices
+
+ASSIST.ID                                                                                   RIAU, ID
+Backend Software Engineer                                                        Jul 2020 – Feb 2023
+- Accelerated report generation 700% via query tuning and materialized views
+- Sustained 99.5% uptime while resolving ~100 production issues/month through root-cause analysis
+- Designed and built 100+ RESTful APIs for the IBBR healthcare system; integrated 40+ third-party
+  services (payments, logistics, SMS)
+- Designed a multi-level approval request engine; synced ERP data in real time via REST and
+  webhooks
+
+PROJECTS
+- High-Precision Contract-Advisor RAG — Top 50, LLaMA Hackathon; LangChain + Flask pipeline with
+  hybrid search over ChromaDB, Groq (LLaMA 3.3 70B) inference, HuggingFace embeddings, and EasyOCR
+  ingestion for scanned contracts — github.com/fadhlillah2/llama-docs-auditor
+
+SKILLS
+AI/LLM       : RAG (LangChain, ChromaDB), LLM integration (OpenAI, LLaMA, Groq), AI chatbots,
+               AI-augmented engineering (Cursor AI)
+Languages    : Java, Python, JavaScript/TypeScript, Go
+Backend      : Spring Boot, Quarkus, FastAPI, Flask, Node.js, Express.js
+Testing      : JUnit 5, Mockito
+Architecture : Microservices, REST, GraphQL, Event-Driven, Hexagonal Architecture
+Databases    : PostgreSQL, MySQL, Microsoft SQL Server, MongoDB, Redis
+Messaging    : Apache Kafka, RabbitMQ, gRPC, WebSocket
+DevOps/Cloud : Docker, Kubernetes, Jenkins, CI/CD, Flyway, Maven, Git, AWS (ECS, EC2, S3), Azure
+Security     : OAuth 2.0, JWT, SSO, AES-256, OWASP Top 10
+
+EDUCATION
+GADJAH MADA UNIVERSITY                                                                YOGYAKARTA, ID
+Bachelor, Mathematics and Computer Science                                       Mar 2016 – May 2020
+
+CERTIFICATIONS
+freeCodeCamp — Machine Learning with Python, Scientific Computing with Python,
+  JavaScript Algorithms & Data Structures
+Digital Talent Scholarship
