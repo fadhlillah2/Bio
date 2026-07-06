@@ -49,6 +49,9 @@ linkedin: v1 export ──► v2 draft ──► v3 draft (never published) ─�
   into one composite claim, never use a stronger verb than the source.
 - **The current resume must always have a matching current PDF.** Regenerate via `build-pdf.py`
   whenever the .txt changes.
+- On version bump, also update the direct-PDF links outside this repo: the **Resume badge in the
+  GitHub profile README** (repo `fadhlillah2/fadhlillah2`) points to
+  `https://fadhlillah2.github.io/Bio/cv/resume-vX.Y.pdf` and will 404 if left stale.
 - Version scheme: resume = `vX.Y`, LinkedIn profile = `vN`. Bump on any content change.
 - New version → add it here, move the superseded files to `archive/`, update this README.
 - The site (`index.html`): career-claim content (hero/meta headline, About, Resume section) is
