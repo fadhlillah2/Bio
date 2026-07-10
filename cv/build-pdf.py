@@ -1,18 +1,30 @@
 #!/usr/bin/env python3
-"""Typeset resume PDF from the canonical .txt — wording is preserved verbatim.
+"""Typeset a cv PDF from the canonical .txt — wording is preserved verbatim.
 
 Usage:  uv run --with pypdf python3 cv/build-pdf.py cv/resume-vX.Y.txt [max_pages]
-Output: cv/resume-vX.Y.pdf (A4) via Windows Chrome headless print-to-pdf,
-        then verifies the PDF's extracted text is character-identical to the .txt
-        (whitespace/bullet markers aside) and fits max_pages (default 1).
+        (or plain python3 with pypdf installed)
+Output: sibling .pdf (A4) via Chrome headless print-to-pdf (native Linux/macOS
+        Chrome, or Windows Chrome under WSL), then verifies the PDF's extracted
+        wording is identical to the .txt (whitespace/bullet markers aside) and
+        fits max_pages (default 1; resume-v8.3 needs 2).
 """
 import html
 import re
+import shutil
 import subprocess
 import sys
 from pathlib import Path
 
-CHROME = "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
+WSL_CHROME = "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe"
+
+
+def find_chrome() -> str:
+    for c in ("google-chrome", "google-chrome-stable", "chromium", "chromium-browser"):
+        if (p := shutil.which(c)):
+            return p
+    if Path(WSL_CHROME).exists():
+        return WSL_CHROME
+    sys.exit("FAIL no Chrome found (native google-chrome/chromium or WSL Windows Chrome)")
 
 CSS = """
 @page { size: A4; margin: 7.5mm 12mm; }
@@ -39,7 +51,7 @@ p.body { text-align: justify; }
 
 def linkify(escaped: str) -> str:
     return re.sub(
-        r"((?:github\.com|linkedin\.com|leetcode\.com|wa\.me|fadhlillah2\.github\.io)/[\w./-]+|[\w.]+@gmail\.com)",
+        r"((?:github\.com|linkedin\.com|leetcode\.com|replit\.com|wa\.me|fadhlillah2\.github\.io)/[\w./@-]+|[\w.]+@gmail\.com)",
         lambda m: '<a href="{}{}">{}</a>'.format(
             "mailto:" if "@" in m.group(1) else "https://", m.group(1), m.group(1)
         ),
@@ -52,7 +64,14 @@ def two_col(line: str):
     return parts if len(parts) == 2 else None
 
 
-def to_html(txt: str) -> str:
+def doc_title(stem: str, name: str) -> str:
+    # "resume-v8.3" -> "Fadhlillah — Resume v8.3" (viewer-facing PDF title)
+    words = [{"id": "ID", "en": "EN"}.get(w, w if re.fullmatch(r"v[\d.]+", w) else w.capitalize())
+             for w in stem.split("-")]
+    return f"{name.title()} — {' '.join(words)}"
+
+
+def to_html(txt: str, stem: str) -> str:
     lines = txt.splitlines()
     head, i = [], 0
     while len(head) < 4:  # name, headline, contact x2
@@ -106,8 +125,11 @@ def to_html(txt: str) -> str:
             flush()
             unit = ("p", line.strip())
     flush()
-    return f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}</style></head><body>" \
-           + "".join(out) + "</body></html>"
+    lang = "id" if "-id-" in stem else "en"
+    title = html.escape(doc_title(stem, head[0]))
+    return (f"<!doctype html><html lang='{lang}'><head><meta charset='utf-8'>"
+            f"<title>{title}</title><style>{CSS}</style></head><body>"
+            + "".join(out) + "</body></html>")
 
 
 def canon(s: str) -> str:
@@ -116,27 +138,39 @@ def canon(s: str) -> str:
     return re.sub(r"\s+", "", s)             # wording only: drop all whitespace
 
 
-def wsl_to_win(p: Path) -> str:
-    m = re.match(r"^/mnt/([a-z])/(.*)$", str(p.resolve()))
-    return f"{m.group(1).upper()}:\\{m.group(2).replace('/', chr(92))}"
+def chrome_path(p: Path, chrome: str) -> str:
+    # Windows Chrome under WSL needs C:\-style paths; native Chrome takes posix
+    if chrome == WSL_CHROME:
+        m = re.match(r"^/mnt/([a-z])/(.*)$", str(p.resolve()))
+        if not m:
+            sys.exit(f"FAIL WSL Chrome needs the repo under /mnt/<drive>/, got {p.resolve()}")
+        return f"{m.group(1).upper()}:\\{m.group(2).replace('/', chr(92))}"
+    return str(p.resolve())
 
 
 def main():
+    if len(sys.argv) < 2:
+        sys.exit(__doc__.strip())
     txt_path = Path(sys.argv[1])
     max_pages = int(sys.argv[2]) if len(sys.argv) > 2 else 1
     txt = txt_path.read_text(encoding="utf-8")
     html_path = txt_path.with_suffix(".print.html")
     pdf_path = txt_path.with_suffix(".pdf")
-    html_path.write_text(to_html(txt), encoding="utf-8")
+    html_path.write_text(to_html(txt, txt_path.stem), encoding="utf-8")
+    chrome = find_chrome()
     try:
         subprocess.run(
-            [CHROME, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
-             f"--print-to-pdf={wsl_to_win(pdf_path)}", wsl_to_win(html_path)],
+            [chrome, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
+             f"--print-to-pdf={chrome_path(pdf_path, chrome)}", chrome_path(html_path, chrome)],
             check=True, capture_output=True, timeout=120)
+    except subprocess.CalledProcessError as e:
+        sys.exit(f"FAIL Chrome exited {e.returncode}: {e.stderr.decode(errors='replace')[-500:]}")
+    except subprocess.TimeoutExpired:
+        sys.exit("FAIL Chrome timed out after 120s")
     finally:
         html_path.unlink(missing_ok=True)
 
-    from pypdf import PdfReader
+    from pypdf import PdfReader, PdfWriter
     reader = PdfReader(str(pdf_path))
     pages = len(reader.pages)
     pdf_text = "".join(p.extract_text() or "" for p in reader.pages)
@@ -146,7 +180,14 @@ def main():
         sys.exit(f"FAIL wording mismatch at char {k}: txt=...{a[k:k+60]!r} pdf=...{b[k:k+60]!r}")
     if pages > max_pages:
         sys.exit(f"FAIL {pages} pages (must be <= {max_pages})")
-    print(f"OK {pdf_path.name}: {pages} page(s), text verified identical to {txt_path.name}")
+
+    # stamp viewer-facing metadata (Chrome sets /Title from <title>; /Author needs a pass)
+    head0 = next(l.strip() for l in txt.splitlines() if l.strip())
+    writer = PdfWriter(clone_from=str(pdf_path))
+    writer.add_metadata({"/Title": doc_title(txt_path.stem, head0), "/Author": head0.title()})
+    with open(pdf_path, "wb") as f:
+        writer.write(f)
+    print(f"OK {pdf_path.name}: {pages} page(s), wording verified identical to {txt_path.name}")
 
 
 if __name__ == "__main__":
