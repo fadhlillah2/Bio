@@ -1,7 +1,8 @@
 # CV Sources
 
 Single source of truth chain (per 2026-07-06): **live LinkedIn profile** is the SoT for career
-claims → captured verbatim in `linkedin-profile-v4.txt` → **resume mirrors it in full**
+claims → captured verbatim in a `linkedin-profile-vN` snapshot (kept **outside this repo** since
+2026-07-10 — see "Removed from the tree" below) → **resume mirrors it in full**
 (user decision 2026-07-06: "mirror penuh" — the resume contains all LinkedIn content and nothing
 that is not on LinkedIn). Files at this level are **current**; `archive/` is the audit trail.
 
@@ -9,7 +10,6 @@ that is not on LinkedIn). Files at this level are **current**; `archive/` is the
 
 | File | What it is |
 |---|---|
-| [`linkedin-profile-v4.txt`](linkedin-profile-v4.txt) | **LIVE snapshot** of linkedin.com/in/fadhlillah2 (scraped via MCP, 2026-07-06; re-verified same day — no drift). The SoT transcript. Header lists the v3→live delta (audited improvements never applied on LinkedIn). |
 | [`resume-v8.3.txt`](resume-v8.3.txt) | Resume v8.3 — **full mirror** of the live profile (2 pages): LinkedIn headline, About verbatim, all bullets per role incl. the reminder-service / ai-chatbot-mern media blocks, all 8 certifications (credential IDs where issued), all 6 projects, top-visible skills, both recommendations. User-confirmed facts absent from LinkedIn (JUnit 5/Mockito, 5-person team scope, "alongside Assist.id") were **removed** per the mirror decision. |
 | [`resume-v8.3.pdf`](resume-v8.3.pdf) | Resume v8.3 PDF (2 pages, typeset) — the distributable. Generated via `build-pdf.py cv/resume-v8.3.txt 2`; extracted text verified identical to the .txt. |
 | [`build-pdf.py`](build-pdf.py) | PDF generator: parses the .txt, typesets it (Arial/Liberation Sans, A4), prints via Chrome headless (native Linux/macOS Chrome or WSL Windows Chrome, auto-detected), stamps Title/Author/lang metadata, verifies the PDF wording is identical to the .txt (whitespace-insensitive) and fits `max_pages` (2nd CLI arg, default 1; resume-v8.3 needs `2`). Needs `pypdf`. Run: `python3 cv/build-pdf.py cv/resume-vX.Y.txt [max_pages]` |
@@ -36,9 +36,11 @@ verifiably visible.
 Removed from the tree 2026-07-10 (still in Git history if ever needed):
 `linkedin-profile-v1.pdf/.txt` (raw export — contained the mobile number),
 `linkedin-profile-v2.txt` and `v3.txt` (private editing drafts with strategy
-notes — must never be publicly served). The repo is public and GitHub Pages
-served everything, so `_config.yml` now excludes `cv/archive/`, this README,
-and `build-pdf.py` from the published site.
+notes — must never be publicly served), `linkedin-profile-v4.txt` (the SoT
+snapshot itself — carries internal delta/strategy notes, so it now lives
+outside the repo) and `img/img.png` (stray personal screenshot). The repo is
+public and GitHub Pages served everything, so `_config.yml` now excludes
+`cv/archive/`, this README, and `build-pdf.py` from the published site.
 
 ## Version lineage
 
@@ -46,13 +48,14 @@ and `build-pdf.py` from the published site.
 resume:      v7.1 ──► v8.0 ──► v8.1 ──► v8.2 (curated 1-page) ──► v8.3 (full LinkedIn mirror, 2 pages)
 1pager:      resume-1pager v1.0 ──► v1.1 (recruiter/ATS edition, v8.2 lineage — parallel artifact, not a mirror)
 consulting:  consulting-onepager v1.0 ──► v1.1 (EN) ⇄ v1.0 ──► v1.1 (ID)
-linkedin:    v1 export ──► v2 draft ──► v3 draft (never published) ──► v4 LIVE snapshot (current SoT)
+linkedin:    v1 export ──► v2 draft ──► v3 draft (never published) ──► v4 LIVE snapshot (current SoT — kept outside the repo)
 ```
 
 ## Rules
 
 - **Resume = full mirror of live LinkedIn** (user decision 2026-07-06). On any LinkedIn change:
-  re-scrape → new `linkedin-profile-vN.txt` snapshot → regenerate the mirror resume from it.
+  re-scrape → new `linkedin-profile-vN` snapshot kept **outside this repo** (snapshots carry
+  internal delta notes and must never be committed) → regenerate the mirror resume from it.
   No content may appear in the resume that is not on the live profile (or its captured snapshot).
 - **Live LinkedIn wins on conflicts**, always.
 - Each PDF is generated FROM its canonical `.txt` (the .txt is the source);
