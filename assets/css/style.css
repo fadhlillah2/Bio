@@ -1401,6 +1401,9 @@ button.mobile-nav-toggle {
 .quote-card {
   position: relative;
   margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
   background: #0b1626;
   border: 1px solid #1b2c44;
   border-radius: 14px;
@@ -1424,6 +1427,7 @@ button.mobile-nav-toggle {
   font-style: italic;
   position: relative;
   z-index: 1;
+  flex-grow: 1;
 }
 .quote-card figcaption {
   display: flex;
