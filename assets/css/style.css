@@ -35,6 +35,17 @@ html {
   html {
     scroll-behavior: auto;
   }
+  #header,
+  .portfolio .portfolio-wrap .portfolio-links {
+    transition: none;
+  }
+}
+
+/* No-JS / AOS-load-failure fallback: the .js class is stamped by an inline
+   head script, so without JS the aos.css opacity:0 must never hide content */
+html:not(.js) [data-aos] {
+  opacity: 1 !important;
+  transform: none !important;
 }
 
 /*--------------------------------------------------------------
@@ -558,14 +569,6 @@ section {
   font-size: 18px;
 }
 
-.services .title a {
-  color: #343a40;
-}
-
-.services .title a:hover {
-  color: #149ddd;
-}
-
 .services .description {
   margin-left: 80px;
   line-height: 24px;
@@ -1029,8 +1032,7 @@ a:hover { color: #7ccdff; }
 .services .icon i { color: #4db8ff; }
 .services .icon-box:hover .icon { background: #2fb4f2; }
 .services .icon-box:hover .icon i { color: #04121f; }
-.services .title a { color: #f2f7fd; }
-.services .title a:hover { color: #4db8ff; }
+.services .title { color: #f2f7fd; } /* titles are plain <h3>, no anchor — selector was dead and titles fell back to body text color */
 .services .description { color: #93a5bc; }
 
 /* Contact — the conversion moment: give it a quiet lift */
@@ -1069,8 +1071,6 @@ a:hover { color: #7ccdff; }
   color: #e6edf6;
   box-shadow: none;
 }
-.contact .php-email-form input::placeholder,
-.contact .php-email-form textarea::placeholder { color: #5f7189; }
 .contact .php-email-form button[type="submit"] {
   background: #149ddd;
   font-weight: 600;
@@ -1259,6 +1259,9 @@ button.mobile-nav-toggle {
    also reveal on focus, and keep permanently visible on no-hover devices */
 .portfolio .portfolio-wrap:focus-within .portfolio-links {
   bottom: 0;
+}
+.portfolio .portfolio-wrap:focus-within::before {
+  opacity: 1; /* keyboard focus gets the same backdrop the hover reveal has */
 }
 @media (hover: none) {
   .portfolio .portfolio-wrap .portfolio-links {

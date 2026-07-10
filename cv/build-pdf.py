@@ -50,8 +50,8 @@ p.body { text-align: justify; }
 
 
 def linkify(escaped: str) -> str:
-    return re.sub(
-        r"((?:github\.com|linkedin\.com|leetcode\.com|replit\.com|wa\.me|fadhlillah2\.github\.io)/[\w./@-]+|[\w.]+@gmail\.com)",
+    return re.sub(  # URL must not end in '.' so trailing sentence punctuation stays outside the link
+        r"((?:github\.com|linkedin\.com|leetcode\.com|replit\.com|wa\.me|fadhlillah2\.github\.io)/[\w./@-]*[\w/@-]|[\w.]+@gmail\.com)",
         lambda m: '<a href="{}{}">{}</a>'.format(
             "mailto:" if "@" in m.group(1) else "https://", m.group(1), m.group(1)
         ),
@@ -75,6 +75,8 @@ def to_html(txt: str, stem: str) -> str:
     lines = txt.splitlines()
     head, i = [], 0
     while len(head) < 4:  # name, headline, contact x2
+        if i >= len(lines):
+            sys.exit("FAIL header incomplete: need 4 non-blank lines (name, headline, contact x2)")
         if lines[i].strip():
             head.append(lines[i].strip())
         i += 1
@@ -105,12 +107,12 @@ def to_html(txt: str, stem: str) -> str:
             flush()
             section = line
             out.append(f"<h2>{e(line)}</h2>")
+        elif line.startswith("- "):  # before the skills regex: a bullet containing " : " is still a bullet
+            flush()
+            unit = ("b", line[2:].strip())
         elif re.match(r"^\S.{0,12}? : ", line):  # skills row "Label : values"
             flush()
             unit = ("sk", re.sub(r"^(\S[^:]*?)\s+: ", r"\1 : ", line.strip()))
-        elif line.startswith("- "):
-            flush()
-            unit = ("b", line[2:].strip())
         elif line.startswith(" ") and unit:  # wrapped continuation
             unit = (unit[0], unit[1] + " " + line.strip())
         elif (cols := two_col(line)) and section not in ("SUMMARY",):
@@ -119,6 +121,10 @@ def to_html(txt: str, stem: str) -> str:
             out.append(f'<div class="{cls[0]}"><span class="{cls[1]}">{e(cols[0])}</span>'
                        f'<span class="{cls[2]}">{e(cols[1])}</span></div>')
         elif section == "SUMMARY" and unit:  # summary wraps without indent
+            unit = (unit[0], unit[1] + " " + line.strip())
+        elif unit and unit[0] == "p" and line[:1].islower() and unit[1][-1:].isalnum():
+            # unindented mid-sentence wrap: joins only lowercase lines after a word break,
+            # so a new lowercase-brand item (e.g. freeCodeCamp) after ")" stays its own paragraph
             unit = (unit[0], unit[1] + " " + line.strip())
         else:
             flush()
@@ -163,6 +169,17 @@ def selftest():
     assert "<html lang='id'>" in to_html(src, "consulting-onepager-id-v9.9")
     assert canon("- a  b\nc") == canon("• a b c") and canon("ab") != canon("ac")
     assert linkify("see replit.com/@X and mail@gmail.com") .count("<a href=") == 2
+    assert 'href="https://github.com/x/y"' in linkify("github.com/x/y.")  # trailing '.' stays outside the link
+    wrap = to_html(src.replace("- bullet one\n  wrapped tail",
+                               "Label line:\nAn unindented paragraph that\nwraps mid-sentence here."), "resume-v9.9-test")
+    assert '<p class="body">An unindented paragraph that wraps mid-sentence here.</p>' in wrap  # lowercase wrap joins
+    assert '<p class="body">Label line:</p>' in wrap  # uppercase start stays its own paragraph
+    certs = to_html(src.replace("- bullet one\n  wrapped tail",
+                                "Cert one (Org)\nfreeCodeCamp — another item"), "resume-v9.9-test")
+    assert '<p class="body">Cert one (Org)</p>' in certs  # lowercase-brand item after ')' is NOT merged
+    assert '<p class="body">freeCodeCamp — another item</p>' in certs
+    assert '<div class="b"><span class="m">&bull;</span> a : b</div>' in to_html(
+        src.replace("- bullet one", "- a : b\n- bullet one"), "resume-v9.9-test")  # bullet with ' : ' stays a bullet
     print("selftest OK")
 
 
@@ -172,17 +189,22 @@ def main():
     if sys.argv[1] == "--selftest":
         return selftest()
     txt_path = Path(sys.argv[1])
+    if not txt_path.is_file():
+        sys.exit(f"FAIL no such file: {txt_path}")
+    if len(sys.argv) > 2 and not sys.argv[2].isdigit():
+        sys.exit(f"FAIL max_pages must be a positive integer, got {sys.argv[2]!r}")
     max_pages = int(sys.argv[2]) if len(sys.argv) > 2 else 1
     # fail fast: without pypdf we'd emit a PDF that is never verified nor metadata-stamped
     try:
         from pypdf import PdfReader, PdfWriter
+        from pypdf.generic import NameObject, TextStringObject
     except ImportError:
         sys.exit("FAIL pypdf is required (wording verify + Title/Author stamp) — install it or add its wheel to PYTHONPATH")
+    chrome = find_chrome()  # before any output is written, so a Chrome-less run leaves no orphan .print.html
     txt = txt_path.read_text(encoding="utf-8")
     html_path = txt_path.with_suffix(".print.html")
     pdf_path = txt_path.with_suffix(".pdf")
     html_path.write_text(to_html(txt, txt_path.stem), encoding="utf-8")
-    chrome = find_chrome()
     try:
         subprocess.run(
             [chrome, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
@@ -205,10 +227,12 @@ def main():
     if pages > max_pages:
         sys.exit(f"FAIL {pages} pages (must be <= {max_pages})")
 
-    # stamp viewer-facing metadata (Chrome sets /Title from <title>; /Author needs a pass)
+    # stamp viewer-facing metadata (Chrome sets /Title from <title>; /Author and a
+    # reliable document /Lang — id for the Indonesian one-pager — need a pass)
     head0 = next(l.strip() for l in txt.splitlines() if l.strip())
     writer = PdfWriter(clone_from=str(pdf_path))
     writer.add_metadata({"/Title": doc_title(txt_path.stem, head0), "/Author": head0.title()})
+    writer._root_object[NameObject("/Lang")] = TextStringObject("id" if "-id-" in txt_path.stem else "en")
     with open(pdf_path, "wb") as f:
         writer.write(f)
     print(f"OK {pdf_path.name}: {pages} page(s), wording verified identical to {txt_path.name}")
