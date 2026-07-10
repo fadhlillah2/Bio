@@ -1291,3 +1291,150 @@ button.mobile-nav-toggle {
     break-inside: avoid;
   }
 }
+
+/*--------------------------------------------------------------
+# Flagship case-study card (Portfolio) + Recommendation
+--------------------------------------------------------------*/
+.flagship {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 0;
+  background: #0b1626;
+  border: 1px solid #1b2c44;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+.flagship-body {
+  padding: 30px 32px;
+}
+.flagship-badge {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: #ffc46b;
+  margin: 0 0 14px;
+}
+.flagship-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #f2f7fd;
+  margin: 0 0 12px;
+}
+.flagship-desc {
+  color: #93a5bc;
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 18px;
+}
+.flagship-tags {
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.flagship-tags li {
+  background: #12203a;
+  border: 1px solid #1b2c44;
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  color: #dbe6f3;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.flagship-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.flagship-cred {
+  font-size: 12px;
+  color: #5f7189;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+.flagship-term {
+  background: #060d18;
+  border-left: 1px solid #1b2c44;
+  display: flex;
+  flex-direction: column;
+}
+.flagship-code {
+  margin: 0;
+  padding: 18px 20px;
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12.5px;
+  line-height: 2;
+  color: #e6edf6;
+  overflow-x: auto;
+  white-space: pre;
+}
+.flagship-code .tmut { color: #7d8da3; }
+.flagship-code .ts { color: #dbe6f3; }
+.flagship-code .tm { color: #ffc46b; }
+.flagship-code .tc { color: #6ee7b7; }
+
+.portfolio-sub {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: #7d8da3;
+  margin-bottom: 18px;
+}
+
+@media (max-width: 768px) {
+  .flagship {
+    grid-template-columns: 1fr;
+  }
+  .flagship-term {
+    border-left: 0;
+    border-top: 1px solid #1b2c44;
+  }
+  .flagship-body {
+    padding: 24px 22px;
+  }
+}
+
+/* Recommendation */
+.quote-card {
+  position: relative;
+  margin: 0;
+  background: #0b1626;
+  border: 1px solid #1b2c44;
+  border-radius: 14px;
+  padding: 34px 32px 28px;
+}
+.quote-card .quote-mark {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  font-size: 40px;
+  color: #2fb4f2;
+  opacity: 0.35;
+  line-height: 1;
+}
+.quote-card blockquote {
+  margin: 0 0 18px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: #dbe6f3;
+  font-style: italic;
+  position: relative;
+  z-index: 1;
+}
+.quote-card figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.quote-card .quote-name {
+  font-weight: 600;
+  color: #f2f7fd;
+}
+.quote-card .quote-role {
+  font-size: 13px;
+  color: #93a5bc;
+}
