@@ -88,14 +88,13 @@ def to_html(txt: str, stem: str) -> str:
         if not unit:
             return
         kind, text = unit
-        t = e(text)
         if kind == "b":
-            out.append(f'<div class="b"><span class="m">&bull;</span> {t}</div>')
+            out.append(f'<div class="b"><span class="m">&bull;</span> {e(text)}</div>')
         elif kind == "sk":
             label, _, rest = text.partition(" : ")
             out.append(f'<div class="sk"><b>{e(label)}</b> : {e(rest)}</div>')
         else:
-            out.append(f'<p class="body">{t}</p>')
+            out.append(f'<p class="body">{e(text)}</p>')
         unit = None
 
     for line in lines[i:]:
@@ -148,9 +147,30 @@ def chrome_path(p: Path, chrome: str) -> str:
     return str(p.resolve())
 
 
+def selftest():
+    # Chrome-less check of the parser branches — fails loudly if the logic breaks
+    src = ("NAME\nHeadline here\nCity, ID | mail@gmail.com\nlinkedin.com/in/x | github.com/x\n\n"
+           "SUMMARY\nProse line one\nwrapping without indent.\n\nEXPERIENCE\n"
+           "COMPANY    CITY, ID\nRole Title    Jan 2020 – Now\n- bullet one\n  wrapped tail\n\n"
+           "SKILLS\nAI/LLM       : RAG, agents\n")
+    h = to_html(src, "resume-v9.9-test")
+    assert "<title>Name — Resume v9.9 Test</title>" in h and "<html lang='en'>" in h
+    assert '<div class="crow"><span class="c">COMPANY</span>' in h
+    assert '<div class="trow"><span class="t">Role Title</span>' in h
+    assert '<div class="b"><span class="m">&bull;</span> bullet one wrapped tail</div>' in h
+    assert '<div class="sk"><b>AI/LLM</b> : RAG, agents</div>' in h
+    assert '<p class="body">Prose line one wrapping without indent.</p>' in h
+    assert "<html lang='id'>" in to_html(src, "consulting-onepager-id-v9.9")
+    assert canon("- a  b\nc") == canon("• a b c") and canon("ab") != canon("ac")
+    assert linkify("see replit.com/@X and mail@gmail.com") .count("<a href=") == 2
+    print("selftest OK")
+
+
 def main():
     if len(sys.argv) < 2:
         sys.exit(__doc__.strip())
+    if sys.argv[1] == "--selftest":
+        return selftest()
     txt_path = Path(sys.argv[1])
     max_pages = int(sys.argv[2]) if len(sys.argv) > 2 else 1
     txt = txt_path.read_text(encoding="utf-8")

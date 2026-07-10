@@ -27,6 +27,16 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Raleway", sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
 /*--------------------------------------------------------------
 # Back to top button
 --------------------------------------------------------------*/
@@ -40,7 +50,7 @@ h1, h2, h3, h4, h5, h6 {
   background: #149ddd;
   width: 40px;
   height: 40px;
-  border-radius: 50px;
+  border-radius: 50%;
   transition: all 0.4s;
 }
 
@@ -180,7 +190,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   line-height: 0;
-  border-radius: 50px;
+  border-radius: 50%;
   cursor: pointer;
 }
 
@@ -419,7 +429,7 @@ section {
   margin-bottom: 30px;
 }
 
-.portfolio #portfolio-flters {
+.portfolio #portfolio-filters {
   padding: 0;
   margin: 0 auto 35px auto;
   list-style: none;
@@ -429,7 +439,7 @@ section {
   padding: 2px 15px;
 }
 
-.portfolio #portfolio-flters li {
+.portfolio #portfolio-filters li {
   cursor: pointer;
   display: inline-block;
   padding: 10px 15px 8px 15px;
@@ -442,11 +452,11 @@ section {
   transition: all 0.3s ease-in-out;
 }
 
-.portfolio #portfolio-flters li:hover, .portfolio #portfolio-flters li.filter-active {
+.portfolio #portfolio-filters li:hover, .portfolio #portfolio-filters li.filter-active {
   color: #149ddd;
 }
 
-.portfolio #portfolio-flters li:last-child {
+.portfolio #portfolio-filters li:last-child {
   margin-right: 0;
 }
 
@@ -998,9 +1008,9 @@ a:hover { color: #7ccdff; }
 }
 
 /* Portfolio */
-.portfolio #portfolio-flters li { color: #c7d3e3; }
-.portfolio #portfolio-flters li:hover,
-.portfolio #portfolio-flters li.filter-active { color: #4db8ff; }
+.portfolio #portfolio-filters li { color: #c7d3e3; }
+.portfolio #portfolio-filters li:hover,
+.portfolio #portfolio-filters li.filter-active { color: #4db8ff; }
 .portfolio .portfolio-wrap {
   background: #0b1626;
   border: 1px solid #1b2c44;
@@ -1204,12 +1214,12 @@ button.mobile-nav-toggle {
 }
 
 /* Portfolio filter bar: dark pill + real buttons */
-.portfolio #portfolio-flters {
+.portfolio #portfolio-filters {
   background: #0b1626;
   border: 1px solid #1b2c44;
   border-radius: 999px;
 }
-.portfolio #portfolio-flters li button {
+.portfolio #portfolio-filters li button {
   background: none;
   border: 0;
   padding: 0;

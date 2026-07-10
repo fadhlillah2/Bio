@@ -41,7 +41,7 @@ Backend Software Engineer (6+ yrs) — deep in **Java/Spring Boot**, adaptable a
 
 ## About This Repo
 
-Source of my portfolio site, live at **[fadhlillah2.github.io/Bio](https://fadhlillah2.github.io/Bio/)** — a static site (iPortfolio/Bootstrap base, heavily customized: terminal-style hero, dark console theme) deployed on GitHub Pages. CV sources live in [`cv/`](cv/).
+Source of my portfolio site, live at **[fadhlillah2.github.io/Bio](https://fadhlillah2.github.io/Bio/)** — a static site (iPortfolio/Bootstrap base, heavily customized: terminal-style hero, dark console theme) deployed on GitHub Pages. [`cv/`](cv/) holds the distributable artifacts and their canonical `.txt` sources: the full resume (LinkedIn mirror), a recruiter/ATS one-pager, and consulting one-pagers (EN + Bahasa Indonesia), all typeset via `build-pdf.py`.
 
 ## Contact
 
