@@ -173,6 +173,11 @@ def main():
         return selftest()
     txt_path = Path(sys.argv[1])
     max_pages = int(sys.argv[2]) if len(sys.argv) > 2 else 1
+    # fail fast: without pypdf we'd emit a PDF that is never verified nor metadata-stamped
+    try:
+        from pypdf import PdfReader, PdfWriter
+    except ImportError:
+        sys.exit("FAIL pypdf is required (wording verify + Title/Author stamp) — install it or add its wheel to PYTHONPATH")
     txt = txt_path.read_text(encoding="utf-8")
     html_path = txt_path.with_suffix(".print.html")
     pdf_path = txt_path.with_suffix(".pdf")
@@ -190,7 +195,6 @@ def main():
     finally:
         html_path.unlink(missing_ok=True)
 
-    from pypdf import PdfReader, PdfWriter
     reader = PdfReader(str(pdf_path))
     pages = len(reader.pages)
     pdf_text = "".join(p.extract_text() or "" for p in reader.pages)

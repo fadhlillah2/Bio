@@ -177,7 +177,7 @@
       once: true,
       mirror: false,
       disable: function () {
-        return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
       }
     })
   });

@@ -79,7 +79,6 @@ html {
   left: 0;
   bottom: 0;
   width: 300px;
-  transition: all ease-in-out 0.5s;
   z-index: 9997;
   transition: all 0.5s;
   padding: 0 15px;
@@ -637,9 +636,10 @@ section {
   margin-bottom: 15px;
 }
 
-/* error/sent text colors chosen for WCAG AA on their banner backgrounds */
+/* error/sent text colors chosen for WCAG AA on their banner backgrounds.
+   Always display:block (an :empty box collapses to zero height) so the
+   role=status/alert live regions announce reliably on text injection. */
 .contact .php-email-form .error-message {
-  display: none;
   color: #fff;
   background: #b02a08;
   text-align: left;
@@ -648,12 +648,17 @@ section {
 }
 
 .contact .php-email-form .sent-message {
-  display: none;
   color: #04121f;
   background: #18d26e;
   text-align: center;
   padding: 15px;
   font-weight: 600;
+}
+
+.contact .php-email-form .error-message:empty,
+.contact .php-email-form .sent-message:empty {
+  padding: 0;
+  background: transparent;
 }
 
 .contact .php-email-form label {
@@ -1129,6 +1134,7 @@ a:focus-visible,
 button:focus-visible,
 input:focus-visible,
 textarea:focus-visible,
+iframe:focus-visible,
 [tabindex]:focus-visible {
   outline: 2px solid #4db8ff !important;
   outline-offset: 2px;
