@@ -1,0 +1,8 @@
+# GitHub Pages (Jekyll): keep internal working files out of the published site.
+# NOTE: the repo itself is public — this only stops these paths from being
+# served at https://fadhlillah2.github.io/Bio/... ; they remain browsable in
+# the Git repo. Sensitive drafts were additionally removed from the tree.
+exclude:
+  - cv/archive
+  - cv/README.md
+  - cv/build-pdf.py

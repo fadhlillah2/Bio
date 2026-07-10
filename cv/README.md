@@ -29,9 +29,13 @@ verifiably visible.
 | `archive/resume-v8.1.txt` / `.pdf` | v8.1 — first typeset release (pre-LinkedIn-sync). |
 | `archive/resume-v8.0.txt` / `.pdf` | v8.0 — monospace-render era. |
 | `archive/resume-v7.1.pdf` / `.txt` | v7.1 — **stale, do not distribute**. |
-| `archive/linkedin-profile-v3.txt` | v3 draft — never published; improvements listed as delta in v4's header. |
-| `archive/linkedin-profile-v2.txt` | v2 draft — never published. |
-| `archive/linkedin-profile-v1.pdf` / `.txt` | LinkedIn export, pre-2026-07-06 live state ("F&amp;B" = export bug). |
+
+Removed from the tree 2026-07-10 (still in Git history if ever needed):
+`linkedin-profile-v1.pdf/.txt` (raw export — contained the mobile number),
+`linkedin-profile-v2.txt` and `v3.txt` (private editing drafts with strategy
+notes — must never be publicly served). The repo is public and GitHub Pages
+served everything, so `_config.yml` now excludes `cv/archive/`, this README,
+and `build-pdf.py` from the published site.
 
 ## Version lineage
 
