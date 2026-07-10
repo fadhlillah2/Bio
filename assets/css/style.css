@@ -1313,6 +1313,7 @@ button.mobile-nav-toggle {
 }
 .flagship-body {
   padding: 30px 32px;
+  min-width: 0; /* let grid track shrink below content min-width (prevents mobile clip) */
 }
 .flagship-badge {
   font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
@@ -1366,6 +1367,7 @@ button.mobile-nav-toggle {
   border-left: 1px solid #1b2c44;
   display: flex;
   flex-direction: column;
+  min-width: 0; /* so .flagship-code overflow-x:auto engages instead of overflowing the card */
 }
 .flagship-code {
   margin: 0;
@@ -1419,10 +1421,15 @@ button.mobile-nav-toggle {
   position: absolute;
   top: 18px;
   left: 22px;
-  font-size: 40px;
+  font-size: 52px;
   color: #2fb4f2;
   opacity: 0.35;
   line-height: 1;
+}
+/* Typographic quote — bundled bootstrap-icons has no bi-quote glyph */
+.quote-card .quote-mark::before {
+  content: "\201C";
+  font-family: Georgia, "Times New Roman", serif;
 }
 .quote-card blockquote {
   margin: 0 0 18px;
