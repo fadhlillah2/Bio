@@ -84,21 +84,6 @@ h1, h2, h3, h4, h5, h6 {
   border: 8px solid #2c2f3f;
 }
 
-#header .profile h1 {
-  font-size: 24px;
-  margin: 0;
-  padding: 0;
-  font-weight: 600;
-  -moz-text-align-last: center;
-  text-align-last: center;
-  font-family: "Poppins", sans-serif;
-}
-
-#header .profile h1 a, #header .profile h1 a:hover {
-  color: #fff;
-  text-decoration: none;
-}
-
 #header .profile .social-links a {
   font-size: 18px;
   display: inline-block;
@@ -247,28 +232,10 @@ h1, h2, h3, h4, h5, h6 {
   font-family: "Poppins", sans-serif;
 }
 
-#hero p span {
-  color: #fff;
-  padding-bottom: 4px;
-  letter-spacing: 1px;
-  border-bottom: 3px solid #149ddd;
-}
-
-@media (min-width: 1024px) {
-  #hero {
-    background-attachment: fixed;
-  }
-}
-
 @media (max-width: 768px) {
   #hero h1 {
     font-size: 28px;
     line-height: 36px;
-  }
-  #hero h2 {
-    font-size: 18px;
-    line-height: 24px;
-    margin-bottom: 30px;
   }
 }
 
@@ -382,57 +349,6 @@ section {
   font-family: "Raleway", sans-serif;
   font-size: 14px;
   color: #122f57;
-}
-
-.facts .count-box a {
-  font-weight: 600;
-  display: block;
-  margin-top: 20px;
-  color: #122f57;
-  font-size: 15px;
-  font-family: "Poppins", sans-serif;
-  transition: ease-in-out 0.3s;
-}
-
-.facts .count-box a:hover {
-  color: #1f5297;
-}
-
-/*--------------------------------------------------------------
-# Akills
---------------------------------------------------------------*/
-.skills .progress {
-  height: 60px;
-  display: block;
-  background: none;
-  border-radius: 0;
-}
-
-.skills .progress .skill {
-  padding: 0;
-  margin: 0 0 6px 0;
-  text-transform: uppercase;
-  display: block;
-  font-weight: 600;
-  font-family: "Poppins", sans-serif;
-  color: #050d18;
-}
-
-.skills .progress .skill .val {
-  float: right;
-  font-style: normal;
-}
-
-.skills .progress-bar-wrap {
-  background: #dce8f8;
-  height: 10px;
-}
-
-.skills .progress-bar {
-  width: 1px;
-  height: 10px;
-  transition: .9s;
-  background-color: #149ddd;
 }
 
 /*--------------------------------------------------------------
@@ -579,10 +495,6 @@ section {
   background: rgba(20, 157, 221, 0.95);
 }
 
-.portfolio .portfolio-wrap .portfolio-links a + a {
-  border-left: 1px solid #37b3ed;
-}
-
 .portfolio .portfolio-wrap:hover::before {
   top: 0;
   left: 0;
@@ -594,71 +506,6 @@ section {
 .portfolio .portfolio-wrap:hover .portfolio-links {
   opacity: 1;
   bottom: 0;
-}
-
-/*--------------------------------------------------------------
-# Portfolio Details
---------------------------------------------------------------*/
-.portfolio-details {
-  padding-top: 40px;
-}
-
-.portfolio-details .portfolio-details-slider img {
-  width: 100%;
-}
-
-.portfolio-details .portfolio-details-slider .swiper-pagination {
-  margin-top: 20px;
-  position: relative;
-}
-
-.portfolio-details .portfolio-details-slider .swiper-pagination .swiper-pagination-bullet {
-  width: 12px;
-  height: 12px;
-  background-color: #fff;
-  opacity: 1;
-  border: 1px solid #149ddd;
-}
-
-.portfolio-details .portfolio-details-slider .swiper-pagination .swiper-pagination-bullet-active {
-  background-color: #149ddd;
-}
-
-.portfolio-details .portfolio-info {
-  padding: 30px;
-  box-shadow: 0px 0 30px rgba(5, 13, 24, 0.08);
-}
-
-.portfolio-details .portfolio-info h3 {
-  font-size: 22px;
-  font-weight: 700;
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #eee;
-}
-
-.portfolio-details .portfolio-info ul {
-  list-style: none;
-  padding: 0;
-  font-size: 15px;
-}
-
-.portfolio-details .portfolio-info ul li + li {
-  margin-top: 10px;
-}
-
-.portfolio-details .portfolio-description {
-  padding-top: 30px;
-}
-
-.portfolio-details .portfolio-description h2 {
-  font-size: 26px;
-  font-weight: 700;
-  margin-bottom: 20px;
-}
-
-.portfolio-details .portfolio-description p {
-  padding: 0;
 }
 
 /*--------------------------------------------------------------
@@ -717,92 +564,6 @@ section {
 }
 
 /*--------------------------------------------------------------
-# Testimonials
---------------------------------------------------------------*/
-.testimonials .testimonial-item {
-  box-sizing: content-box;
-  text-align: center;
-  min-height: 320px;
-}
-
-.testimonials .testimonial-item .testimonial-img {
-  width: 90px;
-  border-radius: 50%;
-  margin: 0 auto;
-}
-
-.testimonials .testimonial-item h3 {
-  font-size: 18px;
-  font-weight: bold;
-  margin: 10px 0 5px 0;
-  color: #111;
-}
-
-.testimonials .testimonial-item h4 {
-  font-size: 14px;
-  color: #999;
-  margin: 0;
-}
-
-.testimonials .testimonial-item .quote-icon-left, .testimonials .testimonial-item .quote-icon-right {
-  color: #c3e8fa;
-  font-size: 26px;
-}
-
-.testimonials .testimonial-item .quote-icon-left {
-  display: inline-block;
-  left: -5px;
-  position: relative;
-}
-
-.testimonials .testimonial-item .quote-icon-right {
-  display: inline-block;
-  right: -5px;
-  position: relative;
-  top: 10px;
-}
-
-.testimonials .testimonial-item p {
-  font-style: italic;
-  margin: 0 15px 15px 15px;
-  padding: 20px;
-  background: #fff;
-  position: relative;
-  margin-bottom: 35px;
-  border-radius: 6px;
-  box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
-}
-
-.testimonials .testimonial-item p::after {
-  content: "";
-  width: 0;
-  height: 0;
-  border-top: 20px solid #fff;
-  border-right: 20px solid transparent;
-  border-left: 20px solid transparent;
-  position: absolute;
-  bottom: -20px;
-  left: calc(50% - 20px);
-}
-
-.testimonials .swiper-pagination {
-  margin-top: 20px;
-  position: relative;
-}
-
-.testimonials .swiper-pagination .swiper-pagination-bullet {
-  width: 12px;
-  height: 12px;
-  background-color: #fff;
-  opacity: 1;
-  border: 1px solid #149ddd;
-}
-
-.testimonials .swiper-pagination .swiper-pagination-bullet-active {
-  background-color: #149ddd;
-}
-
-/*--------------------------------------------------------------
 # Contact
 --------------------------------------------------------------*/
 .contact {
@@ -830,7 +591,7 @@ section {
   transition: all 0.3s ease-in-out;
 }
 
-.contact .info h4 {
+.contact .info h3 {
   padding: 0 0 0 60px;
   font-size: 22px;
   font-weight: 600;
@@ -849,30 +610,6 @@ section {
   padding-top: 5px;
 }
 
-.contact .info .social-links {
-  padding-left: 60px;
-}
-
-.contact .info .social-links a {
-  font-size: 18px;
-  display: inline-block;
-  background: #333;
-  color: #fff;
-  line-height: 1;
-  padding: 8px 0;
-  border-radius: 50%;
-  text-align: center;
-  width: 36px;
-  height: 36px;
-  transition: 0.3s;
-  margin-right: 10px;
-}
-
-.contact .info .social-links a:hover {
-  background: #149ddd;
-  color: #fff;
-}
-
 .contact .info .email:hover i, .contact .info .address:hover i, .contact .info .phone:hover i {
   background: #149ddd;
   color: #fff;
@@ -887,60 +624,26 @@ section {
 
 .contact .php-email-form .form-group {
   padding-bottom: 8px;
+  margin-bottom: 15px;
 }
 
-.contact .php-email-form .validate {
-  display: none;
-  color: red;
-  margin: 0 0 15px 0;
-  font-weight: 400;
-  font-size: 13px;
-}
-
+/* error/sent text colors chosen for WCAG AA on their banner backgrounds */
 .contact .php-email-form .error-message {
   display: none;
   color: #fff;
-  background: #ed3c0d;
+  background: #b02a08;
   text-align: left;
   padding: 15px;
   font-weight: 600;
 }
 
-.contact .php-email-form .error-message br + br {
-  margin-top: 25px;
-}
-
 .contact .php-email-form .sent-message {
   display: none;
-  color: #fff;
+  color: #04121f;
   background: #18d26e;
   text-align: center;
   padding: 15px;
   font-weight: 600;
-}
-
-.contact .php-email-form .loading {
-  display: none;
-  background: #fff;
-  text-align: center;
-  padding: 15px;
-}
-
-.contact .php-email-form .loading:before {
-  content: "";
-  display: inline-block;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  margin: 0 10px -6px 0;
-  border: 3px solid #18d26e;
-  border-top-color: #eee;
-  -webkit-animation: animate-loading 1s linear infinite;
-  animation: animate-loading 1s linear infinite;
-}
-
-.contact .php-email-form .form-group {
-  margin-bottom: 15px;
 }
 
 .contact .php-email-form label {
@@ -965,76 +668,13 @@ section {
   background: #149ddd;
   border: 0;
   padding: 10px 24px;
-  color: #fff;
+  color: #04121f;
   transition: 0.4s;
   border-radius: 4px;
 }
 
 .contact .php-email-form button[type="submit"]:hover {
   background: #37b3ed;
-}
-
-@-webkit-keyframes animate-loading {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes animate-loading {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
-}
-
-/*--------------------------------------------------------------
-# Breadcrumbs
---------------------------------------------------------------*/
-.breadcrumbs {
-  padding: 20px 0;
-  background: #f9f9f9;
-}
-
-.breadcrumbs h2 {
-  font-size: 26px;
-  font-weight: 300;
-}
-
-.breadcrumbs ol {
-  display: flex;
-  flex-wrap: wrap;
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  font-size: 15px;
-}
-
-.breadcrumbs ol li + li {
-  padding-left: 10px;
-}
-
-.breadcrumbs ol li + li::before {
-  display: inline-block;
-  padding-right: 10px;
-  color: #0e2442;
-  content: "/";
-}
-
-@media (max-width: 768px) {
-  .breadcrumbs .d-flex {
-    display: block !important;
-  }
-  .breadcrumbs ol {
-    display: block;
-  }
-  .breadcrumbs ol li {
-    display: inline-block;
-  }
 }
 
 /*--------------------------------------------------------------
@@ -1067,7 +707,7 @@ section {
   #footer {
     position: static;
     width: auto;
-    padding-right: 20px 15px;
+    padding: 20px 15px;
   }
 }
 
@@ -1164,18 +804,6 @@ section {
   white-space: pre;
 }
 
-#hero .tl {
-  display: block;
-  opacity: 0;
-  transform: translateY(3px);
-  animation: hero-tl-in 0.3s ease forwards;
-  animation-delay: calc(0.2s + var(--i) * 0.09s);
-}
-
-@keyframes hero-tl-in {
-  to { opacity: 1; transform: none; }
-}
-
 #hero .tk { color: #4db8ff; }
 #hero .ts { color: #dbe6f3; }
 #hero .tm { color: #ffc46b; }
@@ -1233,6 +861,7 @@ section {
 /* Default (no JS / reduced motion): everything visible, no animation.
    Motion is an enhancement: JS staggers .tl-on per line; transition animates it. */
 #hero .tl {
+  display: block;
   animation: none;
   opacity: 1;
   transform: none;
@@ -1358,11 +987,6 @@ a:hover { color: #7ccdff; }
 .facts .count-box p { color: #93a5bc; }
 .facts .count-box p strong { color: #dbe6f3; }
 
-/* Skills */
-.skills .progress .skill { color: #dbe6f3; }
-.skills .progress-bar-wrap { background: #12203a; }
-.skills .progress-bar { background-color: #2fb4f2; }
-
 /* Resume timeline */
 .resume .resume-title { color: #f2f7fd; }
 .resume .resume-item { border-left: 2px solid #1b2c44; }
@@ -1386,12 +1010,6 @@ a:hover { color: #7ccdff; }
 .portfolio .portfolio-wrap::before { background: rgba(6, 13, 24, 0.55); }
 
 /* Services */
-.services .icon-box {
-  background: #0b1626;
-  border: 1px solid #1b2c44;
-  border-radius: 10px;
-  box-shadow: none;
-}
 .services .icon { background: #12203a; }
 .services .icon i { color: #4db8ff; }
 .services .icon-box:hover .icon { background: #2fb4f2; }
@@ -1399,20 +1017,6 @@ a:hover { color: #7ccdff; }
 .services .title a { color: #f2f7fd; }
 .services .title a:hover { color: #4db8ff; }
 .services .description { color: #93a5bc; }
-
-/* Testimonials */
-.testimonials .testimonial-item p {
-  background: #0b1626;
-  border: 1px solid #1b2c44;
-  color: #c7d3e3;
-}
-.testimonials .testimonial-item p::after { border-color: #0b1626 transparent transparent transparent; }
-.testimonials .testimonial-item h3 { color: #f2f7fd; }
-.testimonials .testimonial-item h4 { color: #93a5bc; }
-.testimonials .testimonial-item .quote-icon-left,
-.testimonials .testimonial-item .quote-icon-right { color: #2fb4f2; }
-.testimonials .swiper-pagination .swiper-pagination-bullet { background: #1b2c44; opacity: 1; }
-.testimonials .swiper-pagination .swiper-pagination-bullet-active { background: #2fb4f2; }
 
 /* Contact — the conversion moment: give it a quiet lift */
 .contact { background: linear-gradient(180deg, #0a1424 0%, #0c1a2e 100%); }
@@ -1423,7 +1027,7 @@ a:hover { color: #7ccdff; }
   box-shadow: none;
 }
 .contact .info i { background: #12203a; color: #4db8ff; }
-.contact .info h4 { color: #f2f7fd; }
+.contact .info h3 { color: #f2f7fd; }
 .contact .info p { color: #93a5bc; }
 .contact .info .email:hover i,
 .contact .info .address:hover i,
@@ -1439,7 +1043,7 @@ a:hover { color: #7ccdff; }
 .contact .php-email-form input,
 .contact .php-email-form textarea {
   background: #0a1424;
-  border: 1px solid #1b2c44;
+  border: 1px solid #4a6690; /* 3.16:1 vs field bg — WCAG 1.4.11 boundary */
   color: #e6edf6;
   border-radius: 6px;
 }
@@ -1513,9 +1117,37 @@ a:hover { color: #7ccdff; }
 
 a:focus-visible,
 button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
 [tabindex]:focus-visible {
   outline: 2px solid #4db8ff !important;
   outline-offset: 2px;
+}
+
+/* Prose links: underline so color isn't the only cue (WCAG 1.4.1) —
+   buttons/CTAs keep their own affordance */
+#main p a:not(.btn-cv),
+#main li a:not(.btn-cv),
+.hero-eyebrow a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Off-canvas sidebar must leave the tab order too, not just the viewport */
+@media (max-width: 1199px) {
+  body:not(.mobile-nav-active) #header {
+    visibility: hidden;
+  }
+}
+
+/* Short viewports (13" laptops): lift the hero so the CTA row clears the fold */
+@media (max-height: 820px) and (min-width: 769px) {
+  #hero {
+    padding-top: 48px;
+  }
+  #hero .hero-role {
+    margin-bottom: 24px;
+  }
 }
 
 /* Sidebar name (was an h1; demoted for heading hierarchy) */
@@ -1542,11 +1174,11 @@ button.mobile-nav-toggle {
   color: #149ddd;
 }
 
-/* Skills as grouped tags (source: cv/resume-v8.0.txt) */
+/* Skills as grouped tags (source: cv/archive/resume-v8.0.txt) */
 .skills .skill-group {
   margin-bottom: 22px;
 }
-.skills .skill-group h4 {
+.skills .skill-group h3 {
   font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 13px;
   letter-spacing: 0.08em;

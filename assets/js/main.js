@@ -12,10 +12,15 @@
    */
   const select = (el, all = false) => {
     el = el.trim()
-    if (all) {
-      return [...document.querySelectorAll(el)]
-    } else {
-      return document.querySelector(el)
+    try {
+      if (all) {
+        return [...document.querySelectorAll(el)]
+      } else {
+        return document.querySelector(el)
+      }
+    } catch (e) {
+      // location.hash is fed here raw; a non-selector hash (#123) must not throw
+      return all ? [] : null
     }
   }
 
@@ -34,10 +39,10 @@
   }
 
   /**
-   * Easy on scroll event listener 
+   * Easy on scroll event listener
    */
   const onscroll = (el, listener) => {
-    el.addEventListener('scroll', listener)
+    el.addEventListener('scroll', listener, { passive: true })
   }
 
   /**
@@ -61,7 +66,7 @@
   onscroll(document, navbarlinksActive)
 
   /**
-   * Scrolls to an element with header offset
+   * Smooth-scrolls to an element (sidebar layout: no top-offset needed)
    */
   const scrollto = (el) => {
     let elementPos = select(el).offsetTop
@@ -98,7 +103,7 @@
   })
 
   /**
-   * Scrool with ofset on links with a class name .scrollto
+   * Scroll on links with a class name .scrollto
    */
   on('click', '.scrollto', function(e) {
     if (select(this.hash)) {
@@ -117,7 +122,7 @@
   }, true)
 
   /**
-   * Scroll with ofset on page load with hash links in the url
+   * Scroll on page load with hash links in the url
    */
   window.addEventListener('load', () => {
     if (window.location.hash) {
@@ -128,29 +133,16 @@
   });
 
   /**
-   * Hero type effect
-   */
-  const typed = select('.typed')
-  if (typed) {
-    let typed_strings = typed.getAttribute('data-typed-items')
-    typed_strings = typed_strings.split(',')
-    new Typed('.typed', {
-      strings: typed_strings,
-      loop: true,
-      typeSpeed: 100,
-      backSpeed: 50,
-      backDelay: 2000
-    });
-  }
-
-  /**
-   * Porfolio isotope and filter
+   * Portfolio isotope and filter
    */
   window.addEventListener('load', () => {
     let portfolioContainer = select('.portfolio-container');
     if (portfolioContainer) {
       let portfolioIsotope = new Isotope(portfolioContainer, {
         itemSelector: '.portfolio-item'
+      });
+      portfolioIsotope.on('arrangeComplete', function() {
+        AOS.refresh()
       });
 
       let portfolioFilters = select('#portfolio-flters li', true);
@@ -159,14 +151,15 @@
         e.preventDefault();
         portfolioFilters.forEach(function(el) {
           el.classList.remove('filter-active');
+          let b = el.querySelector('button');
+          if (b) b.setAttribute('aria-pressed', 'false');
         });
         this.classList.add('filter-active');
+        let btn = this.querySelector('button');
+        if (btn) btn.setAttribute('aria-pressed', 'true');
 
         portfolioIsotope.arrange({
           filter: this.getAttribute('data-filter')
-        });
-        portfolioIsotope.on('arrangeComplete', function() {
-          AOS.refresh()
         });
       }, true);
     }
