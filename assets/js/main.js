@@ -70,9 +70,10 @@
    */
   const scrollto = (el) => {
     let elementPos = select(el).offsetTop
+    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
     window.scrollTo({
       top: elementPos,
-      behavior: 'smooth'
+      behavior: reduced ? 'auto' : 'smooth'
     })
   }
 
@@ -174,7 +175,10 @@
       duration: 1000,
       easing: 'ease-in-out',
       once: true,
-      mirror: false
+      mirror: false,
+      disable: function () {
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      }
     })
   });
 

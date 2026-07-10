@@ -498,7 +498,7 @@ section {
   text-align: center;
   background: rgba(20, 157, 221, 0.75);
   transition: 0.3s;
-  width: 50%;
+  width: 100%;
 }
 
 .portfolio .portfolio-wrap .portfolio-links a:hover {
@@ -1352,7 +1352,7 @@ button.mobile-nav-toggle {
 }
 .flagship-cred {
   font-size: 12px;
-  color: #5f7189;
+  color: #8496ac;
   font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 .flagship-term {
