@@ -1606,3 +1606,46 @@ button.mobile-nav-toggle {
   border-color: #2fb4f2;
   color: #04121f;
 }
+
+/* Portfolio links: hover-only reveal excluded keyboard and touch users —
+   also reveal on focus, and keep permanently visible on no-hover devices */
+.portfolio .portfolio-wrap:focus-within .portfolio-links {
+  bottom: 0;
+}
+@media (hover: none) {
+  .portfolio .portfolio-wrap .portfolio-links {
+    bottom: 0;
+  }
+}
+
+/*--------------------------------------------------------------
+# Print: force AOS-hidden content visible (it never scrolls into
+# view when printing), drop interactive chrome, keep the dark
+# theme's backgrounds so the light text stays legible
+--------------------------------------------------------------*/
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  [data-aos] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  #header,
+  .mobile-nav-toggle,
+  .back-to-top,
+  .skip-link,
+  .contact iframe {
+    display: none !important;
+  }
+  #main {
+    margin-left: 0 !important;
+  }
+  .resume .resume-item,
+  .services .icon-box,
+  .facts .count-box,
+  .portfolio-wrap {
+    break-inside: avoid;
+  }
+}

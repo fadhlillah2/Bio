@@ -635,23 +635,24 @@
               <div class="row">
                 <div class="form-group col-md-6">
                   <label for="name">Your Name</label>
-                  <input type="text" name="name" class="form-control" id="name" required>
+                  <input type="text" name="name" class="form-control" id="name" autocomplete="name" required>
                 </div>
                 <div class="form-group col-md-6">
-                  <label for="name">Your Email</label>
-                  <input type="email" class="form-control" name="email" id="email" required>
+                  <label for="email">Your Email</label>
+                  <input type="email" class="form-control" name="email" id="email" autocomplete="email" required>
                 </div>
               </div>
               <div class="form-group">
-                <label for="name">Subject</label>
+                <label for="subject">Subject</label>
                 <input type="text" class="form-control" name="subject" id="subject" required>
               </div>
               <div class="form-group">
-                <label for="name">Message</label>
-                <textarea class="form-control" name="message" rows="10" required></textarea>
+                <label for="message">Message</label>
+                <textarea class="form-control" name="message" id="message" rows="10" required></textarea>
               </div>
               <div class="my-3">
-                <div class="sent-message" id="contact-sent">Your message has been sent. Thank you!</div>
+                <div class="sent-message" id="contact-sent" role="status">Your message has been sent. Thank you!</div>
+                <div class="error-message" id="contact-error" role="alert">Sending failed — the form service is unreachable right now. Please email <a href="mailto:fadhlillah949699@gmail.com" style="color: #fff; text-decoration: underline;">fadhlillah949699@gmail.com</a> or use the WhatsApp link instead.</div>
               </div>
               <div class="text-center"><button type="submit">Send Message</button></div>
             </form>
@@ -686,13 +687,39 @@
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
 
-  <!-- Contact form: show confirmation after FormSubmit redirects back with ?sent=1 -->
+  <!-- Contact form: AJAX submit with graceful failure (FormSubmit can be down — a
+       plain POST would strand the visitor on a raw Cloudflare error page).
+       No-JS browsers fall back to the form's plain action + ?sent=1 redirect. -->
   <script>
     (function () {
       if (window.location.search.indexOf('sent=1') !== -1) {
         var sent = document.getElementById('contact-sent');
         if (sent) sent.style.display = 'block';
       }
+      var form = document.querySelector('.php-email-form');
+      if (!form || !window.fetch) return;
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var sent = document.getElementById('contact-sent');
+        var err = document.getElementById('contact-error');
+        var btn = form.querySelector('button[type="submit"]');
+        sent.style.display = 'none';
+        err.style.display = 'none';
+        btn.disabled = true;
+        fetch('https://formsubmit.co/ajax/fadhlillah949699@gmail.com', {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: new FormData(form)
+        }).then(function (r) {
+          if (!r.ok) throw new Error(r.status);
+          sent.style.display = 'block';
+          form.reset();
+        }).catch(function () {
+          err.style.display = 'block';
+        }).finally(function () {
+          btn.disabled = false;
+        });
+      });
     })();
   </script>
 
