@@ -66,6 +66,9 @@ body.consulting h2 { font-size: 12.5pt; letter-spacing: 1.2px; margin: 4mm 0 1.6
 body.consulting .b { padding-left: 6mm; text-indent: -3.6mm; margin-top: 1mm; }
 body.consulting .sk { padding-left: 30mm; text-indent: -30mm; margin-top: 1mm; }
 body.consulting p.body { margin-top: 1.2mm; }
+/* Keep proof URLs unbroken: at 10.5pt a link like .../rate-limiter-project-go would wrap at a
+   hyphen, and poppler/ATS plain-text extraction then de-hyphenates it into a dead 404 URL. */
+body.consulting a { white-space: nowrap; }
 """
 
 
@@ -208,6 +211,9 @@ def selftest():
     assert '<p class="body">freeCodeCamp — another item</p>' in certs
     assert '<div class="b"><span class="m">&bull;</span> a : b</div>' in to_html(
         src.replace("- bullet one", "- a : b\n- bullet one"), "resume-v9.9-test")  # bullet with ' : ' stays a bullet
+    # render-behaviour guards (can't run Chrome here, so lock the CSS the render depends on):
+    assert "letter-spacing: 0" in CSS  # h1 name extracts as one token FADHLILLAH, not FA D H L...
+    assert "white-space: nowrap" in CONSULTING_CSS  # proof URLs never wrap→de-hyphenate into 404s
     print("selftest OK")
 
 

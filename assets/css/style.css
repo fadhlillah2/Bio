@@ -102,12 +102,9 @@ html:not(.js) [data-aos] {
 }
 
 .contact-fab:hover {
-  background: #2eafec;
-}
-
-.contact-fab:focus-visible {
-  outline: 2px solid #4db8ff;
-  outline-offset: 2px;
+  /* darker same-hue shade so the white icon keeps WCAG 1.4.11 (3.94:1); #2eafec was 2.48:1.
+     Focus ring comes from the global a:focus-visible !important rule — no local override needed. */
+  background: #1187c9;
 }
 
 /*--------------------------------------------------------------
@@ -390,6 +387,7 @@ section {
   font-weight: 700;
   color: #050d18;
   margin-left: 60px;
+  white-space: nowrap; /* keep space-bearing values like "Top 50" on one line (row-2 has centred slack) */
 }
 
 .facts .count-box p {
@@ -1237,9 +1235,8 @@ iframe:focus-visible,
   #hero {
     padding-top: 48px;
   }
-  #hero .hero-role {
-    margin-bottom: 24px;
-  }
+  /* hero-role margin is only 10px by default now (CTA row moved above the terminal),
+     so the old 24px override expanded the fold instead of compressing it — dropped. */
 }
 
 /* Sidebar name (was an h1; demoted for heading hierarchy) */
@@ -1372,7 +1369,9 @@ button.mobile-nav-toggle {
   }
   .resume .resume-item,
   .services .icon-box,
+  .services .how-we-work,
   .facts .count-box,
+  .flagship,
   .portfolio-wrap {
     break-inside: avoid;
   }

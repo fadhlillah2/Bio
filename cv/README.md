@@ -68,8 +68,12 @@ linkedin:    v1 export ──► v2 draft ──► v3 draft (never published) �
 - **The current resume must always have a matching current PDF.** Regenerate via `build-pdf.py`
   whenever the .txt changes.
 - On version bump, also update ALL version-pinned links:
-  (a) in-repo `index.html` — hero + Resume section (`cv/resume-vX.Y.pdf`/`.txt`) and
-  Services section (`cv/consulting-onepager[-id]-vX.Y.pdf`) — these 404 on the live site if stale;
+  (a) in-repo `index.html`. Each artifact is linked in more than one spot — update every one or
+  the live site 404s:
+  - `cv/resume-vX.Y.pdf`/`.txt` (full mirror) — hero **secondary** "Full CV" + Resume section;
+  - `cv/resume-1pager-vX.Y.pdf` (recruiter/ATS 1-pager — bumps on its OWN `v1.x` scheme, not with
+    resume-v8.3) — hero **primary** "Download CV" + contact block + Resume section;
+  - `cv/consulting-onepager[-id]-vX.Y.pdf` — hero buyer line + Services section;
   (b) outside this repo — the **Resume badge in the GitHub profile README**
   (repo `fadhlillah2/fadhlillah2`) points to
   `https://fadhlillah2.github.io/Bio/cv/resume-vX.Y.pdf` and will 404 if left stale.
@@ -81,7 +85,8 @@ linkedin:    v1 export ──► v2 draft ──► v3 draft (never published) �
   (site-Services wording + resume-sourced metrics only; keep EN/ID in lock-step — same claims,
   translated wording only). Regenerate each PDF via `build-pdf.py` on any change.
 - New version → add it here, move the superseded files to `archive/`, update this README.
-- The site (`index.html`): career-claim content (hero/meta headline, About, Resume section) is
-  synced verbatim to the mirror resume (done 2026-07-06). Site-only sections (Facts, Services,
-  Portfolio, Skills grid) may add repo-verifiable detail (e.g. the RAG stack) but must never
-  *contradict* the live profile.
+- The site (`index.html`): About and the Resume section stay synced verbatim to the mirror resume.
+  The hero/meta headline was re-led for the recruiter scan (2026-07-11: "Backend Software Engineer
+  · 6+ yrs · AI Native Engineer") — a re-emphasis of the same facts, not a contradiction of the
+  LinkedIn headline. Site-only sections (Facts, Services, Portfolio, Skills grid) may add
+  repo-verifiable detail (e.g. the RAG stack) but must never *contradict* the live profile.
