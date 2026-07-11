@@ -134,40 +134,6 @@
   });
 
   /**
-   * Portfolio isotope and filter
-   */
-  window.addEventListener('load', () => {
-    let portfolioContainer = select('.portfolio-container');
-    if (portfolioContainer) {
-      let portfolioIsotope = new Isotope(portfolioContainer, {
-        itemSelector: '.portfolio-item'
-      });
-      portfolioIsotope.on('arrangeComplete', function() {
-        AOS.refresh()
-      });
-
-      let portfolioFilters = select('#portfolio-filters li', true);
-
-      on('click', '#portfolio-filters li', function(e) {
-        e.preventDefault();
-        portfolioFilters.forEach(function(el) {
-          el.classList.remove('filter-active');
-          let b = el.querySelector('button');
-          if (b) b.setAttribute('aria-pressed', 'false');
-        });
-        this.classList.add('filter-active');
-        let btn = this.querySelector('button');
-        if (btn) btn.setAttribute('aria-pressed', 'true');
-
-        portfolioIsotope.arrange({
-          filter: this.getAttribute('data-filter')
-        });
-      }, true);
-    }
-
-  });
-
-  /**
    * Animation on scroll
    */
   window.addEventListener('load', () => {
