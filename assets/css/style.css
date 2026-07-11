@@ -81,6 +81,35 @@ html:not(.js) [data-aos] {
   opacity: 1;
 }
 
+/* Always-visible contact shortcut — mid-page/mobile visitors get a one-tap
+   path to the contact section (stacked above .back-to-top's slot) */
+.contact-fab {
+  position: fixed;
+  right: 15px;
+  bottom: 64px;
+  z-index: 996;
+  background: #149ddd;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.contact-fab i {
+  font-size: 20px;
+  color: #fff;
+  line-height: 0;
+}
+
+.contact-fab:hover {
+  background: #2eafec;
+}
+
+.contact-fab:focus-visible {
+  outline: 2px solid #4db8ff;
+  outline-offset: 2px;
+}
+
 /*--------------------------------------------------------------
 # Header
 --------------------------------------------------------------*/
@@ -575,6 +604,30 @@ section {
   font-size: 14px;
 }
 
+/* "How we work" — engagement process mirrored from the consulting one-pager */
+.services .how-we-work {
+  max-width: 720px;
+  margin: 8px auto 0;
+  background: #0b1626;
+  border: 1px solid #1b2c44;
+  border-radius: 14px;
+  padding: 24px 28px;
+}
+.services .how-we-work h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f2f7fd;
+  margin: 0 0 12px;
+}
+.services .how-we-work ol {
+  margin: 0;
+  padding-left: 20px;
+  color: #93a5bc;
+}
+.services .how-we-work li {
+  padding: 3px 0;
+}
+
 /*--------------------------------------------------------------
 # Contact
 --------------------------------------------------------------*/
@@ -765,7 +818,7 @@ section {
 #hero .hero-role {
   font-size: 20px;
   color: #bcc9da;
-  margin-bottom: 36px;
+  margin-bottom: 10px;
 }
 
 #hero .hero-sep {
@@ -774,9 +827,19 @@ section {
   padding-bottom: 0;
 }
 
+/* Plain-text value prop: the differentiators must be skimmable as text,
+   not only inside the decorative terminal (role="img") below */
+#hero .hero-value {
+  font-size: 15px;
+  line-height: 1.55;
+  color: #9fb1c7;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
 #hero .term {
   width: min(640px, 100%);
-  margin: 0 auto;
+  margin: 26px auto 0;
   text-align: left;
   background: #0b1626;
   border: 1px solid #1b2c44;
@@ -859,7 +922,10 @@ section {
   }
   #hero .hero-role {
     font-size: 16px;
-    margin-bottom: 26px;
+    margin-bottom: 8px;
+  }
+  #hero .hero-value {
+    font-size: 13.5px;
   }
   #hero .term-body {
     font-size: 12px;
@@ -948,6 +1014,15 @@ section {
 #hero .btn-term-icon {
   padding: 11px 14px;
   font-size: 18px;
+}
+
+/* Business-buyer line: promoted out of the muted //-comment styling so the
+   second declared audience gets a readable sentence, not code decoration */
+#hero .hero-buyer {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  color: #9fb1c7;
+  margin: 16px 0 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1144,7 +1219,8 @@ iframe:focus-visible,
    buttons/CTAs keep their own affordance */
 #main p a:not(.btn-cv),
 #main li a:not(.btn-cv),
-.hero-eyebrow a {
+.hero-eyebrow a,
+.hero-buyer a {
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -1286,6 +1362,7 @@ button.mobile-nav-toggle {
   #header,
   .mobile-nav-toggle,
   .back-to-top,
+  .contact-fab,
   .skip-link,
   .contact iframe {
     display: none !important;
@@ -1336,6 +1413,17 @@ button.mobile-nav-toggle {
   font-size: 15px;
   line-height: 1.6;
   margin: 0 0 18px;
+}
+/* Measured result as visible text — was only readable inside the aria-hidden mockup */
+.flagship-result {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 13px;
+  color: #9fb1c7;
+  margin: 0 0 18px;
+}
+.flagship-result strong {
+  color: #ffc46b;
+  font-weight: 600;
 }
 .flagship-tags {
   list-style: none;

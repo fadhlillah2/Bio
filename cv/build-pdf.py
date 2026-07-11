@@ -31,21 +31,41 @@ CSS = """
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: Arial, Helvetica, sans-serif; font-size: 8.8pt; line-height: 1.17; color: #1a1a1a; }
 a { color: inherit; text-decoration: none; }
-h1 { font-size: 19pt; letter-spacing: 3px; text-align: center; }
+h1 { font-size: 19pt; letter-spacing: 0; text-align: center; }
 .hl { text-align: center; font-weight: bold; font-size: 9.4pt; margin-top: 1mm; }
 .ct { text-align: center; font-size: 8.6pt; color: #444; }
 h2 { font-size: 9.8pt; letter-spacing: 1.2px; border-bottom: 1px solid #999;
      padding-bottom: 0.5mm; margin: 2mm 0 0.9mm; break-after: avoid; }
-.crow, .trow { display: flex; justify-content: space-between; break-after: avoid; }
+/* job headers render as one linear line "COMPANY · LOCATION" / "Title · Date" —
+   no space-between gap, so column-aware PDF/ATS extractors keep the date with its
+   own employer instead of detaching the right column (canon() ignores the middot) */
+.crow, .trow { break-after: avoid; }
 .crow { margin-top: 1.2mm; }
 .crow .c { font-weight: bold; }
 .crow .loc, .trow .d { color: #444; font-size: 8.6pt; }
+.crow .loc::before, .trow .d::before { content: "·"; margin: 0 0.45em; color: #999; }
 .trow .t { font-style: italic; }
 .b { padding-left: 4mm; text-indent: -2.6mm; }
 .b .m { color: #666; }
 .sk { padding-left: 22mm; text-indent: -22mm; }
 .sk b { font-weight: bold; }
 p.body { text-align: justify; }
+"""
+
+# The consulting one-pagers carry ~40 lines of short content that, at the resume's
+# dense 8.8pt/1.17, leaves the lower half of the A4 blank. These overrides scale the
+# type/spacing up so the page fills gracefully while staying exactly 1 page. Tuned
+# empirically against last-text y-position (see README lineage note for v1.2).
+CONSULTING_CSS = """
+@page { margin: 12mm 14mm; }
+body.consulting { font-size: 10.5pt; line-height: 1.4; }
+body.consulting h1 { font-size: 24pt; }
+body.consulting .hl { font-size: 12pt; margin-top: 2.5mm; }
+body.consulting .ct { font-size: 10pt; line-height: 1.5; }
+body.consulting h2 { font-size: 12.5pt; letter-spacing: 1.2px; margin: 4mm 0 1.6mm; padding-bottom: 1mm; }
+body.consulting .b { padding-left: 6mm; text-indent: -3.6mm; margin-top: 1mm; }
+body.consulting .sk { padding-left: 30mm; text-indent: -30mm; margin-top: 1mm; }
+body.consulting p.body { margin-top: 1.2mm; }
 """
 
 
@@ -132,14 +152,18 @@ def to_html(txt: str, stem: str) -> str:
     flush()
     lang = "id" if "-id-" in stem else "en"
     title = html.escape(doc_title(stem, head[0]))
+    consulting = "consulting" in stem  # fills the page (see CONSULTING_CSS)
+    body_attr = ' class="consulting"' if consulting else ""
+    extra = CONSULTING_CSS if consulting else ""
     return (f"<!doctype html><html lang='{lang}'><head><meta charset='utf-8'>"
-            f"<title>{title}</title><style>{CSS}</style></head><body>"
+            f"<title>{title}</title><style>{CSS}{extra}</style></head><body{body_attr}>"
             + "".join(out) + "</body></html>")
 
 
 def canon(s: str) -> str:
     s = re.sub(r"(?m)^\s*- ", " ", s)        # txt bullet markers
     s = s.replace("•", " ")             # rendered bullet glyphs
+    s = s.replace("·", " ")             # job-header separator (CSS ::before, absent from the .txt)
     return re.sub(r"\s+", "", s)             # wording only: drop all whitespace
 
 
@@ -168,6 +192,10 @@ def selftest():
     assert '<p class="body">Prose line one wrapping without indent.</p>' in h
     assert "<html lang='id'>" in to_html(src, "consulting-onepager-id-v9.9")
     assert canon("- a  b\nc") == canon("• a b c") and canon("ab") != canon("ac")
+    assert canon("Bank·Jakarta") == canon("Bank Jakarta")  # header separator middot ignored in verify
+    assert 'class="consulting"' in to_html(src, "consulting-onepager-v9.9") and \
+        "body.consulting" in to_html(src, "consulting-onepager-v9.9")  # page-fill overrides applied
+    assert 'class="consulting"' not in to_html(src, "resume-v9.9-test")  # only for consulting docs
     assert linkify("see replit.com/@X and mail@gmail.com") .count("<a href=") == 2
     assert 'href="https://github.com/x/y"' in linkify("github.com/x/y.")  # trailing '.' stays outside the link
     wrap = to_html(src.replace("- bullet one\n  wrapped tail",

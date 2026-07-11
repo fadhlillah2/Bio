@@ -11,11 +11,11 @@ that is not on LinkedIn). Files at this level are **current**; `archive/` is the
 | File | What it is |
 |---|---|
 | [`resume-v8.3.txt`](resume-v8.3.txt) | Resume v8.3 — **full mirror** of the live profile (2 pages): LinkedIn headline, About verbatim, all bullets per role incl. the reminder-service / ai-chatbot-mern media blocks, all 8 certifications (credential IDs where issued), all 6 projects, top-visible skills, both recommendations. User-confirmed facts absent from LinkedIn (JUnit 5/Mockito, 5-person team scope, "alongside Assist.id") were **removed** per the mirror decision. |
-| [`resume-v8.3.pdf`](resume-v8.3.pdf) | Resume v8.3 PDF (2 pages, typeset) — the distributable. Generated via `build-pdf.py cv/resume-v8.3.txt 2`; extracted text verified identical to the .txt. |
-| [`build-pdf.py`](build-pdf.py) | PDF generator: parses the .txt, typesets it (Arial/Liberation Sans, A4), prints via Chrome headless (native Linux/macOS Chrome or WSL Windows Chrome, auto-detected), stamps Title/Author/lang metadata, verifies the PDF wording is identical to the .txt (whitespace-insensitive) and fits `max_pages` (2nd CLI arg, default 1; resume-v8.3 needs `2`). Needs `pypdf`. Run: `python3 cv/build-pdf.py cv/resume-vX.Y.txt [max_pages]` |
-| [`resume-1pager-v1.1.txt`](resume-1pager-v1.1.txt) / `.pdf` | **Recruiter/ATS edition** — curated 1-page resume (v8.2 lineage), NOT the LinkedIn mirror. Full keyword SKILLS block, user-confirmed facts (JUnit 5/Mockito, 5-person team scope, "alongside Assist.id"), open-to line, searchable-as aliases. v1.1 (2026-07-10): "mentor 5 engineers" → "mentor peers" (5+5 read as impossible), locations to SoT precision (Central/South Jakarta, Pekanbaru City), Meta Llama casing, Hugging Face spelling. |
-| [`consulting-onepager-v1.1.txt`](consulting-onepager-v1.1.txt) / `.pdf` | **Consulting one-pager (EN)** for CEOs/CTOs/business owners buying software development — outcomes in business language, services, verifiable proof links, engagement process. Linked from the site's Services section. v1.1 (2026-07-10): "7x" → sourced "700%" (anti-fabrication), project name unified to High-Precision Contract-Advisor RAG, Llama casing, grammar fix. |
-| [`consulting-onepager-id-v1.1.txt`](consulting-onepager-id-v1.1.txt) / `.pdf` | **Consulting one-pager (Bahasa Indonesia)** — faithful translation of the EN one-pager (same claims; numbers/URLs/nouns verbatim). v1.1 in lock-step with EN + "konsultasi" consistency. |
+| [`resume-v8.3.pdf`](resume-v8.3.pdf) | Resume v8.3 PDF (2 pages, typeset) — the distributable. Generated via `build-pdf.py cv/resume-v8.3.txt 2`; extracted text verified identical to the .txt. Regenerated 2026-07-11 on the ATS-hardened template: job headers now extract linearly as `COMPANY · LOCATION` / `Title · Date` (poppler/ATS keep each date with its own employer instead of detaching the right column), and the name renders at letter-spacing 0 so it extracts as the single token `FADHLILLAH` (was split into `FA D H L I L L A H`). The .txt is unchanged. |
+| [`build-pdf.py`](build-pdf.py) | PDF generator: parses the .txt, typesets it (Arial/Liberation Sans, A4), prints via Chrome headless (native Linux/macOS Chrome or WSL Windows Chrome, auto-detected), stamps Title/Author/lang metadata, verifies the PDF wording is identical to the .txt (whitespace-insensitive) and fits `max_pages` (2nd CLI arg, default 1; resume-v8.3 needs `2`). Job headers render as one linear `COMPANY · LOCATION` / `Title · Date` line (ATS-friendly; the `·` separator is CSS-generated and ignored by the wording check). Consulting one-pagers (detected by filename) get a larger page-fill CSS profile so their shorter content fills the A4. Needs `pypdf`. Run: `python3 cv/build-pdf.py cv/resume-vX.Y.txt [max_pages]` |
+| [`resume-1pager-v1.2.txt`](resume-1pager-v1.2.txt) / `.pdf` | **Recruiter/ATS edition** — curated 1-page resume (v8.2 lineage), NOT the LinkedIn mirror. Full keyword SKILLS block, user-confirmed facts (JUnit 5/Mockito, 5-person team scope, "alongside Assist.id"), open-to line, searchable-as aliases. v1.2 (2026-07-11): open-to line "Central Jakarta, WIB" → "Central Jakarta, WIB · UTC+7" for foreign readers; regenerated on the ATS-hardened template (linear `COMPANY · LOCATION` / `Title · Date` headers so dates stay with their employer; name extracts as the single token `FADHLILLAH`). v1.1 (2026-07-10, archived): "mentor 5 engineers" → "mentor peers", locations to SoT precision, Meta Llama casing, Hugging Face spelling. |
+| [`consulting-onepager-v1.2.txt`](consulting-onepager-v1.2.txt) / `.pdf` | **Consulting one-pager (EN)** for CEOs/CTOs/business owners buying software development — outcomes in business language, services, verifiable proof links, engagement process. Linked from the site's Services section. v1.2 (2026-07-11): headline "Jakarta · Remote (WIB)" → "(WIB · UTC+7)" for foreign readers; page-fill layout (larger type/spacing) so content now fills ~90% of the A4 (was ~54%, blank lower half) while staying 1 page. v1.1 (2026-07-10, archived): "7x" → sourced "700%", project name unified to High-Precision Contract-Advisor RAG, Llama casing, grammar fix. |
+| [`consulting-onepager-id-v1.2.txt`](consulting-onepager-id-v1.2.txt) / `.pdf` | **Consulting one-pager (Bahasa Indonesia)** — faithful translation of the EN one-pager (same claims; numbers/URLs/nouns verbatim). v1.2 in lock-step with EN: "(WIB · UTC+7)" + same page-fill layout (~90% of the A4, 1 page). v1.1 (2026-07-10, archived): lock-step with EN + "konsultasi" consistency. |
 
 Known scrape limit: LinkedIn only exposes the top ~10 Skills entries to the scraper (each role
 shows "+N skills" tags that cannot be expanded) — the resume SKILLS section mirrors what is
@@ -29,8 +29,11 @@ verifiably visible.
 | `archive/resume-v8.1.txt` / `.pdf` | v8.1 — first typeset release (pre-LinkedIn-sync). |
 | `archive/resume-v8.0.txt` / `.pdf` | v8.0 — monospace-render era. |
 | `archive/resume-v7.1.pdf` / `.txt` | v7.1 — **stale, do not distribute**. |
+| `archive/resume-1pager-v1.1.txt` / `.pdf` | 1pager v1.1 — superseded by v1.2 (WIB · UTC+7; ATS-hardened header/name rendering). |
 | `archive/resume-1pager-v1.0.txt` / `.pdf` | 1pager v1.0 — superseded by v1.1 (mentor-5 wording, locations, casing). |
+| `archive/consulting-onepager-v1.1.txt` / `.pdf` | consulting EN v1.1 — superseded by v1.2 (WIB · UTC+7; page-fill layout). |
 | `archive/consulting-onepager-v1.0.txt` / `.pdf` | consulting EN v1.0 — superseded by v1.1 (7x → 700%, project name). |
+| `archive/consulting-onepager-id-v1.1.txt` / `.pdf` | consulting ID v1.1 — superseded by v1.2 (lock-step with EN: WIB · UTC+7; page-fill layout). |
 | `archive/consulting-onepager-id-v1.0.txt` / `.pdf` | consulting ID v1.0 — superseded by v1.1 (lock-step with EN). |
 
 Removed from the tree 2026-07-10 (still in Git history if ever needed):
@@ -46,8 +49,8 @@ public and GitHub Pages served everything, so `_config.yml` now excludes
 
 ```
 resume:      v7.1 ──► v8.0 ──► v8.1 ──► v8.2 (curated 1-page) ──► v8.3 (full LinkedIn mirror, 2 pages)
-1pager:      resume-1pager v1.0 ──► v1.1 (recruiter/ATS edition, v8.2 lineage — parallel artifact, not a mirror)
-consulting:  consulting-onepager v1.0 ──► v1.1 (EN) ⇄ v1.0 ──► v1.1 (ID)
+1pager:      resume-1pager v1.0 ──► v1.1 ──► v1.2 (recruiter/ATS edition, v8.2 lineage — parallel artifact, not a mirror; v1.2 = WIB · UTC+7 + ATS header/name-extraction)
+consulting:  consulting-onepager v1.0 ──► v1.1 ──► v1.2 (EN) ⇄ v1.0 ──► v1.1 ──► v1.2 (ID)   [v1.2 = WIB · UTC+7 + page-fill layout]
 linkedin:    v1 export ──► v2 draft ──► v3 draft (never published) ──► v4 LIVE snapshot (current SoT — kept outside the repo)
 ```
 
