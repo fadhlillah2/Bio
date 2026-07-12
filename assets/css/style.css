@@ -1495,6 +1495,32 @@ button.mobile-nav-toggle {
 .flagship-code .tm { color: #ffc46b; }
 .flagship-code .tc { color: #6ee7b7; }
 
+/* The flagship cards reuse .term-bar/.term-dot/.term-title from the hero, but those
+   rules are scoped to #hero — without these mirrors the mac-dots and title render
+   unstyled (invisible) on the flagship terminal mockups. */
+.flagship-term .term-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: #0e1b30;
+  border-bottom: 1px solid #1b2c44;
+}
+.flagship-term .term-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+.flagship-term .term-dot-r { background: #ff5f57; }
+.flagship-term .term-dot-y { background: #febc2e; }
+.flagship-term .term-dot-g { background: #28c840; }
+.flagship-term .term-title {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: #7d8da3;
+  margin-left: 7px;
+}
+
 @media (max-width: 768px) {
   .flagship {
     grid-template-columns: 1fr;
