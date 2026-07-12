@@ -6,7 +6,7 @@ Usage:  uv run --with pypdf python3 cv/build-pdf.py cv/resume-vX.Y.txt [max_page
 Output: sibling .pdf (A4) via Chrome headless print-to-pdf (native Linux/macOS
         Chrome, or Windows Chrome under WSL), then verifies the PDF's extracted
         wording is identical to the .txt (whitespace/bullet markers aside) and
-        fits max_pages (default 1; resume-v8.3 needs 2).
+        fits max_pages (default 1; resume-v8.4 needs 2).
 """
 import html
 import re
@@ -88,7 +88,7 @@ def two_col(line: str):
 
 
 def doc_title(stem: str, name: str) -> str:
-    # "resume-v8.3" -> "Fadhlillah — Resume v8.3" (viewer-facing PDF title)
+    # "resume-v8.4" -> "Fadhlillah — Resume v8.4" (viewer-facing PDF title)
     words = [{"id": "ID", "en": "EN"}.get(w, w if re.fullmatch(r"v[\d.]+", w) else w.capitalize())
              for w in stem.split("-")]
     return f"{name.title()} — {' '.join(words)}"

@@ -1046,11 +1046,6 @@ section {
   color: #04121f;
 }
 
-#hero .btn-term-icon {
-  padding: 11px 14px;
-  font-size: 18px;
-}
-
 /* Business-buyer line: promoted out of the muted //-comment styling so the
    second declared audience gets a readable sentence, not code decoration */
 #hero .hero-buyer {
@@ -1384,6 +1379,14 @@ button.mobile-nav-toggle {
   }
   #main {
     margin-left: 0 !important;
+  }
+  /* The early-practice archive is a <details> collapsed by default; force its
+     contents visible when printing so the 9 project cards aren't lost. */
+  details.early-practice {
+    display: block !important;
+  }
+  details.early-practice > *:not(summary) {
+    display: block !important;
   }
   .resume .resume-item,
   .services .icon-box,

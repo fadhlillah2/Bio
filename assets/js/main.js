@@ -146,6 +146,13 @@
         return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
       }
     })
+
+    // Toggling the early-practice <details> shifts the layout below it; tell
+    // AOS to recompute offsets so sections beneath still reveal correctly.
+    const ep = document.querySelector('details.early-practice');
+    if (ep && typeof AOS !== 'undefined') {
+      ep.addEventListener('toggle', () => { AOS.refresh(); });
+    }
   });
 
 })()
