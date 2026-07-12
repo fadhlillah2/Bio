@@ -7,6 +7,10 @@ Output: sibling .pdf (A4) via Chrome headless print-to-pdf (native Linux/macOS
         Chrome, or Windows Chrome under WSL), then verifies the PDF's extracted
         wording is identical to the .txt (whitespace/bullet markers aside) and
         fits max_pages (default 1; resume-v8.4 needs 2).
+Multi-page resumes wrap each company block in <div class="job"> with
+        break-inside:avoid so a single employer's bullets don't split across a
+        page boundary (1-page docs skip this — it would push a tall block to a
+        phantom page 2).
 """
 import html
 import re
@@ -107,6 +111,7 @@ def to_html(txt: str, stem: str) -> str:
     out = [f"<h1>{e(head[0])}</h1>", f'<p class="hl">{e(head[1])}</p>',
            f'<p class="ct">{e(head[2])}</p>', f'<p class="ct">{e(head[3])}</p>']
     section, unit = None, None  # unit: pending (kind, text) being accumulated
+    job_open = False  # a <div class="job"> wraps each company block so it won't split across pages
 
     def flush():
         nonlocal unit
@@ -122,12 +127,19 @@ def to_html(txt: str, stem: str) -> str:
             out.append(f'<p class="body">{e(text)}</p>')
         unit = None
 
+    def close_job():
+        nonlocal job_open
+        if job_open:
+            out.append('</div>')
+            job_open = False
+
     for line in lines[i:]:
         if not line.strip():
             flush()
             continue
         if re.fullmatch(r"[A-Z][A-Z &/]*", line) and "  " not in line:
             flush()
+            close_job()
             section = line
             out.append(f"<h2>{e(line)}</h2>")
         elif line.startswith("- "):  # before the skills regex: a bullet containing " : " is still a bullet
@@ -141,6 +153,10 @@ def to_html(txt: str, stem: str) -> str:
         elif (cols := two_col(line)) and section not in ("SUMMARY",):
             flush()
             cls = ("crow", "c", "loc") if cols[0].isupper() else ("trow", "t", "d")
+            if cls[0] == "crow":  # a new company block starts — keep it on one page
+                close_job()
+                out.append('<div class="job">')
+                job_open = True
             out.append(f'<div class="{cls[0]}"><span class="{cls[1]}">{e(cols[0])}</span>'
                        f'<span class="{cls[2]}">{e(cols[1])}</span></div>')
         elif section == "SUMMARY" and unit:  # summary wraps without indent
@@ -153,11 +169,16 @@ def to_html(txt: str, stem: str) -> str:
             flush()
             unit = ("p", line.strip())
     flush()
+    close_job()
     lang = "id" if "-id-" in stem else "en"
     title = html.escape(doc_title(stem, head[0]))
     consulting = "consulting" in stem  # fills the page (see CONSULTING_CSS)
     body_attr = ' class="consulting"' if consulting else ""
     extra = CONSULTING_CSS if consulting else ""
+    # break-inside:avoid on a 1-page doc pushes a tall block onto a phantom page 2,
+    # so only the multi-page resume gets it (1-pager & consulting stay single-page).
+    if not consulting and "1pager" not in stem:
+        extra = ".job { break-inside: avoid; }"
     return (f"<!doctype html><html lang='{lang}'><head><meta charset='utf-8'>"
             f"<title>{title}</title><style>{CSS}{extra}</style></head><body{body_attr}>"
             + "".join(out) + "</body></html>")
