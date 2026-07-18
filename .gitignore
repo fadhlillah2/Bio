@@ -7,3 +7,4 @@ Thumbs.db
 *.print.html
 .playwright-mcp/
 .claude/
+*.tmp.pdf

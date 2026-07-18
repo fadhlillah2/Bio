@@ -6,7 +6,7 @@ Usage:  uv run --with pypdf python3 cv/build-pdf.py cv/resume-vX.Y.txt [max_page
 Output: sibling .pdf (A4) via Chrome headless print-to-pdf (native Linux/macOS
         Chrome, or Windows Chrome under WSL), then verifies the PDF's extracted
         wording is identical to the .txt (whitespace/bullet markers aside) and
-        fits max_pages (default 1; resume-v8.4 needs 2).
+        fits max_pages (default 1; a 2-page resume needs 2).
 Multi-page resumes wrap each company block in <div class="job"> with
         break-inside:avoid so a single employer's bullets don't split across a
         page boundary (1-page docs skip this — it would push a tall block to a
@@ -36,7 +36,7 @@ CSS = """
 body { font-family: Arial, Helvetica, sans-serif; font-size: 8.8pt; line-height: 1.17; color: #1a1a1a; }
 a { color: inherit; text-decoration: none; }
 h1 { font-size: 19pt; letter-spacing: 0; text-align: center; }
-.hl { text-align: center; font-weight: bold; font-size: 9.4pt; margin-top: 1mm; }
+.hl { text-align: center; font-weight: bold; font-size: 9.4pt; margin-top: 1mm; text-wrap: balance; }
 .ct { text-align: center; font-size: 8.6pt; color: #444; }
 h2 { font-size: 9.8pt; letter-spacing: 1.2px; border-bottom: 1px solid #999;
      padding-bottom: 0.5mm; margin: 2mm 0 0.9mm; break-after: avoid; }
@@ -53,20 +53,21 @@ h2 { font-size: 9.8pt; letter-spacing: 1.2px; border-bottom: 1px solid #999;
 .b .m { color: #666; }
 .sk { padding-left: 22mm; text-indent: -22mm; }
 .sk b { font-weight: bold; }
-p.body { text-align: justify; }
+.alias { margin-top: 1mm; font-size: 7.4pt; color: #777; }
 """
 
 # The consulting one-pagers carry ~40 lines of short content that, at the resume's
 # dense 8.8pt/1.17, leaves the lower half of the A4 blank. These overrides scale the
 # type/spacing up so the page fills gracefully while staying exactly 1 page. Tuned
-# empirically against last-text y-position (see README lineage note for v1.2).
+# empirically against last-text y-position (see README lineage note for v1.2;
+# leading/section gaps re-tuned for the ~6 extra outcome-led lines of v1.4).
 CONSULTING_CSS = """
 @page { margin: 12mm 14mm; }
-body.consulting { font-size: 10.5pt; line-height: 1.4; }
+body.consulting { font-size: 10.5pt; line-height: 1.33; }
 body.consulting h1 { font-size: 24pt; }
 body.consulting .hl { font-size: 12pt; margin-top: 2.5mm; }
 body.consulting .ct { font-size: 10pt; line-height: 1.5; }
-body.consulting h2 { font-size: 12.5pt; letter-spacing: 1.2px; margin: 4mm 0 1.6mm; padding-bottom: 1mm; }
+body.consulting h2 { font-size: 12.5pt; letter-spacing: 1.2px; margin: 3.4mm 0 1.6mm; padding-bottom: 1mm; }
 body.consulting .b { padding-left: 6mm; text-indent: -3.6mm; margin-top: 1mm; }
 body.consulting .sk { padding-left: 30mm; text-indent: -30mm; margin-top: 1mm; }
 body.consulting p.body { margin-top: 1.2mm; }
@@ -76,11 +77,21 @@ body.consulting a { white-space: nowrap; }
 """
 
 
+# v1.4 keyword expansion adds ~3 SKILLS lines, pushing the alias footer one line onto
+# page 2 — tighten leading and section gaps so the recruiter 1-pager stays exactly 1 page.
+ONEPAGER_CSS = """
+body.onepager { line-height: 1.15; }
+body.onepager h2 { margin-top: 1.5mm; }
+body.onepager .alias { margin-top: 0.6mm; }
+"""
+
+
 def linkify(escaped: str) -> str:
     return re.sub(  # URL must not end in '.' so trailing sentence punctuation stays outside the link
         r"((?:github\.com|linkedin\.com|leetcode\.com|replit\.com|wa\.me|fadhlillah2\.github\.io)/[\w./@-]*[\w/@-]|[\w.]+@gmail\.com)",
         lambda m: '<a href="{}{}">{}</a>'.format(
-            "mailto:" if "@" in m.group(1) else "https://", m.group(1), m.group(1)
+            # email is the only match without '/' — profile paths like replit.com/@X contain '@' too
+            "mailto:" if "/" not in m.group(1) else "https://", m.group(1), m.group(1)
         ),
         escaped,
     )
@@ -148,6 +159,9 @@ def to_html(txt: str, stem: str) -> str:
         elif re.match(r"^\S.{0,12}? : ", line):  # skills row "Label : values"
             flush()
             unit = ("sk", re.sub(r"^(\S[^:]*?)\s+: ", r"\1 : ", line.strip()))
+        elif line.startswith("Also searchable as"):  # de-emphasized keyword footer, not a cert line
+            flush()
+            out.append(f'<p class="alias">{e(line.strip())}</p>')
         elif line.startswith(" ") and unit:  # wrapped continuation
             unit = (unit[0], unit[1] + " " + line.strip())
         elif (cols := two_col(line)) and section not in ("SUMMARY",):
@@ -173,12 +187,14 @@ def to_html(txt: str, stem: str) -> str:
     lang = "id" if "-id-" in stem else "en"
     title = html.escape(doc_title(stem, head[0]))
     consulting = "consulting" in stem  # fills the page (see CONSULTING_CSS)
-    body_attr = ' class="consulting"' if consulting else ""
-    extra = CONSULTING_CSS if consulting else ""
     # break-inside:avoid on a 1-page doc pushes a tall block onto a phantom page 2,
     # so only the multi-page resume gets it (1-pager & consulting stay single-page).
-    if not consulting and "1pager" not in stem:
-        extra = ".job { break-inside: avoid; }"
+    if consulting:
+        body_attr, extra = ' class="consulting"', CONSULTING_CSS
+    elif "1pager" in stem:
+        body_attr, extra = ' class="onepager"', ONEPAGER_CSS
+    else:
+        body_attr, extra = "", ".job { break-inside: avoid; }"
     return (f"<!doctype html><html lang='{lang}'><head><meta charset='utf-8'>"
             f"<title>{title}</title><style>{CSS}{extra}</style></head><body{body_attr}>"
             + "".join(out) + "</body></html>")
@@ -220,7 +236,14 @@ def selftest():
     assert 'class="consulting"' in to_html(src, "consulting-onepager-v9.9") and \
         "body.consulting" in to_html(src, "consulting-onepager-v9.9")  # page-fill overrides applied
     assert 'class="consulting"' not in to_html(src, "resume-v9.9-test")  # only for consulting docs
-    assert linkify("see replit.com/@X and mail@gmail.com") .count("<a href=") == 2
+    assert 'class="onepager"' in to_html(src, "resume-1pager-v9.9") and \
+        "body.onepager" in to_html(src, "resume-1pager-v9.9")  # 1-pager densify applied
+    lk = linkify("see replit.com/@X and mail@gmail.com")
+    assert lk.count("<a href=") == 2
+    # scheme guard: a URL containing '@' must stay https, only bare emails get mailto
+    assert 'href="https://replit.com/@X"' in lk and 'href="mailto:mail@gmail.com"' in lk
+    assert '<p class="alias">Also searchable as: X, Y</p>' in to_html(
+        src + "Also searchable as: X, Y\n", "resume-v9.9-test")  # keyword footer keeps its own style
     assert 'href="https://github.com/x/y"' in linkify("github.com/x/y.")  # trailing '.' stays outside the link
     wrap = to_html(src.replace("- bullet one\n  wrapped tail",
                                "Label line:\nAn unindented paragraph that\nwraps mid-sentence here."), "resume-v9.9-test")
@@ -259,11 +282,12 @@ def main():
     txt = txt_path.read_text(encoding="utf-8")
     html_path = txt_path.with_suffix(".print.html")
     pdf_path = txt_path.with_suffix(".pdf")
+    tmp_path = txt_path.with_suffix(".tmp.pdf")  # verify BEFORE touching the real .pdf — a failed run must not leave a broken artifact
     html_path.write_text(to_html(txt, txt_path.stem), encoding="utf-8")
     try:
         subprocess.run(
             [chrome, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
-             f"--print-to-pdf={chrome_path(pdf_path, chrome)}", chrome_path(html_path, chrome)],
+             f"--print-to-pdf={chrome_path(tmp_path, chrome)}", chrome_path(html_path, chrome)],
             check=True, capture_output=True, timeout=120)
     except subprocess.CalledProcessError as e:
         sys.exit(f"FAIL Chrome exited {e.returncode}: {e.stderr.decode(errors='replace')[-500:]}")
@@ -272,24 +296,27 @@ def main():
     finally:
         html_path.unlink(missing_ok=True)
 
-    reader = PdfReader(str(pdf_path))
-    pages = len(reader.pages)
-    pdf_text = "".join(p.extract_text() or "" for p in reader.pages)
-    a, b = canon(txt), canon(pdf_text)
-    if a != b:
-        k = next((j for j, (x, y) in enumerate(zip(a, b)) if x != y), min(len(a), len(b)))
-        sys.exit(f"FAIL wording mismatch at char {k}: txt=...{a[k:k+60]!r} pdf=...{b[k:k+60]!r}")
-    if pages > max_pages:
-        sys.exit(f"FAIL {pages} pages (must be <= {max_pages})")
+    try:
+        reader = PdfReader(str(tmp_path))
+        pages = len(reader.pages)
+        pdf_text = "".join(p.extract_text() or "" for p in reader.pages)
+        a, b = canon(txt), canon(pdf_text)
+        if a != b:
+            k = next((j for j, (x, y) in enumerate(zip(a, b)) if x != y), min(len(a), len(b)))
+            sys.exit(f"FAIL wording mismatch at char {k}: txt=...{a[k:k+60]!r} pdf=...{b[k:k+60]!r}")
+        if pages > max_pages:
+            sys.exit(f"FAIL {pages} pages (must be <= {max_pages})")
 
-    # stamp viewer-facing metadata (Chrome sets /Title from <title>; /Author and a
-    # reliable document /Lang — id for the Indonesian one-pager — need a pass)
-    head0 = next(l.strip() for l in txt.splitlines() if l.strip())
-    writer = PdfWriter(clone_from=str(pdf_path))
-    writer.add_metadata({"/Title": doc_title(txt_path.stem, head0), "/Author": head0.title()})
-    writer._root_object[NameObject("/Lang")] = TextStringObject("id" if "-id-" in txt_path.stem else "en")
-    with open(pdf_path, "wb") as f:
-        writer.write(f)
+        # stamp viewer-facing metadata (Chrome sets /Title from <title>; /Author and a
+        # reliable document /Lang — id for the Indonesian one-pager — need a pass)
+        head0 = next(l.strip() for l in txt.splitlines() if l.strip())
+        writer = PdfWriter(clone_from=str(tmp_path))
+        writer.add_metadata({"/Title": doc_title(txt_path.stem, head0), "/Author": head0.title()})
+        writer._root_object[NameObject("/Lang")] = TextStringObject("id" if "-id-" in txt_path.stem else "en")
+        with open(pdf_path, "wb") as f:
+            writer.write(f)
+    finally:
+        tmp_path.unlink(missing_ok=True)
     print(f"OK {pdf_path.name}: {pages} page(s), wording verified identical to {txt_path.name}")
 
 
