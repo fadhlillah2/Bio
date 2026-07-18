@@ -1,0 +1,142 @@
+                                             FADHLILLAH
+              Software Engineer | AI Native Engineer | Java · Python · JavaScript · Go
+               South Jakarta, ID · UTC+7 | +62 851-5704-3131 | fadhlillah949699@gmail.com
+          linkedin.com/in/fadhlillah2 | github.com/fadhlillah2 | fadhlillah2.github.io/Bio
+
+SUMMARY
+Backend Software Engineer (6+ yrs) — deep in Java/Spring Boot, adaptable across the languages,
+domains and paradigms around it. Builds Spring Boot microservices serving 2M+ requests/day,
+shipping in Python, Node, and Go across healthcare, F&B, and fintech as each problem demands.
+Adopted AI-augmented workflows early — a production SFTP platform delivered in 10 days against a
+17-day plan — and lifted reporting speed 700% via query and data-model optimization on a
+healthcare platform. Builds LLM-integrated products end to end: RAG systems, AI chatbots,
+internal automation. Top 50 at the LLaMA Hackathon — equally at home in regulated enterprise
+systems and fast-moving AI builds.
+
+EXPERIENCE
+FOX ASSET — INFINITY WAVE SDN BHD                                                MALAYSIA (REMOTE)
+Backend Software Engineer | Contract                                            Dec 2025 – Present
+- Primary backend engineer of the Safety Hub (Permit-to-Work/HIRARC forms + safety induction) on
+  FOX Asset, a multi-tenant asset management & maintenance (CMMS) SaaS built on Django REST
+  Framework — 23 data models, 50+ REST endpoints, ~21,000 lines of Python across the two modules
+- Built a multi-tier digital approval workflow (PIC acceptance + up to 3 sequential approvers)
+  with digital signatures, rejection/resubmission cycles, and 12 email notification flows
+- Engineered async document pipelines: Celery + wkhtmltopdf permit PDFs with embedded QR codes,
+  and a WeasyPrint + Pillow certificate engine with QR verification, watermarks, and expiry
+- Solely built the Project Management module backend: 21 REST endpoints, 10 models, Kanban and
+  timeline views, weightage distribution, and S-Curve planned-vs-actual analytics with adaptive
+  daily/weekly/monthly bucketing
+- Enforced role-based access control with field-level write restrictions and cross-company data
+  isolation; wrote 196 unit tests for Project Management and 105 for the Safety Hub apps
+- Delivered a 2-week AWS/DevOps security engagement: purged leaked credentials from tracked env
+  templates, added gitleaks secret-scanning CI and a database migration-drift gate, and built a
+  staging environment with a GitHub Actions CI/CD pipeline to AWS ECR
+- Authored a 1,260-line bilingual (EN/ID) API reference, Postman collections (38 + 23 requests),
+  and 987 lines of deployment runbooks
+
+PT BANK DANAMON INDONESIA, TBK.                                                          JAKARTA, ID
+Software Engineer | Full-time                                                     Aug 2023 – Present
+- Automated technical documentation with LLMs, cutting cycle time from 40 hours to 4 hours
+- Generated test cases achieving 95% coverage on core modules, reducing prep time by 65%
+- Built SFTP automation platform in 10 days against a 17-day plan using AI coding tools
+- Running 12 microservices (Hexagonal arch). We handle 500k+ daily txs
+- Built and operate Spring Boot microservices serving 2M+ requests/day at sub-200ms response times
+- Supporting financial systems processing $10M+ daily volume; consistently meeting 48h reporting
+  SLAs
+- Met urgent 48h deadline to deliver a critical financial reporting tool
+- Tuned DB queries and caching, improving response times across the platform's user base
+- Implemented OAuth 2.0, JWT, and AES-256; passed internal security audits
+
+PT. IDSTAR CIPTA TEKNOLOGI (IDSTAR)                                                SOUTH JAKARTA, ID
+Backend Software Engineer | Remote                                               Mar 2023 – Jul 2023
+- Developed and optimized 40+ RESTful APIs for the OML Innovoice platform
+- Implemented enterprise SSO (OAuth 2.0/JWT) and session tracking to enforce authenticated access
+- Secured the app against OWASP Top 10 (input validation, SQLi)
+- Cut unauthorized access by 95% by adding multi-layer auth
+- Managed sessions with Redis; secured the app against OWASP Top 10
+- Built an MSSQL email logging system to meet compliance audits
+- Dockerized services and hosted on Azure (Apache Tomcat)
+- Kept code quality score at 90+ using SonarLint and peer reviews
+
+FREELANCE & PERSONAL PROJECTS                                                                 REMOTE
+Full Stack Developer | Freelance                                                 Apr 2022 – Feb 2023
+- Set up Apache Kafka for real-time event processing
+- Hooked up 3+ external systems via REST APIs to automate our data flow
+- Built the restaurant booking alerts system using Kafka
+- Added Redis caching to reduce database load
+- Handled Postgres migration using Flyway with a staged rollout
+- Built a notification service delivering email and SMS
+- Synced orders with Kitchen Displays and POS terminals using REST APIs
+- Built a simulation app using Quarkus microservices. It's event-driven
+- Shipped a home-stay booking site (Next.js/Postgres). Integrated Stripe
+- Coded an Instagram clone. Used WebSockets for live feeds and MongoDB
+- Developed a context-aware AI chatbot on the MERN stack using OpenAI
+- Wrote REST and GraphQL APIs using Spring Boot and FastAPI
+- Deployed Docker containers to AWS ECS
+
+GitHub - fadhlillah2/reminder-service:
+- Set up Apache Kafka for real-time processing. It currently serves 50k+ users
+- Hooked up 3+ external systems via REST APIs to automate our data flow
+- Built the restaurant booking alerts system using Kafka
+- Added Redis caching. This cut DB queries by 60% during the dinner rush
+- Handled the Postgres migration using Flyway. I used a staged rollout
+- My notification service delivers 50k+ emails and SMS messages daily
+- Synced orders with Kitchen Displays and POS terminals using REST APIs
+
+GitHub - fadhlillah2/ai-chatbot-mern:
+A beautiful MERN stack chatbot application with a cosmic-themed UI that connects to various AI
+models including OpenAI, Mistral, and local LLM models
+
+expert-advisor-mt-5 (MetaTrader 5 algorithmic trading — private repo):
+- Built 6 MQL5 Expert Advisors (BTCUSD/XAUUSD) with circuit breakers and crash-safe persisted state
+- Running a preregistered 24/7 live A/B experiment between two EA variants on a demo account (190
+  trades); a Python stats pipeline shows the spread-timed arm entered $0.063/trade cheaper (95%
+  CI excluding 0)
+- Deployed on a headless Linux VPS (Wine/MT5, systemd) with cron + Telegram health monitoring
+- Backtested 300+ gold strategy variants over 10 years of Dukascopy data; 0 passed preregistered
+  promotion gates
+
+ASSIST.ID                                                                   PEKANBARU CITY, RIAU, ID
+Backend Software Engineer | Full-time · Hybrid                                   Jul 2020 – Feb 2023
+- Built 100+ RESTful APIs for the IBBR healthcare system
+- Integrated 40+ external APIs (payments, logistics, SMS)
+- Synced ERP data in real time via REST and webhooks
+- Designed a request engine handling multi-level approvals
+- Accelerated reports 700% via query tuning and MongoDB materialized views
+- Wrote an auto-cleanup job for 10,000+ daily bookings
+- Built the auto check-in/out feature using MongoDB time triggers
+- Resolved ~100 bugs/month while maintaining 99.5% uptime
+
+EDUCATION
+UNIVERSITAS GADJAH MADA                                                               YOGYAKARTA, ID
+Bachelor's degree, Mathematics and Computer Science
+Activities and societies: Coordinator of LMNAS-28 UGM
+
+CERTIFICATIONS
+- Meta Llama Hackathon 2025 - Top 50 — Hacktiv8 Indonesia (Credential ID 032/H8/META/XI/2025)
+- Machine Learning with Python — freeCodeCamp, Nov 2025
+- College Algebra with Python — freeCodeCamp, Nov 2025
+- Scientific Computing with Python — freeCodeCamp, Nov 2025
+- SQL — HackerRank, Feb 2023 (Credential ID 61C45ED8B59F)
+- HTML, CSS & JavaScript training — Digital Talent Scholarship, Apr 2021
+- JavaScript Course — Progate, Apr 2021
+- JavaScript Algorithms and Data Structures — freeCodeCamp, Jan 2021
+
+PROJECTS
+- my-bio-profile — Jul 2021 – Present; "This is some bio about me"
+- high-precision-contract-advisor-rag — github.com/fadhlillah2/llama-docs-auditor
+- my-github-repo — github.com/fadhlillah2
+- my-leetcode-profile — leetcode.com/orion_omniscient
+- my-replit-profile — replit.com/@Fadhlillah
+- rate-limiter-project-go — Rate limiting service implemented in Go with support for multiple
+  algorithms and distributed deployments — github.com/fadhlillah2/rate-limiter-project-go
+
+SKILLS
+Top skills   : Python (Programming Language), Retrieval-Augmented Generation (RAG), Java
+Also listed  : Go (Programming Language), Django REST Framework, Docker, Node.js, Echo, Dart, Fiber
+
+RECOMMENDATIONS
+- "Fadhli is a consistent, friendly, and hard worker person. He is straightforward to be a
+  collaborative person." — Fajri Illahi, Tech Lead at IFG Life (Apr 2023)
+- "ambisi sangat dengan language technology,, so this person it's comfortable in software
+  learning, and also in web developer.." — anshori kasri (Jan 2021)
