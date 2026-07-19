@@ -83,6 +83,8 @@ ONEPAGER_CSS = """
 body.onepager { line-height: 1.15; }
 body.onepager h2 { margin-top: 1.5mm; }
 body.onepager .alias { margin-top: 0.6mm; }
+/* same guard as consulting: a hyphenated proof URL must never wrap→de-hyphenate into a 404 */
+body.onepager a { white-space: nowrap; }
 """
 
 
@@ -103,7 +105,7 @@ def two_col(line: str):
 
 
 def doc_title(stem: str, name: str) -> str:
-    # "resume-v8.4" -> "Fadhlillah — Resume v8.4" (viewer-facing PDF title)
+    # "resume-vX.Y" -> "Fadhlillah — Resume vX.Y" (viewer-facing PDF title)
     words = [{"id": "ID", "en": "EN"}.get(w, w if re.fullmatch(r"v[\d.]+", w) else w.capitalize())
              for w in stem.split("-")]
     return f"{name.title()} — {' '.join(words)}"
@@ -258,6 +260,7 @@ def selftest():
     # render-behaviour guards (can't run Chrome here, so lock the CSS the render depends on):
     assert "letter-spacing: 0" in CSS  # h1 name extracts as one token FADHLILLAH, not FA D H L...
     assert "white-space: nowrap" in CONSULTING_CSS  # proof URLs never wrap→de-hyphenate into 404s
+    assert "white-space: nowrap" in ONEPAGER_CSS  # same URL guard for the recruiter 1-pager
     print("selftest OK")
 
 
