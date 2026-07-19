@@ -106,7 +106,7 @@ def two_col(line: str):
 
 def doc_title(stem: str, name: str) -> str:
     # "resume-vX.Y" -> "Fadhlillah — Resume vX.Y" (viewer-facing PDF title)
-    words = [{"id": "ID", "en": "EN"}.get(w, w if re.fullmatch(r"v[\d.]+", w) else w.capitalize())
+    words = [{"id": "ID", "en": "EN", "onepager": "One-Pager"}.get(w, w if re.fullmatch(r"v[\d.]+", w) else w.capitalize())
              for w in stem.split("-")]
     return f"{name.title()} — {' '.join(words)}"
 
@@ -193,7 +193,7 @@ def to_html(txt: str, stem: str) -> str:
     # so only the multi-page resume gets it (1-pager & consulting stay single-page).
     if consulting:
         body_attr, extra = ' class="consulting"', CONSULTING_CSS
-    elif "1pager" in stem:
+    elif "onepager" in stem:
         body_attr, extra = ' class="onepager"', ONEPAGER_CSS
     else:
         body_attr, extra = "", ".job { break-inside: avoid; }"
@@ -235,11 +235,12 @@ def selftest():
     assert "<html lang='id'>" in to_html(src, "consulting-onepager-id-v9.9")
     assert canon("- a  b\nc") == canon("• a b c") and canon("ab") != canon("ac")
     assert canon("Bank·Jakarta") == canon("Bank Jakarta")  # header separator middot ignored in verify
-    assert 'class="consulting"' in to_html(src, "consulting-onepager-v9.9") and \
-        "body.consulting" in to_html(src, "consulting-onepager-v9.9")  # page-fill overrides applied
+    assert 'class="consulting"' in to_html(src, "consulting-onepager-en-v9.9") and \
+        "body.consulting" in to_html(src, "consulting-onepager-en-v9.9")  # page-fill overrides applied
     assert 'class="consulting"' not in to_html(src, "resume-v9.9-test")  # only for consulting docs
-    assert 'class="onepager"' in to_html(src, "resume-1pager-v9.9") and \
-        "body.onepager" in to_html(src, "resume-1pager-v9.9")  # 1-pager densify applied
+    assert 'class="onepager"' in to_html(src, "resume-onepager-v9.9") and \
+        "body.onepager" in to_html(src, "resume-onepager-v9.9")  # 1-pager densify applied
+    assert "<title>Name — Resume One-Pager v9.9</title>" in to_html(src, "resume-onepager-v9.9")
     lk = linkify("see replit.com/@X and mail@gmail.com")
     assert lk.count("<a href=") == 2
     # scheme guard: a URL containing '@' must stay https, only bare emails get mailto
