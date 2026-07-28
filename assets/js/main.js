@@ -39,13 +39,6 @@
   }
 
   /**
-   * Easy on scroll event listener
-   */
-  const onscroll = (el, listener) => {
-    el.addEventListener('scroll', listener, { passive: true })
-  }
-
-  /**
    * Navbar links active state on scroll
    */
   let navbarlinks = select('#navbar .scrollto', true)
@@ -63,7 +56,7 @@
     })
   }
   window.addEventListener('load', navbarlinksActive)
-  onscroll(document, navbarlinksActive)
+  document.addEventListener('scroll', navbarlinksActive, { passive: true })
 
   /**
    * Smooth-scrolls to an element (sidebar layout: no top-offset needed)
@@ -90,17 +83,17 @@
       }
     }
     window.addEventListener('load', toggleBacktotop)
-    onscroll(document, toggleBacktotop)
+    document.addEventListener('scroll', toggleBacktotop, { passive: true })
   }
 
   /**
    * Mobile nav toggle
    */
-  on('click', '.mobile-nav-toggle', function(e) {
-    select('body').classList.toggle('mobile-nav-active')
+  on('click', '.mobile-nav-toggle', function() {
+    document.body.classList.toggle('mobile-nav-active')
     this.classList.toggle('bi-list')
     this.classList.toggle('bi-x')
-    this.setAttribute('aria-expanded', select('body').classList.contains('mobile-nav-active'))
+    this.setAttribute('aria-expanded', document.body.classList.contains('mobile-nav-active'))
   })
 
   /**
@@ -110,7 +103,7 @@
     if (select(this.hash)) {
       e.preventDefault()
 
-      let body = select('body')
+      let body = document.body
       if (body.classList.contains('mobile-nav-active')) {
         body.classList.remove('mobile-nav-active')
         let navbarToggle = select('.mobile-nav-toggle')
@@ -126,10 +119,8 @@
    * Scroll on page load with hash links in the url
    */
   window.addEventListener('load', () => {
-    if (window.location.hash) {
-      if (select(window.location.hash)) {
-        scrollto(window.location.hash)
-      }
+    if (window.location.hash && select(window.location.hash)) {
+      scrollto(window.location.hash)
     }
   });
 
@@ -141,7 +132,6 @@
       duration: 1000,
       easing: 'ease-in-out',
       once: true,
-      mirror: false,
       disable: function () {
         return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
       }

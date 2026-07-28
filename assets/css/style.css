@@ -10,16 +10,13 @@
 --------------------------------------------------------------*/
 body {
   font-family: "Open Sans", sans-serif;
-  color: #272829;
 }
 
 a {
-  color: #149ddd;
   text-decoration: none;
 }
 
 a:hover {
-  color: #37b3ed;
   text-decoration: none;
 }
 
@@ -58,7 +55,6 @@ html:not(.js) [data-aos] {
   right: 15px;
   bottom: 15px;
   z-index: 996;
-  background: #149ddd;
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -72,7 +68,6 @@ html:not(.js) [data-aos] {
 }
 
 .back-to-top:hover {
-  background: #2eafec;
   color: #fff;
 }
 
@@ -218,8 +213,6 @@ html:not(.js) [data-aos] {
   font-size: 24px;
   transition: all 0.4s;
   outline: none !important;
-  background-color: #149ddd;
-  color: #fff;
   width: 40px;
   height: 40px;
   display: inline-flex;
@@ -243,12 +236,10 @@ html:not(.js) [data-aos] {
 --------------------------------------------------------------*/
 #hero {
   width: 100%;
-  height: 100vh;
 }
 
 #hero:before {
   content: "";
-  background: rgba(5, 13, 24, 0.3);
   position: absolute;
   bottom: 0;
   top: 0;
@@ -293,10 +284,6 @@ section {
   overflow: hidden;
 }
 
-.section-bg {
-  background: #f5f8fd;
-}
-
 .section-title {
   padding-bottom: 30px;
 }
@@ -307,7 +294,6 @@ section {
   margin-bottom: 20px;
   padding-bottom: 20px;
   position: relative;
-  color: #173b6c;
 }
 
 .section-title h2::after {
@@ -316,7 +302,6 @@ section {
   display: block;
   width: 50px;
   height: 3px;
-  background: #149ddd;
   bottom: 0;
   left: 0;
 }
@@ -331,7 +316,6 @@ section {
 .about .content h3 {
   font-weight: 700;
   font-size: 26px;
-  color: #173b6c;
 }
 
 .about .content ul {
@@ -352,7 +336,6 @@ section {
 .about .content ul i {
   font-size: 16px;
   margin-right: 5px;
-  color: #149ddd;
   line-height: 0;
 }
 
@@ -375,7 +358,6 @@ section {
 .facts .count-box i {
   display: block;
   font-size: 44px;
-  color: #149ddd;
   float: left;
   line-height: 0;
 }
@@ -385,7 +367,6 @@ section {
   line-height: 40px;
   display: block;
   font-weight: 700;
-  color: #050d18;
   margin-left: 60px;
   white-space: nowrap; /* keep space-bearing values like "Top 50" on one line (row-2 has centred slack) */
 }
@@ -395,7 +376,6 @@ section {
   margin: 0 0 0 60px;
   font-family: "Raleway", sans-serif;
   font-size: 14px;
-  color: #122f57;
 }
 
 /*--------------------------------------------------------------
@@ -406,13 +386,11 @@ section {
   font-weight: 700;
   margin-top: 20px;
   margin-bottom: 20px;
-  color: #050d18;
 }
 
 .resume .resume-item {
   padding: 0 0 20px 20px;
   margin-top: -2px;
-  border-left: 2px solid #1f5297;
   position: relative;
 }
 
@@ -422,13 +400,11 @@ section {
   font-weight: 600;
   text-transform: uppercase;
   font-family: "Poppins", sans-serif;
-  color: #050d18;
   margin-bottom: 10px;
 }
 
 .resume .resume-item h5 {
   font-size: 16px;
-  background: #e4edf9;
   padding: 5px 15px;
   display: inline-block;
   font-weight: 600;
@@ -455,8 +431,6 @@ section {
   border-radius: 50px;
   left: -9px;
   top: 0;
-  background: #fff;
-  border: 2px solid #1f5297;
 }
 
 /*--------------------------------------------------------------
@@ -537,13 +511,11 @@ section {
 .portfolio .portfolio-wrap {
   transition: 0.3s;
   position: relative;
-  overflow: hidden;
   z-index: 1;
 }
 
 .portfolio .portfolio-wrap::before {
   content: "";
-  background: rgba(255, 255, 255, 0.5);
   position: absolute;
   left: 0;
   right: 0;
@@ -580,15 +552,10 @@ section {
 }
 
 .portfolio .portfolio-wrap:hover::before {
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
   opacity: 1;
 }
 
 .portfolio .portfolio-wrap:hover .portfolio-links {
-  opacity: 1;
   bottom: 0;
 }
 
@@ -606,24 +573,14 @@ section {
   justify-content: center;
   width: 54px;
   height: 54px;
-  background: #149ddd;
   border-radius: 50%;
   transition: 0.5s;
   border: 1px solid #149ddd;
 }
 
 .services .icon i {
-  color: #fff;
   font-size: 24px;
   line-height: 0;
-}
-
-.services .icon-box:hover .icon {
-  background: #fff;
-}
-
-.services .icon-box:hover .icon i {
-  color: #149ddd;
 }
 
 .services .title {
@@ -672,18 +629,14 @@ section {
 
 .contact .info {
   padding: 30px;
-  background: #fff;
   width: 100%;
-  box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.12);
 }
 
 .contact .info i {
   font-size: 20px;
-  color: #149ddd;
   float: left;
   width: 44px;
   height: 44px;
-  background: #dff3fc;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -696,30 +649,21 @@ section {
   font-size: 22px;
   font-weight: 600;
   margin-bottom: 5px;
-  color: #050d18;
 }
 
 .contact .info p {
   padding: 0 0 10px 60px;
   margin-bottom: 20px;
   font-size: 14px;
-  color: #173b6c;
 }
 
 .contact .info .email p {
   padding-top: 5px;
 }
 
-.contact .info .email:hover i, .contact .info .address:hover i, .contact .info .phone:hover i {
-  background: #149ddd;
-  color: #fff;
-}
-
 .contact .php-email-form {
   width: 100%;
   padding: 30px;
-  background: #fff;
-  box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.12);
 }
 
 .contact .php-email-form .form-group {
@@ -757,7 +701,6 @@ section {
 }
 
 .contact .php-email-form input, .contact .php-email-form textarea {
-  border-radius: 0;
   box-shadow: none;
   font-size: 14px;
 }
@@ -771,16 +714,10 @@ section {
 }
 
 .contact .php-email-form button[type="submit"] {
-  background: #149ddd;
   border: 0;
   padding: 10px 24px;
   color: #04121f;
   transition: 0.4s;
-  border-radius: 4px;
-}
-
-.contact .php-email-form button[type="submit"]:hover {
-  background: #37b3ed;
 }
 
 /*--------------------------------------------------------------
@@ -788,18 +725,12 @@ section {
 --------------------------------------------------------------*/
 #footer {
   padding: 15px;
-  color: #f4f6fd;
   font-size: 14px;
   position: fixed;
   left: 0;
   bottom: 0;
   width: 300px;
   z-index: 9999;
-  background: #040b14;
-}
-
-#footer .copyright {
-  text-align: center;
 }
 
 #footer .credits {
@@ -822,7 +753,6 @@ section {
 # Scoped overrides; template rules above left untouched.
 --------------------------------------------------------------*/
 #hero {
-  background: #060d18;
   height: auto;
   min-height: 100vh;
   padding: 96px 15px 48px;
@@ -858,8 +788,6 @@ section {
 
 #hero .hero-sep {
   color: #149ddd;
-  border-bottom: none;
-  padding-bottom: 0;
 }
 
 /* Plain-text value prop: the differentiators must be skimmable as text,
@@ -941,11 +869,6 @@ section {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #hero .tl {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
   #hero .term-cursor {
     animation: none;
   }
@@ -1056,8 +979,7 @@ section {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #hero .term.is-boot .tl:not(.tl-cmd),
-  #hero .term.is-live .tl:not(.tl-cmd) {
+  #hero .term.is-boot .tl:not(.tl-cmd) {
     animation: none;
     opacity: 1;
     transform: none;
@@ -1229,7 +1151,6 @@ a:hover { color: #7ccdff; }
 }
 .skip-link:focus {
   left: 0;
-  color: #04121f;
 }
 
 a:focus-visible,
@@ -1246,7 +1167,6 @@ iframe:focus-visible,
    buttons/CTAs keep their own affordance */
 #main p a:not(.btn-cv),
 #main li a:not(.btn-cv),
-.hero-eyebrow a,
 .hero-buyer a {
   text-decoration: underline;
   text-underline-offset: 2px;
@@ -1274,7 +1194,6 @@ iframe:focus-visible,
   margin: 15px 0 10px 0;
   padding: 0;
   font-weight: 600;
-  -moz-text-align-last: center;
   text-align-last: center;
   font-family: "Poppins", sans-serif;
 }
