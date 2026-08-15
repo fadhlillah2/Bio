@@ -4,6 +4,7 @@
 # the Git repo. The LinkedIn source-of-truth snapshot (linkedin-profile-v4.txt)
 # and a stray screenshot were removed from the working tree entirely.
 exclude:
+  - CLAUDE.md
   - cv/archive
   - cv/README.md
   - cv/build-pdf.py
