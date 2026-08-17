@@ -1543,7 +1543,15 @@ section {
   color: var(--muted);
 }
 
+/* Tablet keeps two columns: at one column these cards run ~740px wide with
+   only a few lines in them, which reads as a stretched mobile layout. */
 @media (max-width: 900px) {
+  .cred-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
   .cred-grid {
     grid-template-columns: minmax(0, 1fr);
   }
