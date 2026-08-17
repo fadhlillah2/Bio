@@ -1,10 +1,14 @@
 # CV Sources
 
 Single source of truth chain (per 2026-07-06): **live LinkedIn profile** is the SoT for career
-claims → captured verbatim in a `linkedin-profile-vN` snapshot (kept **outside this repo** since
-2026-07-10 — see "Removed from the tree" below) → **resume mirrors it in full**
+claims → captured verbatim in a `linkedin-profile-vN` snapshot (currently `v4`; kept **outside this
+repo** since 2026-07-10 — see "Removed from the tree" below) → **resume mirrors it in full**
 (user decision 2026-07-06: "mirror penuh" — the resume contains all LinkedIn content and nothing
 that is not on LinkedIn). Files at this level are **current**; `archive/` is the audit trail.
+
+> **Open (tracked here and nowhere else):** the FOX Asset role and the rewritten
+> expert-advisor-mt-5 project block are not on LinkedIn yet. Until they are pasted, the resume runs
+> ahead of the SoT instead of mirroring it. Clear this note once the profile is updated.
 
 ## Layout & naming
 
@@ -12,24 +16,24 @@ that is not on LinkedIn). Files at this level are **current**; `archive/` is the
 cv/
 ├── README.md                               ← this file: which file to use + full version history
 ├── build-pdf.py                            ← .txt → .pdf generator (`--selftest` checks the parser)
-├── resume-v8.7.txt / .pdf                  ← official full CV — LinkedIn mirror, 2 pages
-├── resume-onepager-v1.8.txt / .pdf         ← recruiter/ATS edition, 1 page
-├── consulting-onepager-en-v1.4.txt / .pdf  ← business-buyer one-pager, English
-├── consulting-onepager-id-v1.4.txt / .pdf  ← business-buyer one-pager, Bahasa Indonesia
+├── resume-vX.Y.txt / .pdf                  ← official full CV — LinkedIn mirror, 2 pages
+├── resume-onepager-vX.Y.txt / .pdf         ← recruiter/ATS edition, 1 page
+├── consulting-onepager-en-vX.Y.txt / .pdf  ← business-buyer one-pager, English
+├── consulting-onepager-id-vX.Y.txt / .pdf  ← business-buyer one-pager, Bahasa Indonesia
 ├── drafts/                                 ← LinkedIn paste-ready drafts (gitignored, local-only)
 └── archive/                                ← superseded versions, audit trail — never distribute
 ```
+
+The version numbers in play right now are listed once, under [Current](#current--which-file-do-i-send)
+— nowhere else in this file outside the Changelog.
 
 Naming convention: `<artifact>[-<lang>]-v<major.minor>.<ext>` — artifact ∈ {`resume`,
 `resume-onepager`, `consulting-onepager`}; `-en`/`-id` appears only where an artifact ships
 in two languages; every `.pdf` sits next to the same-named `.txt` it is generated from.
 
-> Naming normalized 2026-07-19: `resume-1pager-*` → `resume-onepager-*`, and the EN consulting
-> one-pager gained its explicit `-en` suffix (was unsuffixed). Content unchanged — no version
-> bump. The three current one-pager PDFs were regenerated so their embedded Titles match the new
-> naming — including `consulting-onepager-id` (name unchanged; its Title style follows lock-step:
-> "Consulting One-Pager ID"). `archive/` files were renamed in lock-step but keep their
-> as-shipped embedded PDF titles.
+> Naming normalized 2026-07-19 (`resume-1pager-*` → `resume-onepager-*`, EN consulting gained its
+> `-en` suffix; content unchanged, no bump). Current PDFs carry Titles matching the new naming;
+> `archive/` files were renamed but keep their as-shipped embedded PDF titles.
 
 ## Current — which file do I send?
 
@@ -53,7 +57,7 @@ verifiably visible.
 Parses the .txt, typesets it (Arial/Liberation Sans, A4), prints via Chrome headless (native
 Linux/macOS Chrome or WSL Windows Chrome, auto-detected), stamps Title/Author/lang metadata,
 verifies the PDF wording is identical to the .txt (whitespace-insensitive) and fits `max_pages`
-(2nd CLI arg, default 1; resume-v8.7 needs `2`). Job headers render as one linear
+(2nd CLI arg, default 1; only the full mirror resume needs `2`). Job headers render as one linear
 `COMPANY · LOCATION` / `Title · Date` line (ATS-friendly; the `·` separator is CSS-generated and
 ignored by the wording check). Consulting one-pagers (detected by filename) get a larger page-fill
 CSS profile so their shorter content fills the A4; the recruiter 1-pager gets a slight densify
@@ -84,7 +88,6 @@ Newest first. Every version listed here has its files either at this level (curr
   preregistered promotion gates (honest null, no profit claim — demo account stated). Every number
   sourced from the private repo's workspace/CLAUDE.md + docs/analysis via a 4-agent fact harvest,
   2026-07-18; block kept to the same rendered-line footprint as v8.4's so the 2-page limit holds.
-  **LinkedIn paste pending** — update the Freelance-role project description to match.
 - **v8.5** (2026-07-18, user-requested) — adds the **FOX ASSET — INFINITY WAVE SDN BHD** contract
   entry (Backend Software Engineer, Dec 2025 – Present, Malaysia/remote) as the first EXPERIENCE
   entry — 7 bullets covering the Safety Hub (Permit-to-Work/HIRARC + safety induction: 23 models,
@@ -96,7 +99,6 @@ Newest first. Every version listed here has its files either at this level (curr
   38+23-request Postman collections, 987-line runbooks). Every metric was code/git-verified in the
   FOX repo by a 6-agent audit (2026-07-18) — planned-only items (AWS SSM/KMS/OIDC/rotation) and
   teammates' work (toolbox, inventory FE, tenant customizations) deliberately excluded.
-  **LinkedIn paste pending** — add the FOX role on LinkedIn to restore full-mirror status.
 - **v8.4** — full LinkedIn mirror (2 pages; adds expert-advisor-mt-5, confirmed on LinkedIn
   2026-07-12; in-place contact tweaks 2026-07-12/18).
 - **v8.3** — first full-mirror release (2 pages, ATS-hardened template).
@@ -157,36 +159,12 @@ Newest first. Every version listed here has its files either at this level (curr
   Contract-Advisor RAG, Llama casing, grammar fix; ID in lock-step + "konsultasi" consistency.
 - **v1.0** — initial version.
 
-## Archive — superseded files
+## Archive
 
-Never distribute from here. What each version changed is in the [Changelog](#changelog) above.
-
-| File                                               | Superseded by            |
-|----------------------------------------------------|--------------------------|
-| `archive/resume-v8.6.txt` / `.pdf`                 | resume v8.7              |
-| `archive/resume-v8.5.txt` / `.pdf`                 | resume v8.6              |
-| `archive/resume-v8.4.txt` / `.pdf`                 | resume v8.5              |
-| `archive/resume-v8.3.txt` / `.pdf`                 | resume v8.4              |
-| `archive/resume-v8.2.txt` / `.pdf`                 | the full-mirror decision |
-| `archive/resume-v8.1.txt` / `.pdf`                 | resume v8.2              |
-| `archive/resume-v8.0.txt` / `.pdf`                 | resume v8.1              |
-| `archive/resume-v7.1.txt` / `.pdf`                 | resume v8.0              |
-| `archive/resume-onepager-v1.7.txt` / `.pdf`        | onepager v1.8            |
-| `archive/resume-onepager-v1.6.txt` / `.pdf`        | onepager v1.7            |
-| `archive/resume-onepager-v1.5.txt` / `.pdf`        | onepager v1.6            |
-| `archive/resume-onepager-v1.4.txt` / `.pdf`        | onepager v1.5            |
-| `archive/resume-onepager-v1.3.txt` / `.pdf`        | onepager v1.4            |
-| `archive/resume-onepager-v1.2.txt` / `.pdf`        | onepager v1.3            |
-| `archive/resume-onepager-v1.1.txt` / `.pdf`        | onepager v1.2            |
-| `archive/resume-onepager-v1.0.txt` / `.pdf`        | onepager v1.1            |
-| `archive/consulting-onepager-en-v1.3.txt` / `.pdf` | consulting EN v1.4       |
-| `archive/consulting-onepager-en-v1.2.txt` / `.pdf` | consulting EN v1.3       |
-| `archive/consulting-onepager-en-v1.1.txt` / `.pdf` | consulting EN v1.2       |
-| `archive/consulting-onepager-en-v1.0.txt` / `.pdf` | consulting EN v1.1       |
-| `archive/consulting-onepager-id-v1.3.txt` / `.pdf` | consulting ID v1.4       |
-| `archive/consulting-onepager-id-v1.2.txt` / `.pdf` | consulting ID v1.3       |
-| `archive/consulting-onepager-id-v1.1.txt` / `.pdf` | consulting ID v1.2       |
-| `archive/consulting-onepager-id-v1.0.txt` / `.pdf` | consulting ID v1.1       |
+Never distribute from here. `archive/` holds every superseded `.txt`/`.pdf` pair; each is replaced
+by the next version of the same artifact, and the [Changelog](#changelog) above says what changed
+at each step (the one exception: `resume-v8.2` was superseded by the full-mirror decision, not by
+`v8.3` being a newer edition of the same thing).
 
 Removed from the tree 2026-07-10 (still in Git history if ever needed):
 `linkedin-profile-v1.pdf/.txt` (raw export — contained the mobile number),
@@ -196,15 +174,6 @@ snapshot itself — carries internal delta/strategy notes, so it now lives
 outside the repo) and `img/img.png` (stray personal screenshot). The repo is
 public and GitHub Pages served everything, so `_config.yml` now excludes
 `cv/archive/`, this README, and `build-pdf.py` from the published site.
-
-## Version lineage
-
-```
-resume:      v7.1 ──► v8.0 ──► v8.1 ──► v8.2 (curated 1-page) ──► v8.3 (full LinkedIn mirror, 2 pages) ──► v8.4 (+ expert-advisor-mt-5 block) ──► v8.5 (+ FOX Asset — Infinity Wave entry) ──► v8.6 (expert-advisor-mt-5 block rewritten from live repo state) ──► v8.7 (FOX role type Contract → Freelance; LinkedIn paste pending for both)
-onepager:    resume-onepager v1.0 ──► v1.1 ──► v1.2 ──► v1.3 ──► v1.4 (ATS keyword expansion) ──► v1.5 (+ FOX Asset entry, Freelance section trimmed) ──► v1.6 (+ expert-advisor-mt-5 PROJECTS line + MQL5 skill) ──► v1.7 (FOX role type → Freelance) ──► v1.8 (recruiter/ATS edition, v8.2 lineage — parallel artifact, not a mirror; v1.8 = Django data-models fix + em-dash header + URL nowrap)
-consulting:  consulting-onepager v1.0 ──► v1.1 ──► v1.2 ──► v1.3 ──► v1.4 (EN) ⇄ same chain (ID)   [v1.4 = outcome-led services + 10-vs-17-day differentiator]
-linkedin:    v1 export ──► v2 draft ──► v3 draft (never published) ──► v4 LIVE snapshot (current SoT — kept outside the repo)
-```
 
 ## Rules
 
@@ -233,13 +202,14 @@ linkedin:    v1 export ──► v2 draft ──► v3 draft (never published) �
   `https://fadhlillah2.github.io/Bio/cv/resume-vX.Y.pdf` and will 404 if left stale.
 - Version scheme: resume = `vX.Y`, LinkedIn profile = `vN`, 1-pagers = `v1.0`-style per artifact.
   Bump on any content change.
-- **Artifact roles:** `resume-v8.7` = official CV (LinkedIn mirror; v8.7 = FOX Asset freelance entry + rewritten MT5 block, **LinkedIn paste pending**);
+- **Artifact roles:** `resume-vX.Y` = official CV (LinkedIn mirror);
   `resume-onepager` = recruiter/ATS edition (curated; may use user-confirmed + archive-audited facts;
   must never *contradict* LinkedIn); `consulting-onepager-{en,id}` = business-buyer artifact
   (site-Services wording + resume-sourced metrics only; keep EN/ID in lock-step — same claims,
   translated wording only). Regenerate each PDF via `build-pdf.py` on any change.
-- New version → add a **Changelog** entry, swap the file in **Current**, move the superseded files
-  to `archive/` and add their row under **Archive**, and extend **Version lineage**.
+- New version → add a **Changelog** entry, swap the file in **Current**, and move the superseded
+  files to `archive/`. **Current** and the **Changelog** are the only two places a version number
+  appears in this README — keep it that way.
 - The site (`index.html`): About and the Resume section stay synced verbatim to the mirror resume.
   The hero/meta headline was re-led for the recruiter scan (2026-07-11: "Backend Software Engineer
   · 6+ yrs · AI Native Engineer") — a re-emphasis of the same facts, not a contradiction of the

@@ -156,7 +156,7 @@
   const sent = select('#contact-sent')
   const err = select('#contact-error')
   const SENT_MSG = 'Your message has been sent. Thank you!'
-  const ERR_MSG = 'Sending failed — the form service is unreachable right now. Please email <a href="mailto:fadhlillah949699@gmail.com" style="color: #fff; text-decoration: underline;">fadhlillah949699@gmail.com</a> or use the WhatsApp link instead.'
+  const ERR_MSG = 'Sending failed — the form service is unreachable right now. Please email <a href="mailto:fadhlillah949699@gmail.com">fadhlillah949699@gmail.com</a> or use the WhatsApp link instead.'
   if (window.location.search.indexOf('sent=1') !== -1 && sent) {
     sent.textContent = SENT_MSG
   }

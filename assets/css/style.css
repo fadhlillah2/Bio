@@ -426,13 +426,6 @@ button.mobile-nav-toggle {
   white-space: pre;
 }
 
-#hero .tk { color: var(--cyan); }
-#hero .ts { color: var(--bright); }
-#hero .tm { color: var(--amber); }
-#hero .tp { color: #59718f; }
-#hero .tc { color: var(--green); }
-#hero .tmut { color: var(--muted-2); }
-
 /* Default (no JS / reduced motion): everything visible, no animation.
    Motion is an enhancement: JS staggers .tl-on per line; transition animates it. */
 #hero .tl {
@@ -551,6 +544,22 @@ button.mobile-nav-toggle {
   font-family: var(--mono);
   color: var(--muted-2);
 }
+
+/* Syntax colors, one palette for both terminals (.tk/.tp: hero JSON only) */
+#hero .ts,
+.flagship-code .ts { color: var(--bright); }
+
+#hero .tm,
+.flagship-code .tm { color: var(--amber); }
+
+#hero .tc,
+.flagship-code .tc { color: var(--green); }
+
+#hero .tmut,
+.flagship-code .tmut { color: var(--muted-2); }
+
+#hero .tk { color: var(--cyan); }
+#hero .tp { color: #59718f; }
 
 /*--------------------------------------------------------------
 # Sections — shared
@@ -1035,11 +1044,6 @@ section {
   white-space: pre;
 }
 
-.flagship-code .tmut { color: var(--muted-2); }
-.flagship-code .ts { color: var(--bright); }
-.flagship-code .tm { color: var(--amber); }
-.flagship-code .tc { color: var(--green); }
-
 @media (max-width: 768px) {
   .flagship {
     grid-template-columns: 1fr;
@@ -1218,13 +1222,14 @@ section {
   background: linear-gradient(180deg, var(--bg-alt) 0%, #0c1a2e 100%);
 }
 
-.contact .info {
-  padding: 30px;
+/* Both columns are the same card */
+.contact .info,
+.contact .php-email-form {
   width: 100%;
+  padding: 30px;
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 10px;
-  box-shadow: none;
 }
 
 .contact .info i {
@@ -1268,17 +1273,11 @@ section {
 }
 
 .contact .info iframe {
+  border: 0;
+  width: 100%;
+  height: 290px;
   border-radius: 8px;
   filter: saturate(0.85);
-}
-
-.contact .php-email-form {
-  width: 100%;
-  padding: 30px;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: none;
 }
 
 .contact .php-email-form .form-group {
@@ -1348,6 +1347,12 @@ section {
   text-align: center;
   padding: 15px;
   font-weight: 600;
+}
+
+/* white + underlined on the red banner: the global cyan link color fails contrast there */
+.contact .php-email-form .error-message a {
+  color: #fff;
+  text-decoration: underline;
 }
 
 .contact .php-email-form .error-message:empty,
@@ -1424,28 +1429,50 @@ iframe:focus-visible,
   font-size: 13px;
 }
 
-.back-to-top {
+.resume .row > .cta-row {
+  margin-top: 8px;
+}
+
+.services .section-title .cta-row {
+  margin-top: 12px;
+}
+
+.services .section-title p[lang="id"] {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+/* Floating round chrome, stacked bottom-right: back-to-top, plus an always-visible
+   contact shortcut one slot above it so mid-page/mobile visitors get a one-tap path */
+.back-to-top,
+.contact-fab {
   position: fixed;
-  visibility: hidden;
-  opacity: 0;
   right: 15px;
-  bottom: 15px;
   z-index: 996;
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  transition: all 0.4s;
   background: var(--brand);
 }
 
-.back-to-top i {
-  font-size: 28px;
+.back-to-top i,
+.contact-fab i {
   color: #fff;
   line-height: 0;
 }
 
+.back-to-top {
+  bottom: 15px;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.4s;
+}
+
+.back-to-top i {
+  font-size: 28px;
+}
+
 .back-to-top:hover {
-  color: #fff;
   background: var(--brand-hi);
 }
 
@@ -1454,24 +1481,13 @@ iframe:focus-visible,
   opacity: 1;
 }
 
-/* Always-visible contact shortcut — mid-page/mobile visitors get a one-tap
-   path to the contact section (stacked above .back-to-top's slot) */
 .contact-fab {
-  position: fixed;
-  right: 15px;
   bottom: 64px;
-  z-index: 996;
-  background: var(--brand);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
   transition: background 0.3s;
 }
 
 .contact-fab i {
   font-size: 20px;
-  color: #fff;
-  line-height: 0;
 }
 
 .contact-fab:hover {
