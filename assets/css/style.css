@@ -44,6 +44,17 @@
   --r-lg: 18px;
 }
 
+/* Readers who ask the OS for more contrast get lighter body text and borders.
+   Only the tokens move — every component inherits the change. */
+@media (prefers-contrast: more) {
+  :root {
+    --text: #c6cfda;
+    --muted: #9caabb;
+    --line: #33415a;
+    --line-2: #4a5c78;
+  }
+}
+
 /*--------------------------------------------------------------
 # Reset & base
 --------------------------------------------------------------*/
@@ -2171,6 +2182,46 @@ html:not(.js) .fab {
   white-space: pre;
 }
 
+/* Reading progress for the long-form page. CSS scroll-timeline, no JS — where
+   it is unsupported the bar simply stays at scaleX(0) and is never seen. */
+.read-progress {
+  position: fixed;
+  inset: 0 0 auto 0;
+  height: 2px;
+  z-index: 120;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  animation: read-progress linear both;
+  animation-timeline: scroll(root block);
+}
+
+@keyframes read-progress {
+  to { transform: scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .read-progress {
+    display: none;
+  }
+}
+
+.tag-fixed {
+  display: inline-block;
+  margin-right: 7px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+  background: var(--accent-wash);
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  vertical-align: 2px;
+}
+
 .article-close {
   margin-top: 34px;
   padding-top: 22px;
@@ -2204,8 +2255,13 @@ html:not(.js) .fab {
   .fab,
   .skip-link,
   .contact-form,
+  .read-progress,
+  .article-nav,
   .hero::before {
     display: none !important;
+  }
+  .code-block {
+    break-inside: avoid;
   }
   .tl-meta {
     position: static;

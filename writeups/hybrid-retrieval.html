@@ -18,11 +18,34 @@
   <meta property="og:title" content="Hybrid retrieval for scanned Indonesian contracts">
   <meta property="og:description" content="Why pure vector search loses clause numbers in contract documents, and how the retrieval layer is put together — including what is still unfinished.">
   <meta property="og:url" content="https://fadhlillah2.github.io/Bio/writeups/hybrid-retrieval.html">
-  <meta property="og:image" content="https://fadhlillah2.github.io/Bio/assets/img/og-cover.png">
+  <meta property="og:image" content="https://fadhlillah2.github.io/Bio/assets/img/og-writeup-retrieval.png">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Hybrid retrieval for scanned Indonesian contracts">
   <meta name="twitter:description" content="Why pure vector search loses clause numbers in contract documents — and what is still unfinished.">
-  <meta name="twitter:image" content="https://fadhlillah2.github.io/Bio/assets/img/og-cover.png">
+  <meta name="twitter:image" content="https://fadhlillah2.github.io/Bio/assets/img/og-writeup-retrieval.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Hybrid retrieval for scanned Indonesian contracts",
+    "description": "Why pure vector search loses clause numbers in contract documents, how the retrieval layer combines semantic search, TF-IDF and an exact-match fallback, and which parts are still unfinished.",
+    "datePublished": "2026-08-17",
+    "dateModified": "2026-08-17",
+    "inLanguage": "en",
+    "author": {
+      "@type": "Person",
+      "name": "Fadhlillah",
+      "url": "https://fadhlillah2.github.io/Bio/",
+      "jobTitle": "Backend Software Engineer"
+    },
+    "image": "https://fadhlillah2.github.io/Bio/assets/img/og-writeup-retrieval.png",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://fadhlillah2.github.io/Bio/writeups/hybrid-retrieval.html" },
+    "isBasedOn": "https://github.com/fadhlillah2/llama-docs-auditor",
+    "about": ["Retrieval-Augmented Generation", "Information retrieval", "Optical character recognition", "Hybrid search"],
+    "keywords": "RAG, hybrid search, TF-IDF, EasyOCR, ChromaDB, LangChain, contract analysis"
+  }
+  </script>
 
   <link href="../assets/img/favicon.png" rel="icon" type="image/png" sizes="32x32">
   <link href="../assets/img/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
@@ -37,6 +60,8 @@
 <body id="top">
 
   <a href="#main" class="skip-link">Skip to content</a>
+
+  <div class="read-progress" aria-hidden="true"></div>
 
   <svg width="0" height="0" class="sprite" aria-hidden="true" focusable="false">
     <symbol id="i-arrow-up" viewBox="0 0 24 24"><path d="M12 19V5m0 0-6.5 6.5M12 5l6.5 6.5"/></symbol>
@@ -63,7 +88,7 @@
     <article class="article">
       <div class="wrap article-wrap">
 
-        <header class="article-head">
+        <header class="article-head" data-reveal>
           <p class="section-index">Writeup &mdash; Retrieval</p>
           <h1>Hybrid retrieval for scanned Indonesian contracts</h1>
           <p class="article-deck">A contract question like <em>“what does PASAL 5 say?”</em> breaks a RAG pipeline in two unrelated places — and neither of them is the language model. Here is how the retrieval layer in Contract-Advisor RAG is put together, and which parts of it I have not finished.</p>
@@ -92,7 +117,7 @@
 
         <p>The selection rule is the part I would defend in review:</p>
 
-        <pre class="code-block"><code>best_result = max(all_results, key=lambda x: x['confidence'] * x['word_count'])</code></pre>
+        <pre class="code-block" tabindex="0" role="region" aria-label="Code sample"><code>best_result = max(all_results, key=lambda x: x['confidence'] * x['word_count'])</code></pre>
 
         <p>Confidence alone is the obvious choice and the wrong one. An aggressive binarisation pass often destroys most of the page but reads the four surviving words perfectly — a 0.98 confidence result carrying almost no document. Multiplying by word count makes a variant earn its confidence across the whole page, so a slightly noisier read of the full contract beats a pristine read of one heading. It is a crude objective function, but it encodes the thing that actually matters here: coverage is not optional when the answer might be in the clause that got thrown away.</p>
 
@@ -102,7 +127,7 @@
 
         <p>The retriever runs both strategies and merges them rather than choosing between them. Semantic search returns 15 candidates; a TF-IDF keyword search returns 10. The merge in <a href="https://github.com/fadhlillah2/llama-docs-auditor/blob/main/rag/retriever.py" target="_blank" rel="noopener">retriever.py</a> weights them 0.7 to 0.3 in favour of semantics — but the detail that does the real work is the third term:</p>
 
-        <pre class="code-block"><code>combined_scores[doc_id]['combined_score'] += keyword_score + 0.1  <span class="tmut"># bonus for appearing in both</span></code></pre>
+        <pre class="code-block" tabindex="0" role="region" aria-label="Code sample"><code>combined_scores[doc_id]['combined_score'] += keyword_score + 0.1  <span class="tmut"># bonus for appearing in both</span></code></pre>
 
         <p>A chunk that both searches surface independently gets a flat bonus on top of its weighted sum. The two methods fail in uncorrelated ways — semantics drifts to neighbouring clauses, TF-IDF matches boilerplate that shares vocabulary — so agreement between them is genuine evidence rather than a louder version of one signal. Weighted sums alone let a single very confident semantic hit dominate; the bonus rewards consensus instead.</p>
 
@@ -112,9 +137,19 @@
 
         <h2>What is not finished</h2>
 
-        <p>Three things, and I would rather name them than let a reader find them.</p>
+        <p>Three things, and I would rather name them than let a reader find them. The first is now fixed — I have left it in place with what changed, because the bug the fix uncovered is more instructive than the patch.</p>
 
-        <p><strong>The exact-match fallback is hard-coded.</strong> The pattern extraction in <code>_exact_section_search</code> literally tests for <code>'IV.15' in query</code> — a debugging shortcut from the hackathon that never got generalised. The surrounding machinery (detecting that a query carries a section reference, checking whether results already contain it, scoring and injecting matches) is complete and generic; only the pattern list is a stub. Replacing those two conditionals with the regex set already used one function above would finish it.</p>
+        <p><strong>The exact-match fallback was hard-coded.</strong> <span class="tag-fixed">Fixed Aug 2026</span> The pattern extraction in <code>_exact_section_search</code> tested for <code>'IV.15' in query</code> — a debugging shortcut from the hackathon that never got generalised, so every other clause reference fell through to semantic search. References are now derived from a shared <code>SECTION_PATTERNS</code> list, which the three duplicated inline copies of that list also read from.</p>
+
+        <p>Finishing it surfaced a second bug, this time in the fix. Matching needs to tolerate the doubled spacing OCR leaves behind, so the reference is spliced with <code>\s+</code> — but escaping the whole string first turns its spaces into <code>\␠</code>, and the <code>\s+</code> then attaches to the backslash:</p>
+
+        <pre class="code-block" tabindex="0" role="region" aria-label="Code sample"><code><span class="tmut"># wrong: matches a literal backslash followed by one or more 's'</span>
+re.sub(r'\s+', r'\\s+', re.escape("Section II.3"))  <span class="tmut">→</span> Section\\s+II\.3
+
+<span class="tmut"># right: escape per word, then rejoin</span>
+r'\s+'.join(re.escape(p) for p in "Section II.3".split())  <span class="tmut">→</span> Section\s+II\.3</code></pre>
+
+        <p>Every prefixed reference failed silently, and the tests still passed — the bare <code>II.3</code> form matched the same chunk and masked it. What caught it was reading the debug trace rather than the green checkmark. The regression test now puts the bare form in an earlier chunk so the prefixed reference has to win on its own; the suite is 11 cases, and I checked that it fails when either bug is put back — one failure for the escaping, six for the hard-coding.</p>
 
         <p><strong>The section patterns are the wrong alphabet.</strong> Those regexes match <code>Section IV.15</code> and <code>Article IV</code> — Roman-numeral conventions from English contracts. The OCR layer normalises <code>PASAL</code> and <code>AYAT</code>, but the retriever never learned to look for them, so the exact path does not currently fire for the Indonesian documents the OCR pipeline was built for. The two halves were developed against different sample documents and never met.</p>
 
@@ -122,9 +157,9 @@
 
         <p>That last one is the gap that matters. The architecture reflects a real understanding of how contract queries fail, and the failure modes it addresses are the correct ones. But until the RAGAS runs are switched on and the weights are tuned against them, the tuning is judgement rather than evidence — and it is worth being clear about which is which.</p>
 
-        <p class="article-close">Code: <a href="https://github.com/fadhlillah2/llama-docs-auditor" target="_blank" rel="noopener">github.com/fadhlillah2/llama-docs-auditor</a> — retrieval in <code>rag/retriever.py</code>, OCR in <code>rag/easyocr_implementation.py</code>.</p>
+        <p class="article-close">Code: <a href="https://github.com/fadhlillah2/llama-docs-auditor" target="_blank" rel="noopener">github.com/fadhlillah2/llama-docs-auditor</a> — retrieval in <code>rag/retriever.py</code>, OCR in <code>rag/easyocr_implementation.py</code>, and the fix described above in <a href="https://github.com/fadhlillah2/llama-docs-auditor/commit/f47b6c4" target="_blank" rel="noopener">commit f47b6c4</a> with its tests in <code>tests/test_section_references.py</code>.</p>
 
-        <nav class="article-nav">
+        <nav class="article-nav" data-reveal>
           <a href="../index.html#portfolio" class="btn btn-ghost btn-sm"><svg class="ico" aria-hidden="true"><use href="#i-arrow-back"/></svg> Back to portfolio</a>
           <a href="../index.html#contact" class="btn btn-solid btn-sm">Get in touch</a>
         </nav>
