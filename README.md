@@ -3,8 +3,8 @@
 <div align="center">
 
 [![Portfolio](https://img.shields.io/badge/Portfolio-fadhlillah2.github.io%2FBio-5ce1c6?style=for-the-badge&labelColor=0b0f17)](https://fadhlillah2.github.io/Bio/)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=0b0f17)](https://www.linkedin.com/in/fadhlillah2)
-[![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&logo=gmail&logoColor=white&labelColor=0b0f17)](mailto:fadhlillah949699@gmail.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&labelColor=0b0f17)](https://www.linkedin.com/in/fadhlillah2)
+[![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&labelColor=0b0f17)](mailto:fadhlillah949699@gmail.com)
 
 </div>
 
