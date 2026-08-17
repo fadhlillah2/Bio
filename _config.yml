@@ -1,8 +1,7 @@
 # GitHub Pages (Jekyll): keep build/reference files out of the published site.
-# NOTE: the repo itself is public — this only stops these paths from being
-# served at https://fadhlillah2.github.io/Bio/... ; they remain browsable in
-# the Git repo. The LinkedIn source-of-truth snapshot (linkedin-profile-v4.txt)
-# and a stray screenshot were removed from the working tree entirely.
+# The repo itself is public — this only stops these paths from being served at
+# https://fadhlillah2.github.io/Bio/... ; they stay browsable in the Git repo.
+# What was removed from the tree entirely: see cv/README.md.
 exclude:
   - cv/archive
   - cv/README.md

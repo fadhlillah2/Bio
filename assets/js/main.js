@@ -145,4 +145,77 @@
     }
   });
 
+  /**
+   * Contact form: AJAX submit with graceful failure (FormSubmit can be down — a
+   * plain POST would strand the visitor on a raw Cloudflare error page).
+   * No-JS browsers fall back to the form's plain action + ?sent=1 redirect.
+   * Messages are injected into always-rendered live regions (revealing from
+   * display:none makes role=status/alert announcements unreliable) and the
+   * fetch aborts after 15s so the Send button never stays stuck disabled.
+   */
+  const sent = select('#contact-sent')
+  const err = select('#contact-error')
+  const SENT_MSG = 'Your message has been sent. Thank you!'
+  const ERR_MSG = 'Sending failed — the form service is unreachable right now. Please email <a href="mailto:fadhlillah949699@gmail.com" style="color: #fff; text-decoration: underline;">fadhlillah949699@gmail.com</a> or use the WhatsApp link instead.'
+  if (window.location.search.indexOf('sent=1') !== -1 && sent) {
+    sent.textContent = SENT_MSG
+  }
+  const form = select('.php-email-form')
+  if (form && window.fetch) {
+    form.addEventListener('submit', (e) => {
+      e.preventDefault()
+      const btn = form.querySelector('button[type="submit"]')
+      sent.textContent = ''
+      err.textContent = ''
+      btn.disabled = true
+      const ctrl = window.AbortController ? new AbortController() : null
+      const timer = ctrl ? setTimeout(() => ctrl.abort(), 15000) : null
+      fetch('https://formsubmit.co/ajax/fadhlillah949699@gmail.com', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: new FormData(form),
+        signal: ctrl ? ctrl.signal : undefined
+      }).then((r) => {
+        if (!r.ok) throw new Error(r.status)
+        sent.textContent = SENT_MSG
+        form.reset()
+      }).catch(() => {
+        err.innerHTML = ERR_MSG
+      }).finally(() => {
+        if (timer) clearTimeout(timer)
+        btn.disabled = false
+      })
+    })
+  }
+
+  /**
+   * Hero terminal boot sequence: type the command, then reveal the response
+   */
+  const term = select('#hero-term')
+  const cmd = select('#hero-cmd')
+  if (term && cmd) {
+    const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reducedMotion || typeof Typed === 'undefined') {
+      term.classList.add('is-live')
+    } else {
+      term.classList.add('is-boot')
+      cmd.textContent = ''
+      new Typed('#hero-cmd', {
+        strings: ['curl -s api.fadhlillah.dev/whoami'],
+        typeSpeed: 26,
+        startDelay: 500,
+        showCursor: false,
+        loop: false,
+        onComplete: () => {
+          setTimeout(() => {
+            term.classList.add('is-live')
+            term.querySelectorAll('.tl:not(.tl-cmd)').forEach((el, idx) => {
+              setTimeout(() => el.classList.add('tl-on'), idx * 70)
+            })
+          }, 220)
+        }
+      })
+    }
+  }
+
 })()

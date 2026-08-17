@@ -3,25 +3,64 @@
 * Template URL: https://bootstrapmade.com/iportfolio-bootstrap-portfolio-websites-template/
 * Author: BootstrapMade.com
 * License: https://bootstrapmade.com/license/
+*
+* Dark-console theme, heavily customized. Organised per component: every selector
+* lives in exactly one place, and each component block ends with its own media queries.
 */
 
 /*--------------------------------------------------------------
-# General
+# Design tokens
+--------------------------------------------------------------*/
+:root {
+  /* surfaces */
+  --bg: #060d18;
+  --bg-alt: #0a1424;
+  --panel: #0b1626;
+  --panel-2: #12203a;
+  --sidebar: #040b14;
+  --line: #1b2c44;
+
+  /* text */
+  --text: #c7d3e3;
+  --head: #f2f7fd;
+  --bright: #dbe6f3;
+  --code: #e6edf6;
+  --dim: #9fb1c7;
+  --muted: #93a5bc;
+  --muted-2: #7d8da3;
+
+  /* accents */
+  --brand: #149ddd;
+  --brand-hi: #2fb4f2;
+  --cyan: #4db8ff;
+  --amber: #ffc46b;
+  --green: #6ee7b7;
+  --on-brand: #04121f;
+
+  --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/*--------------------------------------------------------------
+# Base
 --------------------------------------------------------------*/
 body {
   font-family: "Open Sans", sans-serif;
-}
-
-a {
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: none;
+  background: var(--bg);
+  color: var(--text);
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Raleway", sans-serif;
+}
+
+a {
+  color: var(--cyan);
+  text-decoration: none;
+}
+
+a:hover {
+  color: #7ccdff;
+  text-decoration: none;
 }
 
 html {
@@ -31,10 +70,6 @@ html {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-  #header,
-  .portfolio .portfolio-wrap .portfolio-links {
-    transition: none;
   }
 }
 
@@ -46,64 +81,7 @@ html:not(.js) [data-aos] {
 }
 
 /*--------------------------------------------------------------
-# Back to top button
---------------------------------------------------------------*/
-.back-to-top {
-  position: fixed;
-  visibility: hidden;
-  opacity: 0;
-  right: 15px;
-  bottom: 15px;
-  z-index: 996;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  transition: all 0.4s;
-}
-
-.back-to-top i {
-  font-size: 28px;
-  color: #fff;
-  line-height: 0;
-}
-
-.back-to-top:hover {
-  color: #fff;
-}
-
-.back-to-top.active {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* Always-visible contact shortcut — mid-page/mobile visitors get a one-tap
-   path to the contact section (stacked above .back-to-top's slot) */
-.contact-fab {
-  position: fixed;
-  right: 15px;
-  bottom: 64px;
-  z-index: 996;
-  background: #149ddd;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  transition: background 0.3s;
-}
-
-.contact-fab i {
-  font-size: 20px;
-  color: #fff;
-  line-height: 0;
-}
-
-.contact-fab:hover {
-  /* darker same-hue shade so the white icon keeps WCAG 1.4.11 (3.94:1); #2eafec was 2.48:1.
-     Focus ring comes from the global a:focus-visible !important rule — no local override needed. */
-  background: #1187c9;
-}
-
-/*--------------------------------------------------------------
-# Header
+# Layout — sidebar, main, footer
 --------------------------------------------------------------*/
 #header {
   position: fixed;
@@ -114,7 +92,7 @@ html:not(.js) [data-aos] {
   z-index: 9997;
   transition: all 0.5s;
   padding: 0 15px;
-  background: #040b14;
+  background: var(--sidebar);
   overflow-y: auto;
 }
 
@@ -123,6 +101,22 @@ html:not(.js) [data-aos] {
   display: block;
   width: 120px;
   border: 8px solid #2c2f3f;
+}
+
+/* Sidebar name (was an h1; demoted for heading hierarchy) */
+#header .profile .profile-name {
+  font-size: 24px;
+  margin: 15px 0 10px 0;
+  padding: 0;
+  font-weight: 600;
+  text-align-last: center;
+  font-family: "Poppins", sans-serif;
+}
+
+#header .profile .profile-name a,
+#header .profile .profile-name a:hover {
+  color: #fff;
+  text-decoration: none;
 }
 
 #header .profile .social-links a {
@@ -141,7 +135,7 @@ html:not(.js) [data-aos] {
 }
 
 #header .profile .social-links a:hover {
-  background: #149ddd;
+  background: var(--brand);
   color: #fff;
   text-decoration: none;
 }
@@ -150,19 +144,52 @@ html:not(.js) [data-aos] {
   margin-left: 300px;
 }
 
+#footer {
+  padding: 15px;
+  font-size: 14px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 300px;
+  z-index: 9999;
+  background: var(--sidebar);
+  color: var(--muted);
+}
+
+#footer .credits {
+  padding-top: 5px;
+  text-align: center;
+  font-size: 13px;
+  color: #eaebf0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #header {
+    transition: none;
+  }
+}
+
 @media (max-width: 1199px) {
   #header {
     left: -300px;
   }
+  /* Off-canvas sidebar must leave the tab order too, not just the viewport */
+  body:not(.mobile-nav-active) #header {
+    visibility: hidden;
+  }
   #main {
     margin-left: 0;
+  }
+  #footer {
+    position: static;
+    width: auto;
+    padding: 20px 15px;
   }
 }
 
 /*--------------------------------------------------------------
-# Navigation Menu
+# Navigation
 --------------------------------------------------------------*/
-/* Desktop Navigation */
 .nav-menu {
   padding: 30px 0 0 0;
 }
@@ -200,19 +227,21 @@ html:not(.js) [data-aos] {
 }
 
 .nav-menu a:hover i, .nav-menu .active i, .nav-menu li:hover > a i {
-  color: #149ddd;
+  color: var(--brand);
 }
 
-/* Mobile Navigation */
-.mobile-nav-toggle {
+/* Mobile nav toggle is a real button */
+button.mobile-nav-toggle {
   position: fixed;
   right: 15px;
   top: 15px;
   z-index: 9998;
+  background: none;
   border: 0;
+  padding: 0;
   font-size: 24px;
   transition: all 0.4s;
-  outline: none !important;
+  outline: none !important; /* the later global button:focus-visible rule outranks it — keyboard ring survives */
   width: 40px;
   height: 40px;
   display: inline-flex;
@@ -221,6 +250,7 @@ html:not(.js) [data-aos] {
   line-height: 0;
   border-radius: 50%;
   cursor: pointer;
+  color: var(--brand);
 }
 
 .mobile-nav-active {
@@ -232,10 +262,16 @@ html:not(.js) [data-aos] {
 }
 
 /*--------------------------------------------------------------
-# Hero Section
+# Hero — terminal / API-response
 --------------------------------------------------------------*/
 #hero {
   width: 100%;
+  height: auto;
+  min-height: 100vh;
+  padding: 96px 15px 48px;
+  background:
+    radial-gradient(rgba(125, 141, 163, 0.07) 1px, transparent 1px) 0 0 / 22px 22px,
+    var(--bg);
 }
 
 #hero:before {
@@ -246,12 +282,16 @@ html:not(.js) [data-aos] {
   left: 0;
   right: 0;
   z-index: 1;
+  background: radial-gradient(900px 520px at 68% 18%, rgba(20, 157, 221, 0.12), transparent 60%);
 }
 
 #hero .hero-container {
   position: relative;
   z-index: 2;
   min-width: 300px;
+  max-width: 720px;
+  width: 100%;
+  text-align: center;
 }
 
 #hero h1 {
@@ -260,6 +300,7 @@ html:not(.js) [data-aos] {
   font-weight: 700;
   line-height: 56px;
   color: #fff;
+  letter-spacing: 2px;
 }
 
 #hero p {
@@ -269,19 +310,258 @@ html:not(.js) [data-aos] {
   font-family: "Poppins", sans-serif;
 }
 
+#hero .hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  color: var(--muted-2);
+  margin: 0 0 14px;
+}
+
+#hero .hero-role {
+  font-size: 20px;
+  color: #bcc9da;
+  margin-bottom: 10px;
+}
+
+#hero .hero-sep {
+  color: var(--brand);
+}
+
+/* Plain-text value prop: the differentiators must be skimmable as text,
+   not only inside the decorative terminal (role="img") below */
+#hero .hero-value {
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--dim);
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+/* Business-buyer line: promoted out of the muted //-comment styling so the
+   second declared audience gets a readable sentence, not code decoration */
+#hero .hero-buyer {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--dim);
+  margin: 16px 0 0;
+}
+
+#hero .hero-cta {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+#hero .btn-term {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  padding: 11px 20px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: #bcc9da;
+  background: rgba(11, 22, 38, 0.7);
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+#hero .btn-term:hover {
+  border-color: var(--brand);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+#hero .btn-term-primary {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
+  font-weight: 600;
+}
+
+#hero .btn-term-primary:hover {
+  background: var(--brand-hi);
+  border-color: var(--brand-hi);
+  color: var(--on-brand);
+}
+
+#hero .term {
+  width: min(640px, 100%);
+  margin: 26px auto 0;
+  text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(20, 157, 221, 0.06);
+  overflow: hidden;
+}
+
+#hero .term-bar {
+  gap: 7px;
+  padding: 11px 14px;
+}
+
+#hero .term-dot {
+  width: 11px;
+  height: 11px;
+}
+
+#hero .term-title {
+  font-size: 12px;
+  margin-left: 8px;
+}
+
+#hero .term-body {
+  margin: 0;
+  padding: 18px 20px 20px;
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.8;
+  color: var(--code);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+#hero .tk { color: var(--cyan); }
+#hero .ts { color: var(--bright); }
+#hero .tm { color: var(--amber); }
+#hero .tp { color: #59718f; }
+#hero .tc { color: var(--green); }
+#hero .tmut { color: var(--muted-2); }
+
+/* Default (no JS / reduced motion): everything visible, no animation.
+   Motion is an enhancement: JS staggers .tl-on per line; transition animates it. */
+#hero .tl {
+  display: block;
+  animation: none;
+  opacity: 1;
+  transform: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* Boot: JS is typing the command — hide the response lines. */
+#hero .term.is-boot .tl:not(.tl-cmd) {
+  opacity: 0;
+  transform: translateY(3px);
+}
+
+/* Line revealed: end state lives in the class, not in an animation. */
+#hero .term.is-boot .tl.tl-on {
+  opacity: 1;
+  transform: none;
+}
+
+#hero .term-cursor {
+  display: inline-block;
+  width: 8px;
+  height: 15px;
+  background: var(--green);
+  vertical-align: -2px;
+  animation: hero-blink 1.1s steps(1) infinite;
+}
+
+@keyframes hero-blink {
+  50% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #hero .term-cursor {
+    animation: none;
+  }
+  #hero .term.is-boot .tl:not(.tl-cmd) {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+  #hero .btn-term,
+  #hero .btn-term:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
 @media (max-width: 768px) {
+  #hero {
+    padding: 84px 12px 40px;
+  }
   #hero h1 {
     font-size: 28px;
     line-height: 36px;
   }
+  #hero .hero-role {
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  #hero .hero-value {
+    font-size: 13.5px;
+  }
+  #hero .hero-cta {
+    gap: 10px;
+    margin-top: 22px;
+  }
+  #hero .btn-term {
+    padding: 10px 16px;
+    font-size: 12.5px;
+  }
+  #hero .term-body {
+    font-size: 12px;
+    padding: 14px 14px 16px;
+  }
+}
+
+/* Short viewports (13" laptops): lift the hero so the CTA row clears the fold */
+@media (max-height: 820px) and (min-width: 769px) {
+  #hero {
+    padding-top: 48px;
+  }
 }
 
 /*--------------------------------------------------------------
-# Sections General
+# Terminal chrome — shared by the hero and the flagship cards
+# (sizes differ per context and are set in their own blocks)
+--------------------------------------------------------------*/
+#hero .term-bar,
+.flagship-term .term-bar {
+  display: flex;
+  align-items: center;
+  background: #0e1b30;
+  border-bottom: 1px solid var(--line);
+}
+
+#hero .term-dot,
+.flagship-term .term-dot {
+  border-radius: 50%;
+}
+
+#hero .term-dot-r,
+.flagship-term .term-dot-r { background: #ff5f57; }
+
+#hero .term-dot-y,
+.flagship-term .term-dot-y { background: #febc2e; }
+
+#hero .term-dot-g,
+.flagship-term .term-dot-g { background: #28c840; }
+
+#hero .term-title,
+.flagship-term .term-title {
+  font-family: var(--mono);
+  color: var(--muted-2);
+}
+
+/*--------------------------------------------------------------
+# Sections — shared
 --------------------------------------------------------------*/
 section {
   padding: 60px 0;
   overflow: hidden;
+}
+
+.section-bg {
+  background: var(--bg-alt);
 }
 
 .section-title {
@@ -294,6 +574,7 @@ section {
   margin-bottom: 20px;
   padding-bottom: 20px;
   position: relative;
+  color: var(--head);
 }
 
 .section-title h2::after {
@@ -304,10 +585,12 @@ section {
   height: 3px;
   bottom: 0;
   left: 0;
+  background: var(--brand-hi);
 }
 
 .section-title p {
   margin-bottom: 0;
+  color: var(--muted);
 }
 
 /*--------------------------------------------------------------
@@ -316,6 +599,7 @@ section {
 .about .content h3 {
   font-weight: 700;
   font-size: 26px;
+  color: var(--head);
 }
 
 .about .content ul {
@@ -331,12 +615,14 @@ section {
 
 .about .content ul strong {
   margin-right: 10px;
+  color: var(--head);
 }
 
 .about .content ul i {
   font-size: 16px;
   margin-right: 5px;
   line-height: 0;
+  color: var(--cyan);
 }
 
 .about .content p:last-child {
@@ -344,7 +630,7 @@ section {
 }
 
 /*--------------------------------------------------------------
-# Facts
+# Facts — numbers wear the metric amber from the hero terminal
 --------------------------------------------------------------*/
 .facts {
   padding-bottom: 30px;
@@ -360,6 +646,7 @@ section {
   font-size: 44px;
   float: left;
   line-height: 0;
+  color: var(--cyan);
 }
 
 .facts .count-box span {
@@ -369,6 +656,7 @@ section {
   font-weight: 700;
   margin-left: 60px;
   white-space: nowrap; /* keep space-bearing values like "Top 50" on one line (row-2 has centred slack) */
+  color: var(--amber);
 }
 
 .facts .count-box p {
@@ -376,22 +664,63 @@ section {
   margin: 0 0 0 60px;
   font-family: "Raleway", sans-serif;
   font-size: 14px;
+  color: var(--muted);
+}
+
+.facts .count-box p strong {
+  color: var(--bright);
 }
 
 /*--------------------------------------------------------------
-# Resume
+# Skills — grouped tags (source: cv/archive/resume-v8.0.txt)
+--------------------------------------------------------------*/
+.skills .skill-group {
+  margin-bottom: 22px;
+}
+
+.skills .skill-group h3 {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 10px;
+}
+
+.skills .skill-group ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skills .skill-group ul li {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 13.5px;
+  color: var(--bright);
+}
+
+/*--------------------------------------------------------------
+# Resume — timeline
 --------------------------------------------------------------*/
 .resume .resume-title {
   font-size: 26px;
   font-weight: 700;
   margin-top: 20px;
   margin-bottom: 20px;
+  color: var(--head);
 }
 
 .resume .resume-item {
   padding: 0 0 20px 20px;
   margin-top: -2px;
   position: relative;
+  border-left: 2px solid var(--line);
 }
 
 .resume .resume-item h4 {
@@ -401,6 +730,7 @@ section {
   text-transform: uppercase;
   font-family: "Poppins", sans-serif;
   margin-bottom: 10px;
+  color: var(--cyan);
 }
 
 .resume .resume-item h5 {
@@ -409,6 +739,8 @@ section {
   display: inline-block;
   font-weight: 600;
   margin-bottom: 10px;
+  background: var(--panel-2);
+  color: var(--amber);
 }
 
 .resume .resume-item ul {
@@ -431,6 +763,8 @@ section {
   border-radius: 50px;
   left: -9px;
   top: 0;
+  background: var(--bg);
+  border: 2px solid var(--brand-hi);
 }
 
 /*--------------------------------------------------------------
@@ -440,78 +774,14 @@ section {
   margin-bottom: 30px;
 }
 
-/* Early-practice archive: native <details> panel in the site's terminal voice,
-   collapsed by default so 2021 practice apps don't compete with flagship work */
-.portfolio .early-practice {
-  background: #0b1626;
-  border: 1px solid #1b2c44;
-  border-radius: 10px;
-}
-
-.portfolio .early-practice summary {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 13.5px;
-  color: #9fb1c7;
-  padding: 16px 20px;
-  cursor: pointer;
-  list-style: none;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.portfolio .early-practice summary::-webkit-details-marker {
-  display: none;
-}
-
-.portfolio .early-practice summary:hover {
-  color: #dbe6f3;
-}
-
-.portfolio .early-practice summary:focus-visible {
-  outline: 2px solid #4db8ff;
-  outline-offset: 2px;
-  border-radius: 10px;
-}
-
-.portfolio .early-practice .ep-prompt {
-  color: #2fb4f2;
-}
-
-.portfolio .early-practice .ep-note {
-  color: #7d8da3;
-}
-
-.portfolio .early-practice .ep-chevron {
-  margin-left: auto;
-  transition: transform 0.2s ease;
-}
-
-.portfolio .early-practice .ep-chevron::before {
-  content: "\25B8"; /* ▸ */
-  color: #4db8ff;
-}
-
-.portfolio .early-practice[open] .ep-chevron {
-  transform: rotate(90deg);
-}
-
-.portfolio .early-practice .ep-grid {
-  margin: 0;
-  padding: 20px 20px 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .portfolio .early-practice .ep-chevron {
-    transition: none;
-  }
-}
-
 .portfolio .portfolio-wrap {
   transition: 0.3s;
   position: relative;
   z-index: 1;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .portfolio .portfolio-wrap::before {
@@ -524,6 +794,7 @@ section {
   transition: all ease-in-out 0.3s;
   z-index: 2;
   opacity: 0;
+  background: rgba(6, 13, 24, 0.55);
 }
 
 .portfolio .portfolio-wrap .portfolio-links {
@@ -551,19 +822,256 @@ section {
   background: rgba(20, 157, 221, 0.95);
 }
 
-.portfolio .portfolio-wrap:hover::before {
+/* Hover-only reveal excluded keyboard and touch users — also reveal on focus,
+   and keep permanently visible on no-hover devices */
+.portfolio .portfolio-wrap:hover::before,
+.portfolio .portfolio-wrap:focus-within::before {
   opacity: 1;
 }
 
-.portfolio .portfolio-wrap:hover .portfolio-links {
+.portfolio .portfolio-wrap:hover .portfolio-links,
+.portfolio .portfolio-wrap:focus-within .portfolio-links {
   bottom: 0;
+}
+
+@media (hover: none) {
+  .portfolio .portfolio-wrap .portfolio-links {
+    bottom: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio .portfolio-wrap .portfolio-links {
+    transition: none;
+  }
+}
+
+/* Early-practice archive: native <details> panel in the site's terminal voice,
+   collapsed by default so 2021 practice apps don't compete with flagship work */
+.portfolio .early-practice {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.portfolio .early-practice summary {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  color: var(--dim);
+  padding: 16px 20px;
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.portfolio .early-practice summary::-webkit-details-marker {
+  display: none;
+}
+
+.portfolio .early-practice summary:hover {
+  color: var(--bright);
+}
+
+/* <summary> isn't in the global focus-ring rule's element list */
+.portfolio .early-practice summary:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+.portfolio .early-practice .ep-prompt {
+  color: var(--brand-hi);
+}
+
+.portfolio .early-practice .ep-note {
+  color: var(--muted-2);
+}
+
+.portfolio .early-practice .ep-chevron {
+  margin-left: auto;
+  transition: transform 0.2s ease;
+}
+
+.portfolio .early-practice .ep-chevron::before {
+  content: "\25B8"; /* ▸ */
+  color: var(--cyan);
+}
+
+.portfolio .early-practice[open] .ep-chevron {
+  transform: rotate(90deg);
+}
+
+.portfolio .early-practice .ep-grid {
+  margin: 0;
+  padding: 20px 20px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .portfolio .early-practice .ep-chevron {
+    transition: none;
+  }
+}
+
+/*--------------------------------------------------------------
+# Flagship case-study card (Portfolio)
+--------------------------------------------------------------*/
+.flagship {
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  gap: 0;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 40px;
+}
+
+.flagship-body {
+  padding: 30px 32px;
+  min-width: 0; /* let grid track shrink below content min-width (prevents mobile clip) */
+}
+
+.flagship-badge {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  color: var(--amber);
+  margin: 0 0 14px;
+}
+
+.flagship-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--head);
+  margin: 0 0 12px;
+}
+
+.flagship-desc {
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+  margin: 0 0 18px;
+}
+
+/* Measured result as visible text — was only readable inside the aria-hidden mockup */
+.flagship-result {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--dim);
+  margin: 0 0 18px;
+}
+
+.flagship-result strong {
+  color: var(--amber);
+  font-weight: 600;
+}
+
+.flagship-tags {
+  list-style: none;
+  margin: 0 0 22px;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.flagship-tags li {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 12px;
+  font-size: 12.5px;
+  color: var(--bright);
+  font-family: var(--mono);
+}
+
+.flagship-cta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.flagship-cred {
+  font-size: 12px;
+  color: #8496ac;
+  font-family: var(--mono);
+}
+
+.flagship-term {
+  background: var(--bg);
+  border-left: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* so .flagship-code overflow-x:auto engages instead of overflowing the card */
+}
+
+.flagship-term .term-bar {
+  gap: 6px;
+  padding: 9px 16px;
+}
+
+.flagship-term .term-dot {
+  width: 9px;
+  height: 9px;
+}
+
+.flagship-term .term-title {
+  font-size: 11px;
+  margin-left: 7px;
+}
+
+.flagship-code {
+  margin: 0;
+  padding: 18px 20px;
+  font-family: var(--mono);
+  font-size: 12.5px;
+  line-height: 2;
+  color: var(--code);
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.flagship-code .tmut { color: var(--muted-2); }
+.flagship-code .ts { color: var(--bright); }
+.flagship-code .tm { color: var(--amber); }
+.flagship-code .tc { color: var(--green); }
+
+@media (max-width: 768px) {
+  .flagship {
+    grid-template-columns: 1fr;
+  }
+  .flagship-term {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .flagship-body {
+    padding: 24px 22px;
+  }
 }
 
 /*--------------------------------------------------------------
 # Services
+# (.icon-box sits ON the grid column, so a transparent border
+#  creates the gutter and an inset ring draws the card edge)
 --------------------------------------------------------------*/
 .services .icon-box {
   margin-bottom: 20px;
+  background: var(--panel);
+  background-clip: padding-box;
+  border: 12px solid transparent;
+  border-radius: 22px;
+  box-shadow: inset 0 0 0 1px var(--line);
+  padding: 30px 28px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.services .icon-box:hover {
+  transform: translateY(-4px);
+  box-shadow: inset 0 0 0 1px var(--brand-hi);
 }
 
 .services .icon {
@@ -575,12 +1083,22 @@ section {
   height: 54px;
   border-radius: 50%;
   transition: 0.5s;
-  border: 1px solid #149ddd;
+  border: 1px solid var(--brand);
+  background: var(--panel-2);
 }
 
 .services .icon i {
   font-size: 24px;
   line-height: 0;
+  color: var(--cyan);
+}
+
+.services .icon-box:hover .icon {
+  background: var(--brand-hi);
+}
+
+.services .icon-box:hover .icon i {
+  color: var(--on-brand);
 }
 
 .services .title {
@@ -588,48 +1106,125 @@ section {
   font-weight: 700;
   margin-bottom: 15px;
   font-size: 18px;
+  color: var(--head);
 }
 
 .services .description {
   margin-left: 80px;
   line-height: 24px;
   font-size: 14px;
+  color: var(--muted);
 }
 
 /* "How we work" — engagement process mirrored from the consulting one-pager */
 .services .how-we-work {
   max-width: 720px;
   margin: 8px auto 0;
-  background: #0b1626;
-  border: 1px solid #1b2c44;
+  background: var(--panel);
+  border: 1px solid var(--line);
   border-radius: 14px;
   padding: 24px 28px;
 }
+
 .services .how-we-work h3 {
   font-size: 18px;
   font-weight: 700;
-  color: #f2f7fd;
+  color: var(--head);
   margin: 0 0 12px;
 }
+
 .services .how-we-work ol {
   margin: 0;
   padding-left: 20px;
-  color: #93a5bc;
+  color: var(--muted);
 }
+
 .services .how-we-work li {
   padding: 3px 0;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .services .icon-box,
+  .services .icon-box:hover {
+    transition: none;
+    transform: none;
+  }
+}
+
 /*--------------------------------------------------------------
-# Contact
+# Recommendations
+--------------------------------------------------------------*/
+.quote-card {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 34px 32px 28px;
+}
+
+.quote-card .quote-mark {
+  position: absolute;
+  top: 18px;
+  left: 22px;
+  font-size: 52px;
+  color: var(--brand-hi);
+  opacity: 0.35;
+  line-height: 1;
+}
+
+/* Typographic quote — bundled bootstrap-icons has no bi-quote glyph */
+.quote-card .quote-mark::before {
+  content: "\201C";
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.quote-card blockquote {
+  margin: 0 0 18px;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--bright);
+  font-style: italic;
+  position: relative;
+  z-index: 1;
+  flex-grow: 1;
+}
+
+.quote-card figcaption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.quote-card .quote-name {
+  font-weight: 600;
+  color: var(--head);
+}
+
+.quote-card .quote-role {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/*--------------------------------------------------------------
+# Contact — the conversion moment: give it a quiet lift
 --------------------------------------------------------------*/
 .contact {
   padding-bottom: 130px;
+  background: linear-gradient(180deg, var(--bg-alt) 0%, #0c1a2e 100%);
 }
 
 .contact .info {
   padding: 30px;
   width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: none;
 }
 
 .contact .info i {
@@ -642,6 +1237,8 @@ section {
   align-items: center;
   border-radius: 50px;
   transition: all 0.3s ease-in-out;
+  background: var(--panel-2);
+  color: var(--cyan);
 }
 
 .contact .info h3 {
@@ -649,26 +1246,89 @@ section {
   font-size: 22px;
   font-weight: 600;
   margin-bottom: 5px;
+  color: var(--head);
 }
 
 .contact .info p {
   padding: 0 0 10px 60px;
   margin-bottom: 20px;
   font-size: 14px;
+  color: var(--muted);
 }
 
 .contact .info .email p {
   padding-top: 5px;
 }
 
+.contact .info .email:hover i,
+.contact .info .address:hover i,
+.contact .info .phone:hover i {
+  background: var(--brand-hi);
+  color: var(--on-brand);
+}
+
+.contact .info iframe {
+  border-radius: 8px;
+  filter: saturate(0.85);
+}
+
 .contact .php-email-form {
   width: 100%;
   padding: 30px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: none;
 }
 
 .contact .php-email-form .form-group {
   padding-bottom: 8px;
   margin-bottom: 15px;
+}
+
+.contact .php-email-form label {
+  padding-bottom: 8px;
+  color: var(--bright);
+}
+
+.contact .php-email-form input,
+.contact .php-email-form textarea {
+  box-shadow: none;
+  font-size: 14px;
+  background: var(--bg-alt);
+  border: 1px solid #4a6690; /* 3.16:1 vs field bg — WCAG 1.4.11 boundary */
+  color: var(--code);
+  border-radius: 6px;
+}
+
+.contact .php-email-form input {
+  height: 44px;
+}
+
+.contact .php-email-form textarea {
+  padding: 10px 15px;
+}
+
+.contact .php-email-form input:focus,
+.contact .php-email-form textarea:focus {
+  background: var(--bg-alt);
+  border-color: var(--brand-hi);
+  color: var(--code);
+  box-shadow: none;
+}
+
+.contact .php-email-form button[type="submit"] {
+  border: 0;
+  padding: 10px 24px;
+  color: var(--on-brand);
+  transition: 0.4s;
+  background: var(--brand);
+  font-weight: 600;
+  border-radius: 6px;
+}
+
+.contact .php-email-form button[type="submit"]:hover {
+  background: var(--brand-hi);
 }
 
 /* error/sent text colors chosen for WCAG AA on their banner backgrounds.
@@ -683,7 +1343,7 @@ section {
 }
 
 .contact .php-email-form .sent-message {
-  color: #04121f;
+  color: var(--on-brand);
   background: #18d26e;
   text-align: center;
   padding: 15px;
@@ -696,459 +1356,21 @@ section {
   background: transparent;
 }
 
-.contact .php-email-form label {
-  padding-bottom: 8px;
-}
-
-.contact .php-email-form input, .contact .php-email-form textarea {
-  box-shadow: none;
-  font-size: 14px;
-}
-
-.contact .php-email-form input {
-  height: 44px;
-}
-
-.contact .php-email-form textarea {
-  padding: 10px 15px;
-}
-
-.contact .php-email-form button[type="submit"] {
-  border: 0;
-  padding: 10px 24px;
-  color: #04121f;
-  transition: 0.4s;
-}
-
 /*--------------------------------------------------------------
-# Footer
---------------------------------------------------------------*/
-#footer {
-  padding: 15px;
-  font-size: 14px;
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  width: 300px;
-  z-index: 9999;
-}
-
-#footer .credits {
-  padding-top: 5px;
-  text-align: center;
-  font-size: 13px;
-  color: #eaebf0;
-}
-
-@media (max-width: 1199px) {
-  #footer {
-    position: static;
-    width: auto;
-    padding: 20px 15px;
-  }
-}
-
-/*--------------------------------------------------------------
-# Hero v2 — terminal / API-response hero (sync 2026-07)
-# Scoped overrides; template rules above left untouched.
---------------------------------------------------------------*/
-#hero {
-  height: auto;
-  min-height: 100vh;
-  padding: 96px 15px 48px;
-}
-
-#hero:before {
-  background: radial-gradient(900px 520px at 68% 18%, rgba(20, 157, 221, 0.12), transparent 60%);
-}
-
-#hero .hero-container {
-  max-width: 720px;
-  width: 100%;
-  text-align: center;
-}
-
-#hero .hero-eyebrow {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  color: #7d8da3;
-  margin: 0 0 14px;
-}
-
-#hero h1 {
-  letter-spacing: 2px;
-}
-
-#hero .hero-role {
-  font-size: 20px;
-  color: #bcc9da;
-  margin-bottom: 10px;
-}
-
-#hero .hero-sep {
-  color: #149ddd;
-}
-
-/* Plain-text value prop: the differentiators must be skimmable as text,
-   not only inside the decorative terminal (role="img") below */
-#hero .hero-value {
-  font-size: 15px;
-  line-height: 1.55;
-  color: #9fb1c7;
-  max-width: 640px;
-  margin: 0 auto;
-}
-
-#hero .term {
-  width: min(640px, 100%);
-  margin: 26px auto 0;
-  text-align: left;
-  background: #0b1626;
-  border: 1px solid #1b2c44;
-  border-radius: 10px;
-  box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(20, 157, 221, 0.06);
-  overflow: hidden;
-}
-
-#hero .term-bar {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 11px 14px;
-  background: #0e1b30;
-  border-bottom: 1px solid #1b2c44;
-}
-
-#hero .term-dot {
-  width: 11px;
-  height: 11px;
-  border-radius: 50%;
-}
-
-#hero .term-dot-r { background: #ff5f57; }
-#hero .term-dot-y { background: #febc2e; }
-#hero .term-dot-g { background: #28c840; }
-
-#hero .term-title {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 12px;
-  color: #7d8da3;
-  margin-left: 8px;
-}
-
-#hero .term-body {
-  margin: 0;
-  padding: 18px 20px 20px;
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 13.5px;
-  line-height: 1.8;
-  color: #e6edf6;
-  overflow-x: auto;
-  white-space: pre;
-}
-
-#hero .tk { color: #4db8ff; }
-#hero .ts { color: #dbe6f3; }
-#hero .tm { color: #ffc46b; }
-#hero .tp { color: #59718f; }
-#hero .tc { color: #6ee7b7; }
-#hero .tmut { color: #7d8da3; }
-
-#hero .term-cursor {
-  display: inline-block;
-  width: 8px;
-  height: 15px;
-  background: #6ee7b7;
-  vertical-align: -2px;
-  animation: hero-blink 1.1s steps(1) infinite;
-}
-
-@keyframes hero-blink {
-  50% { opacity: 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #hero .term-cursor {
-    animation: none;
-  }
-}
-
-@media (max-width: 768px) {
-  #hero {
-    padding: 84px 12px 40px;
-  }
-  #hero .hero-role {
-    font-size: 16px;
-    margin-bottom: 8px;
-  }
-  #hero .hero-value {
-    font-size: 13.5px;
-  }
-  #hero .term-body {
-    font-size: 12px;
-    padding: 14px 14px 16px;
-  }
-}
-
-/*--------------------------------------------------------------
-# Hero v2.1 — boot sequence, CTA, signature background
---------------------------------------------------------------*/
-#hero {
-  background:
-    radial-gradient(rgba(125, 141, 163, 0.07) 1px, transparent 1px) 0 0 / 22px 22px,
-    #060d18;
-}
-
-/* Default (no JS / reduced motion): everything visible, no animation.
-   Motion is an enhancement: JS staggers .tl-on per line; transition animates it. */
-#hero .tl {
-  display: block;
-  animation: none;
-  opacity: 1;
-  transform: none;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-/* Boot: JS is typing the command — hide the response lines. */
-#hero .term.is-boot .tl:not(.tl-cmd) {
-  opacity: 0;
-  transform: translateY(3px);
-}
-
-/* Line revealed: end state lives in the class, not in an animation. */
-#hero .term.is-boot .tl.tl-on {
-  opacity: 1;
-  transform: none;
-}
-
-#hero .hero-cta {
-  display: flex;
-  justify-content: center;
-  align-items: stretch;
-  gap: 12px;
-  margin-top: 28px;
-  flex-wrap: wrap;
-}
-
-#hero .btn-term {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 13.5px;
-  padding: 11px 20px;
-  border: 1px solid #1b2c44;
-  border-radius: 8px;
-  color: #bcc9da;
-  background: rgba(11, 22, 38, 0.7);
-  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease, transform 0.2s ease;
-}
-
-#hero .btn-term:hover {
-  border-color: #149ddd;
-  color: #fff;
-  transform: translateY(-1px);
-}
-
-#hero .btn-term:focus-visible {
-  outline: 2px solid #4db8ff;
-  outline-offset: 2px;
-}
-
-#hero .btn-term-primary {
-  background: #149ddd;
-  border-color: #149ddd;
-  color: #04121f;
-  font-weight: 600;
-}
-
-#hero .btn-term-primary:hover {
-  background: #2fb4f2;
-  border-color: #2fb4f2;
-  color: #04121f;
-}
-
-/* Business-buyer line: promoted out of the muted //-comment styling so the
-   second declared audience gets a readable sentence, not code decoration */
-#hero .hero-buyer {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 13px;
-  color: #9fb1c7;
-  margin: 16px 0 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  #hero .term.is-boot .tl:not(.tl-cmd) {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-  #hero .btn-term,
-  #hero .btn-term:hover {
-    transition: none;
-    transform: none;
-  }
-}
-
-@media (max-width: 768px) {
-  #hero .hero-cta {
-    gap: 10px;
-    margin-top: 22px;
-  }
-  #hero .btn-term {
-    padding: 10px 16px;
-    font-size: 12.5px;
-  }
-}
-
-/*--------------------------------------------------------------
-# Theme v3 — dark console, end to end (sync 2026-07)
-# Tokens: bg #060d18 · bg-alt #0a1424 · panel #0b1626 · line #1b2c44
-#         text #c7d3e3 · head #f2f7fd · muted #93a5bc · cyan #2fb4f2/#4db8ff · amber #ffc46b
---------------------------------------------------------------*/
-body {
-  background: #060d18;
-  color: #c7d3e3;
-}
-
-a { color: #4db8ff; }
-a:hover { color: #7ccdff; }
-
-.section-bg { background: #0a1424; }
-
-.section-title h2 { color: #f2f7fd; }
-.section-title h2::after { background: #2fb4f2; }
-.section-title p { color: #93a5bc; }
-
-/* About */
-.about .content h3 { color: #f2f7fd; }
-.about .content ul i { color: #4db8ff; }
-.about .content ul strong { color: #f2f7fd; }
-
-/* Facts — numbers wear the metric amber from the hero terminal */
-.facts .count-box i { color: #4db8ff; }
-.facts .count-box span { color: #ffc46b; }
-.facts .count-box p { color: #93a5bc; }
-.facts .count-box p strong { color: #dbe6f3; }
-
-/* Resume timeline */
-.resume .resume-title { color: #f2f7fd; }
-.resume .resume-item { border-left: 2px solid #1b2c44; }
-.resume .resume-item h4 { color: #4db8ff; }
-.resume .resume-item h5 { background: #12203a; color: #ffc46b; }
-.resume .resume-item::before {
-  background: #060d18;
-  border: 2px solid #2fb4f2;
-}
-
-/* Portfolio */
-.portfolio .portfolio-wrap {
-  background: #0b1626;
-  border: 1px solid #1b2c44;
-  border-radius: 8px;
-  overflow: hidden;
-}
-.portfolio .portfolio-wrap::before { background: rgba(6, 13, 24, 0.55); }
-
-/* Services */
-.services .icon { background: #12203a; }
-.services .icon i { color: #4db8ff; }
-.services .icon-box:hover .icon { background: #2fb4f2; }
-.services .icon-box:hover .icon i { color: #04121f; }
-.services .title { color: #f2f7fd; } /* titles are plain <h3>, no anchor — selector was dead and titles fell back to body text color */
-.services .description { color: #93a5bc; }
-
-/* Contact — the conversion moment: give it a quiet lift */
-.contact { background: linear-gradient(180deg, #0a1424 0%, #0c1a2e 100%); }
-.contact .info {
-  background: #0b1626;
-  border: 1px solid #1b2c44;
-  border-radius: 10px;
-  box-shadow: none;
-}
-.contact .info i { background: #12203a; color: #4db8ff; }
-.contact .info h3 { color: #f2f7fd; }
-.contact .info p { color: #93a5bc; }
-.contact .info .email:hover i,
-.contact .info .address:hover i,
-.contact .info .phone:hover i { background: #2fb4f2; color: #04121f; }
-.contact .info iframe { border-radius: 8px; filter: saturate(0.85); }
-.contact .php-email-form {
-  background: #0b1626;
-  border: 1px solid #1b2c44;
-  border-radius: 10px;
-  box-shadow: none;
-}
-.contact .php-email-form label { color: #dbe6f3; }
-.contact .php-email-form input,
-.contact .php-email-form textarea {
-  background: #0a1424;
-  border: 1px solid #4a6690; /* 3.16:1 vs field bg — WCAG 1.4.11 boundary */
-  color: #e6edf6;
-  border-radius: 6px;
-}
-.contact .php-email-form input:focus,
-.contact .php-email-form textarea:focus {
-  background: #0a1424;
-  border-color: #2fb4f2;
-  color: #e6edf6;
-  box-shadow: none;
-}
-.contact .php-email-form button[type="submit"] {
-  background: #149ddd;
-  font-weight: 600;
-  border-radius: 6px;
-}
-.contact .php-email-form button[type="submit"]:hover { background: #2fb4f2; }
-
-/* Footer & chrome */
-#footer { background: #040b14; color: #93a5bc; }
-.back-to-top { background: #149ddd; }
-.back-to-top:hover { background: #2fb4f2; }
-
-/*--------------------------------------------------------------
-# Theme v3.1 — Services cards: real gutters, breathing room
-# (.icon-box sits ON the grid column, so a transparent border
-#  creates the gap and an inset ring draws the card edge)
---------------------------------------------------------------*/
-.services .icon-box {
-  background: #0b1626;
-  background-clip: padding-box;
-  border: 12px solid transparent;
-  border-radius: 22px;
-  box-shadow: inset 0 0 0 1px #1b2c44;
-  padding: 30px 28px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-
-.services .icon-box:hover {
-  transform: translateY(-4px);
-  box-shadow: inset 0 0 0 1px #2fb4f2;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .services .icon-box,
-  .services .icon-box:hover {
-    transition: none;
-    transform: none;
-  }
-}
-
-/*--------------------------------------------------------------
-# Theme v3.2 — Batch A: a11y, skill tags, CTA, cleanup
+# Buttons, links & floating chrome
 --------------------------------------------------------------*/
 .skip-link {
   position: absolute;
   left: -9999px;
   top: 0;
   z-index: 10000;
-  background: #149ddd;
-  color: #04121f;
+  background: var(--brand);
+  color: var(--on-brand);
   padding: 10px 18px;
   font-weight: 600;
   border-radius: 0 0 8px 0;
 }
+
 .skip-link:focus {
   left: 0;
 }
@@ -1159,7 +1381,7 @@ input:focus-visible,
 textarea:focus-visible,
 iframe:focus-visible,
 [tabindex]:focus-visible {
-  outline: 2px solid #4db8ff !important;
+  outline: 2px solid var(--cyan) !important;
   outline-offset: 2px;
 }
 
@@ -1172,106 +1394,90 @@ iframe:focus-visible,
   text-underline-offset: 2px;
 }
 
-/* Off-canvas sidebar must leave the tab order too, not just the viewport */
-@media (max-width: 1199px) {
-  body:not(.mobile-nav-active) #header {
-    visibility: hidden;
-  }
-}
-
-/* Short viewports (13" laptops): lift the hero so the CTA row clears the fold */
-@media (max-height: 820px) and (min-width: 769px) {
-  #hero {
-    padding-top: 48px;
-  }
-  /* hero-role margin is only 10px by default now (CTA row moved above the terminal),
-     so the old 24px override expanded the fold instead of compressing it — dropped. */
-}
-
-/* Sidebar name (was an h1; demoted for heading hierarchy) */
-#header .profile .profile-name {
-  font-size: 24px;
-  margin: 15px 0 10px 0;
-  padding: 0;
-  font-weight: 600;
-  text-align-last: center;
-  font-family: "Poppins", sans-serif;
-}
-#header .profile .profile-name a,
-#header .profile .profile-name a:hover {
-  color: #fff;
-  text-decoration: none;
-}
-
-/* Mobile nav toggle is now a real button */
-button.mobile-nav-toggle {
-  background: none;
-  border: 0;
-  padding: 0;
-  color: #149ddd;
-}
-
-/* Skills as grouped tags (source: cv/archive/resume-v8.0.txt) */
-.skills .skill-group {
-  margin-bottom: 22px;
-}
-.skills .skill-group h3 {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 13px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #4db8ff;
-  margin-bottom: 10px;
-}
-.skills .skill-group ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.skills .skill-group ul li {
-  background: #0b1626;
-  border: 1px solid #1b2c44;
-  border-radius: 999px;
-  padding: 6px 14px;
-  font-size: 13.5px;
-  color: #dbe6f3;
-}
-
 /* Download CV button (outside hero) */
 .btn-cv {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--mono);
   font-size: 13.5px;
   padding: 10px 18px;
   border-radius: 8px;
-  background: #149ddd;
-  border: 1px solid #149ddd;
-  color: #04121f;
+  background: var(--brand);
+  border: 1px solid var(--brand);
+  color: var(--on-brand);
   font-weight: 600;
 }
+
 .btn-cv:hover {
-  background: #2fb4f2;
-  border-color: #2fb4f2;
-  color: #04121f;
+  background: var(--brand-hi);
+  border-color: var(--brand-hi);
+  color: var(--on-brand);
 }
 
-/* Portfolio links: hover-only reveal excluded keyboard and touch users —
-   also reveal on focus, and keep permanently visible on no-hover devices */
-.portfolio .portfolio-wrap:focus-within .portfolio-links {
-  bottom: 0;
+/* CTA rows (Resume + Services): spacing lives here, not in inline styles */
+.cta-row a + a {
+  margin-left: 10px;
 }
-.portfolio .portfolio-wrap:focus-within::before {
-  opacity: 1; /* keyboard focus gets the same backdrop the hover reveal has */
+
+.cta-row a:not(.btn-cv) {
+  font-size: 13px;
 }
-@media (hover: none) {
-  .portfolio .portfolio-wrap .portfolio-links {
-    bottom: 0;
-  }
+
+.back-to-top {
+  position: fixed;
+  visibility: hidden;
+  opacity: 0;
+  right: 15px;
+  bottom: 15px;
+  z-index: 996;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: all 0.4s;
+  background: var(--brand);
+}
+
+.back-to-top i {
+  font-size: 28px;
+  color: #fff;
+  line-height: 0;
+}
+
+.back-to-top:hover {
+  color: #fff;
+  background: var(--brand-hi);
+}
+
+.back-to-top.active {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Always-visible contact shortcut — mid-page/mobile visitors get a one-tap
+   path to the contact section (stacked above .back-to-top's slot) */
+.contact-fab {
+  position: fixed;
+  right: 15px;
+  bottom: 64px;
+  z-index: 996;
+  background: var(--brand);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition: background 0.3s;
+}
+
+.contact-fab i {
+  font-size: 20px;
+  color: #fff;
+  line-height: 0;
+}
+
+.contact-fab:hover {
+  /* darker same-hue shade so the white icon keeps WCAG 1.4.11 (3.94:1); #2eafec was 2.48:1.
+     Focus ring comes from the global a:focus-visible !important rule — no local override needed. */
+  background: #1187c9;
 }
 
 /*--------------------------------------------------------------
@@ -1315,191 +1521,4 @@ button.mobile-nav-toggle {
   .portfolio-wrap {
     break-inside: avoid;
   }
-}
-
-/*--------------------------------------------------------------
-# Flagship case-study card (Portfolio) + Recommendation
---------------------------------------------------------------*/
-.flagship {
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 0;
-  background: #0b1626;
-  border: 1px solid #1b2c44;
-  border-radius: 14px;
-  overflow: hidden;
-  margin-bottom: 40px;
-}
-.flagship-body {
-  padding: 30px 32px;
-  min-width: 0; /* let grid track shrink below content min-width (prevents mobile clip) */
-}
-.flagship-badge {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 12px;
-  letter-spacing: 0.06em;
-  color: #ffc46b;
-  margin: 0 0 14px;
-}
-.flagship-title {
-  font-size: 24px;
-  font-weight: 700;
-  color: #f2f7fd;
-  margin: 0 0 12px;
-}
-.flagship-desc {
-  color: #93a5bc;
-  font-size: 15px;
-  line-height: 1.6;
-  margin: 0 0 18px;
-}
-/* Measured result as visible text — was only readable inside the aria-hidden mockup */
-.flagship-result {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 13px;
-  color: #9fb1c7;
-  margin: 0 0 18px;
-}
-.flagship-result strong {
-  color: #ffc46b;
-  font-weight: 600;
-}
-.flagship-tags {
-  list-style: none;
-  margin: 0 0 22px;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.flagship-tags li {
-  background: #12203a;
-  border: 1px solid #1b2c44;
-  border-radius: 999px;
-  padding: 5px 12px;
-  font-size: 12.5px;
-  color: #dbe6f3;
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
-.flagship-cta {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-.flagship-cred {
-  font-size: 12px;
-  color: #8496ac;
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
-.flagship-term {
-  background: #060d18;
-  border-left: 1px solid #1b2c44;
-  display: flex;
-  flex-direction: column;
-  min-width: 0; /* so .flagship-code overflow-x:auto engages instead of overflowing the card */
-}
-.flagship-code {
-  margin: 0;
-  padding: 18px 20px;
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 12.5px;
-  line-height: 2;
-  color: #e6edf6;
-  overflow-x: auto;
-  white-space: pre;
-}
-.flagship-code .tmut { color: #7d8da3; }
-.flagship-code .ts { color: #dbe6f3; }
-.flagship-code .tm { color: #ffc46b; }
-.flagship-code .tc { color: #6ee7b7; }
-
-/* The flagship cards reuse .term-bar/.term-dot/.term-title from the hero, but those
-   rules are scoped to #hero — without these mirrors the mac-dots and title render
-   unstyled (invisible) on the flagship terminal mockups. */
-.flagship-term .term-bar {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 9px 16px;
-  background: #0e1b30;
-  border-bottom: 1px solid #1b2c44;
-}
-.flagship-term .term-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-}
-.flagship-term .term-dot-r { background: #ff5f57; }
-.flagship-term .term-dot-y { background: #febc2e; }
-.flagship-term .term-dot-g { background: #28c840; }
-.flagship-term .term-title {
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 11px;
-  color: #7d8da3;
-  margin-left: 7px;
-}
-
-@media (max-width: 768px) {
-  .flagship {
-    grid-template-columns: 1fr;
-  }
-  .flagship-term {
-    border-left: 0;
-    border-top: 1px solid #1b2c44;
-  }
-  .flagship-body {
-    padding: 24px 22px;
-  }
-}
-
-/* Recommendation */
-.quote-card {
-  position: relative;
-  margin: 0;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  background: #0b1626;
-  border: 1px solid #1b2c44;
-  border-radius: 14px;
-  padding: 34px 32px 28px;
-}
-.quote-card .quote-mark {
-  position: absolute;
-  top: 18px;
-  left: 22px;
-  font-size: 52px;
-  color: #2fb4f2;
-  opacity: 0.35;
-  line-height: 1;
-}
-/* Typographic quote — bundled bootstrap-icons has no bi-quote glyph */
-.quote-card .quote-mark::before {
-  content: "\201C";
-  font-family: Georgia, "Times New Roman", serif;
-}
-.quote-card blockquote {
-  margin: 0 0 18px;
-  padding: 0;
-  font-size: 18px;
-  line-height: 1.6;
-  color: #dbe6f3;
-  font-style: italic;
-  position: relative;
-  z-index: 1;
-  flex-grow: 1;
-}
-.quote-card figcaption {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.quote-card .quote-name {
-  font-weight: 600;
-  color: #f2f7fd;
-}
-.quote-card .quote-role {
-  font-size: 13px;
-  color: #93a5bc;
 }
