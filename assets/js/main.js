@@ -41,9 +41,27 @@
     });
   }
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && document.body.classList.contains('nav-open')) {
+    if (!document.body.classList.contains('nav-open')) return;
+
+    if (e.key === 'Escape') {
       setNav(false);
       if (toggle) toggle.focus();
+      return;
+    }
+
+    // the open drawer covers the page — keep Tab inside it instead of letting
+    // focus wander onto content the user cannot see
+    if (e.key === 'Tab' && nav) {
+      var stops = [toggle].concat(Array.prototype.slice.call(nav.querySelectorAll('a')));
+      var first = stops[0];
+      var last = stops[stops.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     }
   });
 
@@ -128,9 +146,13 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var btn = form.querySelector('button[type="submit"]');
+      var btnLabel = btn.textContent;
       sent.textContent = '';
       err.textContent = '';
+      // the request can sit for up to 15s — a disabled button alone reads as a hang
       btn.disabled = true;
+      btn.setAttribute('aria-busy', 'true');
+      btn.textContent = 'Sending…';
       var ctrl = window.AbortController ? new AbortController() : null;
       var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 15000) : null;
       fetch('https://formsubmit.co/ajax/fadhlillah949699@gmail.com', {
@@ -147,6 +169,8 @@
       }).finally(function () {
         if (timer) clearTimeout(timer);
         btn.disabled = false;
+        btn.removeAttribute('aria-busy');
+        btn.textContent = btnLabel;
       });
     });
   }

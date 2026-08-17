@@ -339,6 +339,11 @@ html.js [data-reveal-children].is-in > :nth-child(n + 9) { transition-delay: 440
   .nav-toggle {
     display: block;
   }
+  /* the drawer overlays the page; letting the page scroll behind it means the
+     user closes the menu somewhere they did not expect to be */
+  .nav-open {
+    overflow: hidden;
+  }
   .site-nav {
     position: fixed;
     inset: var(--bar) 0 auto 0;
