@@ -7,5 +7,6 @@ Thumbs.db
 *.print.html
 .playwright-mcp/
 .claude/
+CLAUDE.md
 *.tmp.pdf
 cv/drafts/
