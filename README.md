@@ -2,9 +2,9 @@
 
 <div align="center">
 
-[![Portfolio](https://img.shields.io/badge/Portfolio-fadhlillah2.github.io/Bio-149ddd?style=for-the-badge)](https://fadhlillah2.github.io/Bio/)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/fadhlillah2)
-[![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:fadhlillah949699@gmail.com)
+[![Portfolio](https://img.shields.io/badge/Portfolio-fadhlillah2.github.io%2FBio-5ce1c6?style=for-the-badge&labelColor=0b0f17)](https://fadhlillah2.github.io/Bio/)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&logo=linkedin&logoColor=white&labelColor=0b0f17)](https://www.linkedin.com/in/fadhlillah2)
+[![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&logo=gmail&logoColor=white&labelColor=0b0f17)](mailto:fadhlillah949699@gmail.com)
 
 </div>
 
@@ -41,7 +41,7 @@ Backend Software Engineer (6+ yrs) — deep in **Java/Spring Boot**, adaptable a
 
 ## About This Repo
 
-Source of my portfolio site, live at **[fadhlillah2.github.io/Bio](https://fadhlillah2.github.io/Bio/)** — a static site (iPortfolio/Bootstrap base, heavily customized: terminal-style hero, dark console theme) deployed on GitHub Pages. [`cv/`](cv/) holds the distributable artifacts and their canonical `.txt` sources: the full resume (LinkedIn mirror), a recruiter/ATS one-pager, and consulting one-pagers (EN + Bahasa Indonesia), all typeset via `build-pdf.py`.
+Source of my portfolio site, live at **[fadhlillah2.github.io/Bio](https://fadhlillah2.github.io/Bio/)** — a static site with a dark console theme and terminal-style hero, hand-written HTML/CSS/JS: no framework, no build step, no JS dependencies (icons are inline SVG; the only external request is Google Fonts). Deployed on GitHub Pages. [`cv/`](cv/) holds the distributable artifacts and their canonical `.txt` sources: the full resume (LinkedIn mirror), a recruiter/ATS one-pager, and consulting one-pagers (EN + Bahasa Indonesia), all typeset via `build-pdf.py`.
 
 ## Contact
 
