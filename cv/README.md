@@ -192,12 +192,13 @@ public and GitHub Pages served everything, so `_config.yml` now excludes
 - **The current resume must always have a matching current PDF.** Regenerate via `build-pdf.py`
   whenever the .txt changes.
 - On version bump, also update ALL version-pinned links:
-  (a) in-repo `index.html` — 12 `href="cv/…"` in total (`grep -o 'href="cv/' index.html | wc -l`).
+  (a) in-repo `index.html` — 13 `href="cv/…"` in total (`grep -o 'href="cv/' index.html | wc -l`).
   Each artifact is linked in more than one spot; update every one or the live site 404s:
-  - `cv/resume-vX.Y.pdf` ×3 (hero **secondary** "Full CV" + both Resume-section CTA rows) and
+  - `cv/resume-vX.Y.pdf` ×3 (hero **secondary** "Full CV" + both Experience-section CTA rows) and
     `cv/resume-vX.Y.txt` ×2 ("Plain-text version" in both CTA rows);
-  - `cv/resume-onepager-vX.Y.pdf` ×3 (hero **primary** "Download CV" + both Resume-section CTA
-    rows) — bumps on its OWN `v1.x` scheme, not with the resume's `v8.x`;
+  - `cv/resume-onepager-vX.Y.pdf` ×4 (**top-bar** "Download CV" + hero **primary** "Download CV"
+    + both Experience-section CTA rows) — bumps on its OWN `v1.x` scheme, not with the resume's
+    `v8.x`;
   - `cv/consulting-onepager-en-vX.Y.pdf` ×2 (hero buyer line + Services) and
     `cv/consulting-onepager-id-vX.Y.pdf` ×2 (Services button + the Bahasa Indonesia line);
   (b) outside this repo — the **Resume badge in the GitHub profile README**
@@ -214,7 +215,8 @@ public and GitHub Pages served everything, so `_config.yml` now excludes
   files to `archive/`, then prune `archive/` back to the two newest per artifact (`resume-v8.2`
   stays regardless). **Current** and the **Changelog** are the only two places a version number
   appears in this README — keep it that way.
-- The site (`index.html`): About and the Resume section stay synced verbatim to the mirror resume.
+- The site (`index.html`): About and the Experience section (`#resume`) stay synced verbatim to the
+  mirror resume.
   The hero/meta headline was re-led for the recruiter scan (2026-07-11: "Backend Software Engineer
   · 6+ yrs · AI Native Engineer") — a re-emphasis of the same facts, not a contradiction of the
   LinkedIn headline. Site-only sections (Facts, Services, Portfolio, Skills grid) may add

@@ -1,221 +1,145 @@
 /**
-* Template Name: iPortfolio - v3.0.1
-* Template URL: https://bootstrapmade.com/iportfolio-bootstrap-portfolio-websites-template/
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
-(function() {
+ * Fadhlillah — portfolio behaviour. No dependencies.
+ * Everything here is an enhancement: without JS the page stays fully readable
+ * (the .js class is never stamped, so no [data-reveal] element is ever hidden).
+ */
+(function () {
   "use strict";
 
-  /**
-   * Easy selector helper function
-   */
-  const select = (el, all = false) => {
-    el = el.trim()
-    try {
-      if (all) {
-        return [...document.querySelectorAll(el)]
-      } else {
-        return document.querySelector(el)
-      }
-    } catch (e) {
-      // location.hash is fed here raw; a non-selector hash (#123) must not throw
-      return all ? [] : null
-    }
+  var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- Scroll reveal ---------- */
+  var revealables = document.querySelectorAll('[data-reveal]');
+  if (!window.IntersectionObserver || reduced) {
+    Array.prototype.forEach.call(revealables, function (el) { el.classList.add('is-in'); });
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-in');
+        io.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.06 });
+    Array.prototype.forEach.call(revealables, function (el) { io.observe(el); });
   }
 
-  /**
-   * Easy event listener function
-   */
-  const on = (type, el, listener, all = false) => {
-    let selectEl = select(el, all)
-    if (selectEl) {
-      if (all) {
-        selectEl.forEach(e => e.addEventListener(type, listener))
-      } else {
-        selectEl.addEventListener(type, listener)
-      }
-    }
+  /* ---------- Mobile nav ---------- */
+  var toggle = document.querySelector('.nav-toggle');
+  var nav = document.getElementById('site-nav');
+  var setNav = function (open) {
+    document.body.classList.toggle('nav-open', open);
+    if (toggle) toggle.setAttribute('aria-expanded', String(open));
+  };
+  if (toggle) {
+    toggle.addEventListener('click', function () {
+      setNav(!document.body.classList.contains('nav-open'));
+    });
   }
-
-  /**
-   * Navbar links active state on scroll
-   */
-  let navbarlinks = select('#navbar .scrollto', true)
-  const navbarlinksActive = () => {
-    let position = window.scrollY + 200
-    navbarlinks.forEach(navbarlink => {
-      if (!navbarlink.hash) return
-      let section = select(navbarlink.hash)
-      if (!section) return
-      if (position >= section.offsetTop && position <= (section.offsetTop + section.offsetHeight)) {
-        navbarlink.classList.add('active')
-      } else {
-        navbarlink.classList.remove('active')
-      }
-    })
+  if (nav) {
+    nav.addEventListener('click', function (e) {
+      if (e.target.closest('a')) setNav(false);
+    });
   }
-  window.addEventListener('load', navbarlinksActive)
-  document.addEventListener('scroll', navbarlinksActive, { passive: true })
-
-  /**
-   * Smooth-scrolls to an element (sidebar layout: no top-offset needed)
-   */
-  const scrollto = (el) => {
-    let elementPos = select(el).offsetTop
-    const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    window.scrollTo({
-      top: elementPos,
-      behavior: reduced ? 'auto' : 'smooth'
-    })
-  }
-
-  /**
-   * Back to top button
-   */
-  let backtotop = select('.back-to-top')
-  if (backtotop) {
-    const toggleBacktotop = () => {
-      if (window.scrollY > 100) {
-        backtotop.classList.add('active')
-      } else {
-        backtotop.classList.remove('active')
-      }
-    }
-    window.addEventListener('load', toggleBacktotop)
-    document.addEventListener('scroll', toggleBacktotop, { passive: true })
-  }
-
-  /**
-   * Mobile nav toggle
-   */
-  on('click', '.mobile-nav-toggle', function() {
-    document.body.classList.toggle('mobile-nav-active')
-    this.classList.toggle('bi-list')
-    this.classList.toggle('bi-x')
-    this.setAttribute('aria-expanded', document.body.classList.contains('mobile-nav-active'))
-  })
-
-  /**
-   * Scroll on links with a class name .scrollto
-   */
-  on('click', '.scrollto', function(e) {
-    if (select(this.hash)) {
-      e.preventDefault()
-
-      let body = document.body
-      if (body.classList.contains('mobile-nav-active')) {
-        body.classList.remove('mobile-nav-active')
-        let navbarToggle = select('.mobile-nav-toggle')
-        navbarToggle.classList.toggle('bi-list')
-        navbarToggle.classList.toggle('bi-x')
-        navbarToggle.setAttribute('aria-expanded', 'false')
-      }
-      scrollto(this.hash)
-    }
-  }, true)
-
-  /**
-   * Scroll on page load with hash links in the url
-   */
-  window.addEventListener('load', () => {
-    if (window.location.hash && select(window.location.hash)) {
-      scrollto(window.location.hash)
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && document.body.classList.contains('nav-open')) {
+      setNav(false);
+      if (toggle) toggle.focus();
     }
   });
 
-  /**
-   * Animation on scroll
-   */
-  window.addEventListener('load', () => {
-    AOS.init({
-      duration: 1000,
-      easing: 'ease-in-out',
-      once: true,
-      disable: function () {
-        return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      }
-    })
+  /* ---------- Scroll state: sticky bar, back-to-top, section spy ---------- */
+  var topbar = document.getElementById('topbar');
+  var fabs = Array.prototype.slice.call(document.querySelectorAll('.fab'));
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav-link'));
+  var targets = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
+  var queued = false;
 
-    // Toggling the early-practice <details> shifts the layout below it; tell
-    // AOS to recompute offsets so sections beneath still reveal correctly.
-    const ep = document.querySelector('details.early-practice');
-    if (ep && typeof AOS !== 'undefined') {
-      ep.addEventListener('toggle', () => { AOS.refresh(); });
-    }
-  });
+  var onScroll = function () {
+    var y = window.scrollY;
+    if (topbar) topbar.classList.toggle('is-stuck', y > 8);
+    fabs.forEach(function (f) { f.classList.toggle('is-on', y > 420); });
 
-  /**
-   * Contact form: AJAX submit with graceful failure (FormSubmit can be down — a
-   * plain POST would strand the visitor on a raw Cloudflare error page).
-   * No-JS browsers fall back to the form's plain action + ?sent=1 redirect.
-   * Messages are injected into always-rendered live regions (revealing from
-   * display:none makes role=status/alert announcements unreliable) and the
-   * fetch aborts after 15s so the Send button never stays stuck disabled.
+    // last section whose top has passed just below the sticky bar wins
+    var active = -1;
+    targets.forEach(function (section, i) {
+      if (section && section.getBoundingClientRect().top <= 140) active = i;
+    });
+    links.forEach(function (a, i) {
+      if (i === active) a.setAttribute('aria-current', 'true');
+      else a.removeAttribute('aria-current');
+    });
+    queued = false;
+  };
+
+  document.addEventListener('scroll', function () {
+    if (queued) return;
+    queued = true;
+    window.requestAnimationFrame(onScroll);
+  }, { passive: true });
+  onScroll();
+
+  /* ---------- Hero terminal: type the command, then stagger the response ---------- */
+  var term = document.getElementById('hero-term');
+  var cmd = document.getElementById('hero-cmd');
+  if (term && cmd && !reduced) {
+    var text = cmd.textContent;
+    var lines = term.querySelectorAll('.tl:not(.tl-cmd)');
+    term.classList.add('is-boot');
+    cmd.textContent = '';
+    var i = 0;
+    var tick = function () {
+      cmd.textContent = text.slice(0, ++i);
+      if (i < text.length) return setTimeout(tick, 26);
+      Array.prototype.forEach.call(lines, function (line, idx) {
+        setTimeout(function () { line.classList.add('tl-on'); }, 220 + idx * 70);
+      });
+    };
+    setTimeout(tick, 500);
+  }
+
+  /* ---------- Contact form ----------
+   * AJAX submit with graceful failure (FormSubmit can be down — a plain POST
+   * would strand the visitor on a raw Cloudflare error page). No-JS browsers
+   * fall back to the form's plain action + ?sent=1 redirect. Messages are
+   * injected into always-rendered live regions (revealing from display:none
+   * makes role=status/alert announcements unreliable) and the fetch aborts
+   * after 15s so the Send button never stays stuck disabled.
    */
-  const sent = select('#contact-sent')
-  const err = select('#contact-error')
-  const SENT_MSG = 'Your message has been sent. Thank you!'
-  const ERR_MSG = 'Sending failed — the form service is unreachable right now. Please email <a href="mailto:fadhlillah949699@gmail.com">fadhlillah949699@gmail.com</a> or use the WhatsApp link instead.'
+  var sent = document.getElementById('contact-sent');
+  var err = document.getElementById('contact-error');
+  var SENT_MSG = 'Your message has been sent. Thank you!';
+  var ERR_MSG = 'Sending failed — the form service is unreachable right now. Please email <a href="mailto:fadhlillah949699@gmail.com">fadhlillah949699@gmail.com</a> or use the WhatsApp link instead.';
+
   if (window.location.search.indexOf('sent=1') !== -1 && sent) {
-    sent.textContent = SENT_MSG
+    sent.textContent = SENT_MSG;
   }
-  const form = select('.php-email-form')
+
+  var form = document.querySelector('.contact-form');
   if (form && window.fetch) {
-    form.addEventListener('submit', (e) => {
-      e.preventDefault()
-      const btn = form.querySelector('button[type="submit"]')
-      sent.textContent = ''
-      err.textContent = ''
-      btn.disabled = true
-      const ctrl = window.AbortController ? new AbortController() : null
-      const timer = ctrl ? setTimeout(() => ctrl.abort(), 15000) : null
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var btn = form.querySelector('button[type="submit"]');
+      sent.textContent = '';
+      err.textContent = '';
+      btn.disabled = true;
+      var ctrl = window.AbortController ? new AbortController() : null;
+      var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 15000) : null;
       fetch('https://formsubmit.co/ajax/fadhlillah949699@gmail.com', {
         method: 'POST',
         headers: { 'Accept': 'application/json' },
         body: new FormData(form),
         signal: ctrl ? ctrl.signal : undefined
-      }).then((r) => {
-        if (!r.ok) throw new Error(r.status)
-        sent.textContent = SENT_MSG
-        form.reset()
-      }).catch(() => {
-        err.innerHTML = ERR_MSG
-      }).finally(() => {
-        if (timer) clearTimeout(timer)
-        btn.disabled = false
-      })
-    })
+      }).then(function (r) {
+        if (!r.ok) throw new Error(r.status);
+        sent.textContent = SENT_MSG;
+        form.reset();
+      }).catch(function () {
+        err.innerHTML = ERR_MSG;
+      }).finally(function () {
+        if (timer) clearTimeout(timer);
+        btn.disabled = false;
+      });
+    });
   }
 
-  /**
-   * Hero terminal boot sequence: type the command, then reveal the response
-   */
-  const term = select('#hero-term')
-  const cmd = select('#hero-cmd')
-  if (term && cmd) {
-    const reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reducedMotion || typeof Typed === 'undefined') {
-      term.classList.add('is-live')
-    } else {
-      term.classList.add('is-boot')
-      cmd.textContent = ''
-      new Typed('#hero-cmd', {
-        strings: ['curl -s api.fadhlillah.dev/whoami'],
-        typeSpeed: 26,
-        startDelay: 500,
-        showCursor: false,
-        loop: false,
-        onComplete: () => {
-          setTimeout(() => {
-            term.classList.add('is-live')
-            term.querySelectorAll('.tl:not(.tl-cmd)').forEach((el, idx) => {
-              setTimeout(() => el.classList.add('tl-on'), idx * 70)
-            })
-          }, 220)
-        }
-      })
-    }
-  }
-
-})()
+})();
