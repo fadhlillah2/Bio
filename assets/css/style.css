@@ -1700,6 +1700,17 @@ section {
   color: var(--text);
 }
 
+/* Buyers cannot size a project from capability alone; these are the real
+   engagement sizes to date, taken from the resume. */
+.how-we-work-scale {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
 .how-we-work li::before {
   content: "0" counter(step);
   display: block;
