@@ -21,7 +21,7 @@ cv/
 ├── consulting-onepager-en-vX.Y.txt / .pdf  ← business-buyer one-pager, English
 ├── consulting-onepager-id-vX.Y.txt / .pdf  ← business-buyer one-pager, Bahasa Indonesia
 ├── drafts/                                 ← LinkedIn paste-ready drafts (gitignored, local-only)
-└── archive/                                ← superseded versions, audit trail — never distribute
+└── archive/                                ← 2 superseded versions per artifact — never distribute
 ```
 
 The version numbers in play right now are listed once, under [Current](#current--which-file-do-i-send)
@@ -70,8 +70,8 @@ python3 cv/build-pdf.py --selftest      # parser self-check, no Chrome needed
 
 ## Changelog
 
-Newest first. Every version listed here has its files either at this level (current) or in
-`archive/`.
+Newest first, and complete — this list is the full history even where the files themselves are no
+longer in the tree (see [Archive](#archive)).
 
 ### resume — full LinkedIn mirror
 
@@ -161,10 +161,13 @@ Newest first. Every version listed here has its files either at this level (curr
 
 ## Archive
 
-Never distribute from here. `archive/` holds every superseded `.txt`/`.pdf` pair; each is replaced
-by the next version of the same artifact, and the [Changelog](#changelog) above says what changed
-at each step (the one exception: `resume-v8.2` was superseded by the full-mirror decision, not by
-`v8.3` being a newer edition of the same thing).
+Never distribute from here. `archive/` keeps the **two most recent superseded versions of each
+artifact**, plus **`resume-v8.2`** — the best curated 1-page edition, kept on purpose in case a
+curated resume is ever wanted again (it was superseded by the full-mirror decision, not by `v8.3`
+being a newer edition of the same thing).
+
+Everything older was pruned from the tree 2026-08-17 (24 versions → 9; still in Git history if ever
+needed). The [Changelog](#changelog) above remains the complete record.
 
 Removed from the tree 2026-07-10 (still in Git history if ever needed):
 `linkedin-profile-v1.pdf/.txt` (raw export — contained the mobile number),
@@ -208,7 +211,8 @@ public and GitHub Pages served everything, so `_config.yml` now excludes
   (site-Services wording + resume-sourced metrics only; keep EN/ID in lock-step — same claims,
   translated wording only). Regenerate each PDF via `build-pdf.py` on any change.
 - New version → add a **Changelog** entry, swap the file in **Current**, and move the superseded
-  files to `archive/`. **Current** and the **Changelog** are the only two places a version number
+  files to `archive/`, then prune `archive/` back to the two newest per artifact (`resume-v8.2`
+  stays regardless). **Current** and the **Changelog** are the only two places a version number
   appears in this README — keep it that way.
 - The site (`index.html`): About and the Resume section stay synced verbatim to the mirror resume.
   The hero/meta headline was re-led for the recruiter scan (2026-07-11: "Backend Software Engineer

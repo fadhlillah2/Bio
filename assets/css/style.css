@@ -681,7 +681,7 @@ section {
 }
 
 /*--------------------------------------------------------------
-# Skills — grouped tags (source: cv/archive/resume-v8.0.txt)
+# Skills — grouped tags (grouping taken from the resume's SKILLS section, introduced in v8.0)
 --------------------------------------------------------------*/
 .skills .skill-group {
   margin-bottom: 22px;
