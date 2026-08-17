@@ -1016,6 +1016,13 @@ section {
   align-items: start;
 }
 
+.about-portrait {
+  position: relative;
+}
+
+/* The source photo has a busy outdoor background. Pulling the saturation down
+   and warming it slightly settles the surroundings without draining the skin
+   tone, so the frame reads as a portrait rather than a snapshot. */
 .about-portrait img {
   width: 100%;
   aspect-ratio: 1;
@@ -1023,7 +1030,18 @@ section {
   object-position: center 22%;
   border: 1px solid var(--line-2);
   border-radius: var(--r-lg);
-  filter: saturate(0.92) contrast(1.02);
+  filter: saturate(0.28) contrast(1.1) brightness(1.03) sepia(0.12);
+}
+
+/* vignette over the image only — bottom:auto + aspect-ratio keeps it off the caption */
+.about-portrait::after {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  aspect-ratio: 1;
+  border-radius: var(--r-lg);
+  background: radial-gradient(120% 100% at 50% 35%, transparent 40%, rgba(7, 10, 16, 0.55) 100%);
+  pointer-events: none;
 }
 
 .about-caption {
