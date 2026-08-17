@@ -2011,6 +2011,133 @@ html:not(.js) .fab {
 }
 
 /*--------------------------------------------------------------
+# Writeup article — long-form prose, narrower measure than the site grid
+--------------------------------------------------------------*/
+.article {
+  padding: clamp(40px, 6vw, 72px) 0 clamp(56px, 7vw, 96px);
+}
+
+.article-wrap {
+  max-width: 720px;
+}
+
+.article-head {
+  margin-bottom: clamp(32px, 4vw, 48px);
+}
+
+.article-head h1 {
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 600;
+  line-height: 1.14;
+  letter-spacing: -0.03em;
+  color: var(--head);
+  text-wrap: balance;
+  margin-bottom: 18px;
+}
+
+.article-deck {
+  font-size: clamp(17px, 1.9vw, 19px);
+  line-height: 1.55;
+  color: var(--bright);
+  letter-spacing: -0.01em;
+}
+
+.article-deck em {
+  font-family: var(--serif);
+  font-style: normal;
+  font-size: 1.06em;
+  color: var(--head);
+}
+
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.article-meta a {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.article h2 {
+  font-size: clamp(20px, 2.3vw, 25px);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  color: var(--head);
+  margin: 42px 0 14px;
+}
+
+.article p {
+  font-size: 16.5px;
+  line-height: 1.72;
+  margin-bottom: 18px;
+}
+
+.article p strong {
+  color: var(--head);
+  font-weight: 600;
+}
+
+.article p em {
+  color: var(--bright);
+  font-style: italic;
+}
+
+.article code {
+  font-family: var(--mono);
+  font-size: 0.88em;
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  color: var(--bright);
+}
+
+.code-block {
+  margin: 0 0 22px;
+  padding: 16px 18px;
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--r-sm);
+  overflow-x: auto;
+}
+
+.code-block code {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--code, var(--bright));
+  white-space: pre;
+}
+
+.article-close {
+  margin-top: 34px;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  font-size: 14.5px;
+  color: var(--muted);
+}
+
+.article-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 30px;
+}
+
+/*--------------------------------------------------------------
 # Print: reveal-hidden content must be forced visible (it never
 # scrolls into view when printing); drop interactive chrome and
 # keep the dark theme so the light text stays legible
