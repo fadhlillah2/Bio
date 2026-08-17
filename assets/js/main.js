@@ -78,6 +78,15 @@
   }, { passive: true });
   onScroll();
 
+  /* ---------- Contact shortcut hides once you're already in Contact ---------- */
+  var contactSection = document.getElementById('contact');
+  var fabContact = document.querySelector('.fab-contact');
+  if (contactSection && fabContact && window.IntersectionObserver) {
+    new IntersectionObserver(function (entries) {
+      fabContact.classList.toggle('is-off', entries[0].isIntersecting);
+    }, { threshold: 0.12 }).observe(contactSection);
+  }
+
   /* ---------- Hero terminal: type the command, then stagger the response ---------- */
   var term = document.getElementById('hero-term');
   var cmd = document.getElementById('hero-cmd');

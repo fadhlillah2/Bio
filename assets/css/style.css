@@ -435,7 +435,12 @@ html.js [data-reveal].is-in {
   color: var(--head);
 }
 
+/* inline-flex + min-height so the tap target clears WCAG 2.5.8 (24px) —
+   as bare text it measured 21px tall next to 33px buttons */
 .plain-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
   font-family: var(--mono);
   font-size: 12.5px;
   text-decoration: underline;
@@ -705,6 +710,9 @@ section {
 @media (max-width: 520px) {
   .hero-cta .btn {
     width: 100%;
+  }
+  .hero-cta .plain-link {
+    min-height: 44px;
   }
 }
 
@@ -1895,6 +1903,7 @@ a.channel:hover {
   display: inline-flex;
   align-items: center;
   gap: 5px;
+  min-height: 32px;
   font-size: 13.5px;
   color: var(--text);
 }
@@ -1916,6 +1925,15 @@ a.channel:hover {
   font-family: var(--mono);
   font-size: 11.5px;
   color: var(--muted);
+}
+
+/* once the footer stacks, margin-left:auto only pushes the links off to the
+   right while everything else stays flush left */
+@media (max-width: 620px) {
+  .footer-links {
+    margin-left: 0;
+    gap: 14px;
+  }
 }
 
 /*--------------------------------------------------------------
@@ -1945,6 +1963,14 @@ a.channel:hover {
 html:not(.js) .fab {
   opacity: 1;
   visibility: visible;
+}
+
+/* inside the contact section the shortcut is redundant, and on mobile it
+   overlaps the message field — must outrank .is-on, so it comes after */
+.fab.is-off {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .fab:hover {
