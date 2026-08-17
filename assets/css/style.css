@@ -56,6 +56,8 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  /* keeps UA-painted chrome dark too: scrollbars, autofilled fields, form widgets */
+  color-scheme: dark;
 }
 
 body {

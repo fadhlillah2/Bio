@@ -65,7 +65,7 @@
       if (section && section.getBoundingClientRect().top <= 140) active = i;
     });
     links.forEach(function (a, i) {
-      if (i === active) a.setAttribute('aria-current', 'true');
+      if (i === active) a.setAttribute('aria-current', 'location');
       else a.removeAttribute('aria-current');
     });
     queued = false;
