@@ -2131,6 +2131,11 @@ html:not(.js) .fab {
 --------------------------------------------------------------*/
 .article {
   padding: clamp(40px, 6vw, 72px) 0 clamp(56px, 7vw, 96px);
+  /* At ~320px the page gained 12px of sideways scroll even though every element
+     measured within the viewport — the scrollable code samples leak width once a
+     vertical scrollbar narrows the layout. `clip` (not `hidden`) contains it
+     without creating a scroll container, so sticky positioning still works. */
+  overflow-x: clip;
 }
 
 .article-wrap {

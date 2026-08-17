@@ -192,13 +192,15 @@ public and GitHub Pages served everything, so `_config.yml` now excludes
 - **The current resume must always have a matching current PDF.** Regenerate via `build-pdf.py`
   whenever the .txt changes.
 - On version bump, also update ALL version-pinned links:
-  (a) in-repo `index.html` — 13 `href="cv/…"` in total (`grep -o 'href="cv/' index.html | wc -l`).
+  (a) in-repo — 14 links in total across **two** files, `index.html` (13) and
+  `writeups/hybrid-retrieval.html` (1, written `../cv/…`):
+  `grep -rno 'href="\(\.\./\)\?cv/' index.html writeups/ | wc -l`.
   Each artifact is linked in more than one spot; update every one or the live site 404s:
   - `cv/resume-vX.Y.pdf` ×3 (hero **secondary** "Full CV" + both Experience-section CTA rows) and
     `cv/resume-vX.Y.txt` ×2 ("Plain-text version" in both CTA rows);
-  - `cv/resume-onepager-vX.Y.pdf` ×4 (**top-bar** "Download CV" + hero **primary** "Download CV"
-    + both Experience-section CTA rows) — bumps on its OWN `v1.x` scheme, not with the resume's
-    `v8.x`;
+  - `cv/resume-onepager-vX.Y.pdf` ×5 (**top-bar** "Download CV" + hero **primary** "Download CV"
+    + both Experience-section CTA rows + the **writeup top bar**) — bumps on its OWN `v1.x`
+    scheme, not with the resume's `v8.x`;
   - `cv/consulting-onepager-en-vX.Y.pdf` ×2 (hero buyer line + Services) and
     `cv/consulting-onepager-id-vX.Y.pdf` ×2 (Services button + the Bahasa Indonesia line);
   (b) outside this repo — the **Resume badge in the GitHub profile README**
