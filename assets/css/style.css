@@ -1020,28 +1020,16 @@ section {
   position: relative;
 }
 
-/* The source photo has a busy outdoor background. Pulling the saturation down
-   and warming it slightly settles the surroundings without draining the skin
-   tone, so the frame reads as a portrait rather than a snapshot. */
+/* A proper studio headshot needs no rescuing — the earlier heavy desaturation
+   and vignette existed to tame a busy outdoor background. All that is left is
+   a touch of dimming so the light grey backdrop sits on a dark page. */
 .about-portrait img {
   width: 100%;
   aspect-ratio: 1;
   object-fit: cover;
-  object-position: center 22%;
   border: 1px solid var(--line-2);
   border-radius: var(--r-lg);
-  filter: saturate(0.28) contrast(1.1) brightness(1.03) sepia(0.12);
-}
-
-/* vignette over the image only — bottom:auto + aspect-ratio keeps it off the caption */
-.about-portrait::after {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  aspect-ratio: 1;
-  border-radius: var(--r-lg);
-  background: radial-gradient(120% 100% at 50% 35%, transparent 40%, rgba(7, 10, 16, 0.55) 100%);
-  pointer-events: none;
+  filter: brightness(0.94) contrast(1.03);
 }
 
 .about-caption {
