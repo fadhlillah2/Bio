@@ -1920,6 +1920,10 @@ a.channel:hover {
 
 .footer-colophon {
   flex: 1 0 100%;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 20px;
   padding-top: 18px;
   border-top: 1px solid var(--line);
   font-family: var(--mono);
