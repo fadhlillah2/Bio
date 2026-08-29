@@ -1,0 +1,24 @@
+{
+  "name": "bio",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "cv": "rm -rf static/cv && mkdir -p static/cv && cp cv/*.pdf cv/*.txt static/cv/",
+    "dev": "bun run cv && vite dev",
+    "build": "bun run cv && vite build",
+    "preview": "vite preview",
+    "check": "svelte-kit sync && svelte-check"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "3.0.10",
+    "@sveltejs/kit": "2.70.3",
+    "@sveltejs/vite-plugin-svelte": "7.3.0",
+    "pdf-lib": "1.17.1",
+    "svelte": "5.57.0",
+    "svelte-check": "4.7.6",
+    "typescript": "5.9.3",
+    "unpdf": "1.8.1",
+    "vite": "8.2.2"
+  }
+}
