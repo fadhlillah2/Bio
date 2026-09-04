@@ -10,7 +10,7 @@
 export function enhance() {
   "use strict";
 
-  // ponytail: only document-level listeners, observers and timers need cleanup —
+  // Only document-level listeners, observers and timers need cleanup —
   // element-scoped listeners die with the nodes Svelte removes on navigation.
   var timers = [];
   var later = function (fn, ms) { timers.push(setTimeout(fn, ms)); };

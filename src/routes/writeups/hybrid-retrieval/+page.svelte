@@ -4,7 +4,7 @@
   import IconSprite from "$lib/components/IconSprite.svelte";
   import { enhance } from "$lib/enhance.js";
 
-  // ponytail: Svelte reads { } in markup as expressions and ends a <script> at the first
+  // Svelte reads { } in markup as expressions and ends a <script> at the first
   // literal closing tag, so the JSON-LD ships verbatim as one {@html} string with \/ escaped.
   const jsonLd = `  <script type="application/ld+json">
   {
@@ -13,7 +13,7 @@
     "headline": "Hybrid retrieval for scanned Indonesian contracts",
     "description": "Why pure vector search loses clause numbers in contract documents, how the retrieval layer combines semantic search, TF-IDF and an exact-match fallback, and which parts are still unfinished.",
     "datePublished": "2026-08-17",
-    "dateModified": "2026-08-17",
+    "dateModified": "2026-09-04",
     "inLanguage": "en",
     "author": {
       "@type": "Person",
@@ -106,6 +106,7 @@
 
         <p>The selection rule is the part I would defend in review:</p>
 
+        <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
         <pre class="code-block" tabindex="0" role="region" aria-label="Code sample"><code>best_result = max(all_results, key=lambda x: x['confidence'] * x['word_count'])</code></pre>
 
         <p>Confidence alone is the obvious choice and the wrong one. An aggressive binarisation pass often destroys most of the page but reads the four surviving words perfectly — a 0.98 confidence result carrying almost no document. Multiplying by word count makes a variant earn its confidence across the whole page, so a slightly noisier read of the full contract beats a pristine read of one heading. It is a crude objective function, but it encodes the thing that actually matters here: coverage is not optional when the answer might be in the clause that got thrown away.</p>
@@ -116,6 +117,7 @@
 
         <p>The retriever runs both strategies and merges them rather than choosing between them. Semantic search returns 15 candidates; a TF-IDF keyword search returns 10. The merge in <a href="https://github.com/fadhlillah2/llama-docs-auditor/blob/main/rag/retriever.py" target="_blank" rel="noopener">retriever.py</a> weights them 0.7 to 0.3 in favour of semantics — but the detail that does the real work is the third term:</p>
 
+        <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
         <pre class="code-block" tabindex="0" role="region" aria-label="Code sample"><code>combined_scores[doc_id]['combined_score'] += keyword_score + 0.1  <span class="tmut"># bonus for appearing in both</span></code></pre>
 
         <p>A chunk that both searches surface independently gets a flat bonus on top of its weighted sum. The two methods fail in uncorrelated ways — semantics drifts to neighbouring clauses, TF-IDF matches boilerplate that shares vocabulary — so agreement between them is genuine evidence rather than a louder version of one signal. Weighted sums alone let a single very confident semantic hit dominate; the bonus rewards consensus instead.</p>
@@ -132,6 +134,7 @@
 
         <p>Finishing it surfaced a second bug, this time in the fix. Matching needs to tolerate the doubled spacing OCR leaves behind, so the reference is spliced with <code>\s+</code> — but escaping the whole string first turns its spaces into <code>\␠</code>, and the <code>\s+</code> then attaches to the backslash:</p>
 
+        <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
         <pre class="code-block" tabindex="0" role="region" aria-label="Code sample"><code><span class="tmut"># wrong: matches a literal backslash followed by one or more 's'</span>
 re.sub(r'\s+', r'\\s+', re.escape("Section II.3"))  <span class="tmut">→</span> Section\\s+II\.3
 
@@ -169,8 +172,8 @@ r'\s+'.join(re.escape(p) for p in "Section II.3".split())  <span class="tmut">�
         <a href="mailto:fadhlillah949699@gmail.com">Email</a>
       </nav>
       <p class="footer-colophon">
-        <span>Static site, hand-written HTML/CSS/JS — no framework, no build step, no third-party requests.</span>
-        <span>Updated <time datetime="2026-08-17">August 2026</time></span>
+        <span>Prerendered with SvelteKit &middot; hand-written CSS/JS &middot; self-hosted fonts.</span>
+        <span>Updated <time datetime="2026-09-04">September 2026</time></span>
       </p>
     </div>
   </footer>

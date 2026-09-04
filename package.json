@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "cv": "rm -rf static/cv && mkdir -p static/cv && cp cv/*.pdf cv/*.txt static/cv/",
+    "cv:selftest": "bun cv/build-pdf.ts --selftest",
     "dev": "bun run cv && vite dev",
     "build": "bun run cv && vite build",
     "preview": "vite preview",
-    "check": "svelte-kit sync && svelte-check"
+    "check": "svelte-kit sync && svelte-check",
+    "validate": "bun run cv:selftest && bun run check && bun run build"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "3.0.10",

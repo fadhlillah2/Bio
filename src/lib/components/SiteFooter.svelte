@@ -11,8 +11,8 @@
       <a href="mailto:fadhlillah949699@gmail.com">Email</a>
     </nav>
     <p class="footer-colophon">
-      <span>Static site, hand-written HTML/CSS/JS — no framework, no build step, no third-party requests.</span>
-      <span>Updated <time datetime="2026-08-17">August 2026</time></span>
+      <span>Prerendered with SvelteKit &middot; hand-written CSS/JS &middot; self-hosted fonts.</span>
+      <span>Updated <time datetime="2026-09-04">September 2026</time></span>
     </p>
   </div>
 </footer>

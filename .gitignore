@@ -17,5 +17,5 @@ node_modules/
 build/
 bun-*.log
 
-# staged by `bun run cv` from the canonical cv/ (same subset _config.yml publishes)
+# staged by `bun run cv` so SvelteKit publishes only current distributable CV files
 static/cv/

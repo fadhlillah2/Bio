@@ -27,14 +27,6 @@ jobs:
       - run: bun install --frozen-lockfile
       - run: bun run build
 
-      # Distributable cv/ subset — same exclusions _config.yml enforces today:
-      # no cv/archive/, no README.md, no build-pdf.py / build-pdf.ts.
-      - name: Copy distributable cv/ artefacts into build output
-        run: |
-          mkdir -p build/cv
-          cp cv/*.pdf cv/*.txt build/cv/
-          ls -1 build/cv
-
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build

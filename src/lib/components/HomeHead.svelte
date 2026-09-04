@@ -21,7 +21,7 @@
   <meta name="twitter:image" content="https://fadhlillah2.github.io/Bio/assets/img/og-cover.png">
   <meta name="twitter:image:alt" content="Fadhlillah — Backend Software Engineer: Java/Spring Boot microservices and LLM/RAG products">
 
-  <!-- ponytail: schema emitted as a raw string — Svelte reads bare JSON braces in markup as expressions -->
+  <!-- Emit raw JSON-LD because Svelte parses bare JSON braces as expressions. -->
   {@html `<script type="application/ld+json">
   {
     "@context": "https://schema.org",

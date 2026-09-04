@@ -35,7 +35,7 @@ Multi-page resumes wrap each company block in <div class="job"> with
 
 const WSL_CHROME = "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe";
 
-// ponytail: mirrors Python's SystemExit — a thrown error so the `finally` cleanups
+// Mirrors Python's SystemExit with an error so the `finally` cleanups
 // (.print.html / .tmp.pdf) still run. process.exit() would skip them.
 class Fail extends Error {}
 function fail(msg: string): never {
