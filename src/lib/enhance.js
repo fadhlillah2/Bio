@@ -2,9 +2,18 @@
  * Fadhlillah — portfolio behaviour. No dependencies.
  * Everything here is an enhancement: without JS the page stays fully readable
  * (the .js class is never stamped, so no [data-reveal] element is ever hidden).
+ *
+ * Called from onMount; returns a cleanup function because SvelteKit keeps the
+ * page alive across client-side navigation — observers, document listeners and
+ * pending timers would otherwise leak between routes.
  */
-(function () {
+export function enhance() {
   "use strict";
+
+  // Only document-level listeners, observers and timers need cleanup —
+  // element-scoped listeners die with the nodes Svelte removes on navigation.
+  var timers = [];
+  var later = function (fn, ms) { timers.push(setTimeout(fn, ms)); };
 
   var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -40,7 +49,7 @@
       if (e.target.closest('a')) setNav(false);
     });
   }
-  document.addEventListener('keydown', function (e) {
+  var onKeydown = function (e) {
     if (!document.body.classList.contains('nav-open')) return;
 
     if (e.key === 'Escape') {
@@ -63,7 +72,8 @@
         first.focus();
       }
     }
-  });
+  };
+  document.addEventListener('keydown', onKeydown);
 
   /* ---------- Scroll state: sticky bar, back-to-top, section spy ---------- */
   var topbar = document.getElementById('topbar');
@@ -89,20 +99,23 @@
     queued = false;
   };
 
-  document.addEventListener('scroll', function () {
+  var onScrollQueue = function () {
     if (queued) return;
     queued = true;
     window.requestAnimationFrame(onScroll);
-  }, { passive: true });
+  };
+  document.addEventListener('scroll', onScrollQueue, { passive: true });
   onScroll();
 
   /* ---------- Contact shortcut hides once you're already in Contact ---------- */
   var contactSection = document.getElementById('contact');
   var fabContact = document.querySelector('.fab-contact');
+  var fabIo = null;
   if (contactSection && fabContact && window.IntersectionObserver) {
-    new IntersectionObserver(function (entries) {
+    fabIo = new IntersectionObserver(function (entries) {
       fabContact.classList.toggle('is-off', entries[0].isIntersecting);
-    }, { threshold: 0.12 }).observe(contactSection);
+    }, { threshold: 0.12 });
+    fabIo.observe(contactSection);
   }
 
   /* ---------- Hero terminal: type the command, then stagger the response ---------- */
@@ -116,12 +129,12 @@
     var i = 0;
     var tick = function () {
       cmd.textContent = text.slice(0, ++i);
-      if (i < text.length) return setTimeout(tick, 26);
+      if (i < text.length) return later(tick, 26);
       Array.prototype.forEach.call(lines, function (line, idx) {
-        setTimeout(function () { line.classList.add('tl-on'); }, 220 + idx * 70);
+        later(function () { line.classList.add('tl-on'); }, 220 + idx * 70);
       });
     };
-    setTimeout(tick, 500);
+    later(tick, 500);
   }
 
   /* ---------- Contact form ----------
@@ -175,4 +188,12 @@
     });
   }
 
-})();
+  return function cleanup() {
+    if (io) io.disconnect();
+    if (fabIo) fabIo.disconnect();
+    document.removeEventListener('scroll', onScrollQueue);
+    document.removeEventListener('keydown', onKeydown);
+    timers.forEach(function (t) { clearTimeout(t); });
+    timers.length = 0;
+  };
+}

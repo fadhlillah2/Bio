@@ -15,7 +15,8 @@ that is not on LinkedIn). Files at this level are **current**; `archive/` is the
 ```
 cv/
 ├── README.md                               ← this file: which file to use + full version history
-├── build-pdf.py                            ← .txt → .pdf generator (`--selftest` checks the parser)
+├── build-pdf.ts                            ← Bun .txt → .pdf generator and verifier
+├── build-pdf.py                            ← independent Python reference oracle
 ├── resume-vX.Y.txt / .pdf                  ← official full CV — LinkedIn mirror, 2 pages
 ├── resume-onepager-vX.Y.txt / .pdf         ← recruiter/ATS edition, 1 page
 ├── consulting-onepager-en-vX.Y.txt / .pdf  ← business-buyer one-pager, English
@@ -45,14 +46,14 @@ in two languages; every `.pdf` sits next to the same-named `.txt` it is generate
 | [`consulting-onepager-id-v1.4.pdf`](consulting-onepager-id-v1.4.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
 
 Each `.pdf` is generated from its same-named `.txt` (the `.txt` is the editable source of truth
-for that artifact); `build-pdf.py` is the generator; `archive/` holds superseded versions —
-never distribute from there.
+for that artifact); `build-pdf.ts` is the current generator and `build-pdf.py` is its reference
+oracle. `archive/` holds superseded versions — never distribute from there.
 
 Known scrape limit: LinkedIn only exposes the top ~10 Skills entries to the scraper (each role
 shows "+N skills" tags that cannot be expanded) — the resume SKILLS section mirrors what is
 verifiably visible.
 
-## Generator — [`build-pdf.py`](build-pdf.py)
+## Generator — [`build-pdf.ts`](build-pdf.ts)
 
 Parses the .txt, typesets it (Arial/Liberation Sans, A4), prints via Chrome headless (native
 Linux/macOS Chrome or WSL Windows Chrome, auto-detected), stamps Title/Author/lang metadata,
@@ -61,11 +62,15 @@ verifies the PDF wording is identical to the .txt (whitespace-insensitive) and f
 `COMPANY · LOCATION` / `Title · Date` line (ATS-friendly; the `·` separator is CSS-generated and
 ignored by the wording check). Consulting one-pagers (detected by filename) get a larger page-fill
 CSS profile so their shorter content fills the A4; the recruiter 1-pager gets a slight densify
-profile so the v1.4 keyword-expanded SKILLS stay on one page. Needs `pypdf`.
+profile so the v1.4 keyword-expanded SKILLS stay on one page. The Bun implementation uses `unpdf`
+for text extraction and `pdf-lib` for metadata; install root dependencies first with `bun install`.
+The Python implementation remains available as an independent parity oracle and needs `pypdf` for
+full PDF generation.
 
 ```bash
-python3 cv/build-pdf.py cv/resume-vX.Y.txt [max_pages]
-python3 cv/build-pdf.py --selftest      # parser self-check, no Chrome needed
+bun run cv:selftest
+bun cv/build-pdf.ts cv/resume-vX.Y.txt [max_pages]
+python3 cv/build-pdf.py --selftest  # independent parser oracle; no pypdf needed
 ```
 
 ## Changelog
@@ -169,14 +174,15 @@ being a newer edition of the same thing).
 Everything older was pruned from the tree 2026-08-17 (24 versions → 9; still in Git history if ever
 needed). The [Changelog](#changelog) above remains the complete record.
 
-Removed from the tree 2026-07-10 (still in Git history if ever needed):
+Removed from the tracked/public tree 2026-07-10 (still in Git history if ever needed):
 `linkedin-profile-v1.pdf/.txt` (raw export — contained the mobile number),
 `linkedin-profile-v2.txt` and `v3.txt` (private editing drafts with strategy
 notes — must never be publicly served), `linkedin-profile-v4.txt` (the SoT
 snapshot itself — carries internal delta/strategy notes, so it now lives
 outside the repo) and `img/img.png` (stray personal screenshot). The repo is
-public and GitHub Pages served everything, so `_config.yml` now excludes
-`cv/archive/`, this README, and `build-pdf.py` from the published site.
+public; the SvelteKit build publishes only files staged under `static/`, so `cv/archive/`, this
+README, both generators, drafts, and the ignored local `img/` workspace never enter the deployed
+artifact.
 
 ## Rules
 
@@ -186,15 +192,15 @@ public and GitHub Pages served everything, so `_config.yml` now excludes
   No content may appear in the resume that is not on the live profile (or its captured snapshot).
 - **Live LinkedIn wins on conflicts**, always.
 - Each PDF is generated FROM its canonical `.txt` (the .txt is the source);
-  `build-pdf.py` verifies the PDF wording is identical (whitespace-insensitive).
+  `build-pdf.ts` verifies the PDF wording is identical (whitespace-insensitive), and
+  `build-pdf.py` remains the independent reference oracle.
 - Anti-fabrication: every metric stands alone exactly as sourced; never merge separate metrics
   into one composite claim, never use a stronger verb than the source.
-- **The current resume must always have a matching current PDF.** Regenerate via `build-pdf.py`
+- **The current resume must always have a matching current PDF.** Regenerate via `build-pdf.ts`
   whenever the .txt changes.
 - On version bump, also update ALL version-pinned links:
-  (a) in-repo — 14 links in total across **two** files, `index.html` (13) and
-  `writeups/hybrid-retrieval.html` (1, written `../cv/…`):
-  `grep -rno 'href="\(\.\./\)\?cv/' index.html writeups/ | wc -l`.
+  (a) in-repo — 14 references in total across the home components and writeup route:
+  `rg -o 'cv/(resume|consulting)[^"} ]+' src/lib/components src/routes | wc -l`.
   Each artifact is linked in more than one spot; update every one or the live site 404s:
   - `cv/resume-vX.Y.pdf` ×3 (hero **secondary** "Full CV" + both Experience-section CTA rows) and
     `cv/resume-vX.Y.txt` ×2 ("Plain-text version" in both CTA rows);
@@ -212,13 +218,13 @@ public and GitHub Pages served everything, so `_config.yml` now excludes
   `resume-onepager` = recruiter/ATS edition (curated; may use user-confirmed + archive-audited facts;
   must never *contradict* LinkedIn); `consulting-onepager-{en,id}` = business-buyer artifact
   (site-Services wording + resume-sourced metrics only; keep EN/ID in lock-step — same claims,
-  translated wording only). Regenerate each PDF via `build-pdf.py` on any change.
+  translated wording only). Regenerate each PDF via `build-pdf.ts` on any change.
 - New version → add a **Changelog** entry, swap the file in **Current**, and move the superseded
   files to `archive/`, then prune `archive/` back to the two newest per artifact (`resume-v8.2`
   stays regardless). **Current** and the **Changelog** are the only two places a version number
   appears in this README — keep it that way.
-- The site (`index.html`): About and the Experience section (`#resume`) stay synced verbatim to the
-  mirror resume.
+- The site (`src/lib/components/About.svelte` and `Resume.svelte`): About and the Experience
+  section (`#resume`) stay synced verbatim to the mirror resume.
   The hero/meta headline was re-led for the recruiter scan (2026-07-11: "Backend Software Engineer
   · 6+ yrs · AI Native Engineer") — a re-emphasis of the same facts, not a contradiction of the
   LinkedIn headline. Site-only sections (Facts, Services, Portfolio, Skills grid) may add

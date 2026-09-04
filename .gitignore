@@ -10,3 +10,12 @@ Thumbs.db
 CLAUDE.md
 *.tmp.pdf
 cv/drafts/
+
+# SvelteKit / Bun
+node_modules/
+.svelte-kit/
+build/
+bun-*.log
+
+# staged by `bun run cv` so SvelteKit publishes only current distributable CV files
+static/cv/

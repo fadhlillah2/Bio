@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- stamps .js before CSS loads; html:not(.js) rules keep [data-reveal] content visible without JS -->
+  <script>document.documentElement.classList.add('js')</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="theme-color" content="#070a10">
+  <meta name="author" content="Fadhlillah">
+
+  <!-- Favicons -->
+  <link href="%sveltekit.assets%/assets/img/favicon.svg" rel="icon" type="image/svg+xml">
+  <link href="%sveltekit.assets%/assets/img/favicon.png" rel="icon" type="image/png" sizes="32x32">
+  <link href="%sveltekit.assets%/assets/img/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180">
+
+  <link rel="preload" href="%sveltekit.assets%/assets/fonts/instrument-sans-var.woff2" as="font" type="font/woff2" crossorigin>
+  <!-- served verbatim from static/ (never bundled, never minified) -->
+  <link href="%sveltekit.assets%/assets/css/style.css" rel="stylesheet">
+  %sveltekit.head%
+</head>
+
+<body id="top">
+  <div style="display: contents">%sveltekit.body%</div>
+</body>
+
+</html>

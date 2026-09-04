@@ -41,7 +41,31 @@ Backend Software Engineer (6+ yrs) — deep in **Java/Spring Boot**, adaptable a
 
 ## About This Repo
 
-Source of my portfolio site, live at **[fadhlillah2.github.io/Bio](https://fadhlillah2.github.io/Bio/)** — a static site with a dark console theme and terminal-style hero, hand-written HTML/CSS/JS: no framework, no build step, no JS dependencies (icons are inline SVG; the only external request is Google Fonts). Deployed on GitHub Pages. [`cv/`](cv/) holds the distributable artifacts and their canonical `.txt` sources: the full resume (LinkedIn mirror), a recruiter/ATS one-pager, and consulting one-pagers (EN + Bahasa Indonesia), all typeset via `build-pdf.py`.
+Source of my portfolio site, live at **[fadhlillah2.github.io/Bio](https://fadhlillah2.github.io/Bio/)**. It is a fully prerendered SvelteKit site with a dark console theme, hand-written CSS and progressive client-side enhancements. Fonts are self-hosted, icons are inline SVG, and production is deployed to GitHub Pages through GitHub Actions.
+
+- [`src/routes/`](src/routes/) contains the home page and technical writeup routes.
+- [`src/lib/components/`](src/lib/components/) contains the portfolio sections.
+- [`static/`](static/) contains the stylesheet, fonts, images, metadata, and generated CV copies served as-is.
+- [`cv/`](cv/) contains the canonical `.txt` sources and distributable PDFs for the full resume, recruiter/ATS one-pager, and consulting one-pagers in English and Bahasa Indonesia.
+
+## Local Development
+
+The project uses Bun for dependency and script management, Vite for development and bundling, and SvelteKit's static adapter for production output.
+
+```bash
+bun install
+bun run dev          # http://localhost:5173/Bio/
+bun run check        # Svelte diagnostics
+bun run cv:selftest  # CV parser checks
+bun run build        # prerendered output in build/
+```
+
+## Deployment
+
+Pushes to `master` run [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), build the
+static site, and deploy the resulting `build/` artifact. The repository's Pages source must be set
+to **GitHub Actions**; branch publishing is incompatible because the repository root contains
+source files rather than generated HTML.
 
 ## Contact
 

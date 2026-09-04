@@ -1,8 +1,0 @@
-# GitHub Pages (Jekyll): keep build/reference files out of the published site.
-# The repo itself is public — this only stops these paths from being served at
-# https://fadhlillah2.github.io/Bio/... ; they stay browsable in the Git repo.
-# What was removed from the tree entirely: see cv/README.md.
-exclude:
-  - cv/archive
-  - cv/README.md
-  - cv/build-pdf.py
