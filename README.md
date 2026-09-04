@@ -60,6 +60,13 @@ bun run cv:selftest  # CV parser checks
 bun run build        # prerendered output in build/
 ```
 
+## Deployment
+
+Pushes to `master` run [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), build the
+static site, and deploy the resulting `build/` artifact. The repository's Pages source must be set
+to **GitHub Actions**; branch publishing is incompatible because the repository root contains
+source files rather than generated HTML.
+
 ## Contact
 
 - **Email:** [fadhlillah949699@gmail.com](mailto:fadhlillah949699@gmail.com)
