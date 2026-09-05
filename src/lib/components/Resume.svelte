@@ -7,9 +7,9 @@
 
         <header class="section-head">
           <p class="section-index">04 &mdash; Experience</p>
-          <h2>Professional experience and educational background</h2>
+          <h2>Experience, education, projects, and certifications</h2>
           <p class="section-deck cta-row">
-            <a href={base + "/cv/resume-onepager-v1.8.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
+            <a href={base + "/cv/resume-onepager-v1.9.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
             <a href={base + "/cv/resume-v8.7.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
             <a href={base + "/cv/resume-v8.7.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
           </p>
@@ -140,7 +140,7 @@
 
           <div class="cred-card" data-reveal>
             <h3 class="cred-title">Projects</h3>
-            <p class="cred-lead">High-Precision Contract-Advisor RAG</p>
+            <p class="cred-lead">High-Precision Contract Advisor RAG</p>
             <p class="cred-sub">Top 50 — Meta Llama Hackathon 2025 (Credential ID 032/H8/META/XI/2025)</p>
             <ul class="cred-list">
               <li><strong>Problem:</strong> contract analysis for scanned and digital documents</li>
@@ -173,7 +173,7 @@
         </div>
 
         <p class="cta-row cta-row-center">
-          <a href={base + "/cv/resume-onepager-v1.8.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
+          <a href={base + "/cv/resume-onepager-v1.9.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
           <a href={base + "/cv/resume-v8.7.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
           <a href="#contact" class="btn btn-quiet btn-sm">Get in touch</a>
           <a href={base + "/cv/resume-v8.7.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>

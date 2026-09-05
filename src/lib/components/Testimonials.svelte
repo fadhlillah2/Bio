@@ -3,7 +3,7 @@
 
     <header class="section-head">
       <p class="section-index">07 &mdash; Recommendations</p>
-      <h2>What people I've worked with say</h2>
+      <h2>Recommendations from colleagues and peers</h2>
       <p class="section-deck">From <a href="https://www.linkedin.com/in/fadhlillah2" target="_blank" rel="noopener">LinkedIn</a>.</p>
     </header>
 

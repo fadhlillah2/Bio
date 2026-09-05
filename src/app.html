@@ -4,6 +4,16 @@
 <head>
   <!-- stamps .js before CSS loads; html:not(.js) rules keep [data-reveal] content visible without JS -->
   <script>document.documentElement.classList.add('js')</script>
+  <!-- inline and before the stylesheet so the look is on <html> at first paint, never a flash of
+       the wrong palette. Only place the hour map lives: 05–14 morning, 14–19 dusk, else night -->
+  <script>(function () {
+      var l = null; try { l = localStorage.getItem('look'); } catch (e) {}
+      if (l !== 'morning' && l !== 'dusk' && l !== 'night') {
+        var h = new Date().getHours();
+        l = h >= 5 && h < 14 ? 'morning' : h >= 14 && h < 19 ? 'dusk' : 'night';
+      }
+      document.documentElement.setAttribute('data-look', l);
+    })();</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 

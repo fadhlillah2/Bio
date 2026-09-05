@@ -3,8 +3,8 @@
 
     <header class="section-head">
       <p class="section-index">05 &mdash; Stack</p>
-      <h2>The stack behind the systems in production</h2>
-      <p class="section-deck">Grouped as I use it.</p>
+      <h2>Technologies used across production and project work</h2>
+      <p class="section-deck">Grouped by engineering purpose.</p>
     </header>
 
     <div class="stack-grid" data-reveal data-reveal-children>
@@ -26,7 +26,7 @@
 
       <div class="stack-group">
         <h3>Architecture</h3>
-        <ul class="tag-row"><li>Microservices</li><li>REST</li><li>GraphQL</li><li>Event-Driven</li><li>Hexagonal Architecture</li></ul>
+        <ul class="tag-row"><li>Microservices</li><li>REST</li><li>GraphQL</li><li>Event-driven architecture</li><li>Hexagonal Architecture</li></ul>
       </div>
 
       <div class="stack-group">
@@ -35,7 +35,7 @@
       </div>
 
       <div class="stack-group">
-        <h3>Messaging</h3>
+        <h3>Messaging &amp; Integration</h3>
         <ul class="tag-row"><li>Apache Kafka</li><li>RabbitMQ</li><li>gRPC</li><li>WebSocket</li></ul>
       </div>
 
@@ -50,7 +50,7 @@
       </div>
 
       <div class="stack-group">
-        <h3>Testing</h3>
+        <h3>Testing &amp; Quality</h3>
         <ul class="tag-row"><li>JUnit 5</li><li>Mockito</li><li>SonarLint</li></ul>
       </div>
 

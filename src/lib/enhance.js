@@ -1,5 +1,5 @@
 /**
- * Fadhlillah — portfolio behaviour. No dependencies.
+ * Fadhlillah — portfolio behavior. No dependencies.
  * Everything here is an enhancement: without JS the page stays fully readable
  * (the .js class is never stamped, so no [data-reveal] element is ever hidden).
  *
@@ -75,6 +75,36 @@ export function enhance() {
   };
   document.addEventListener('keydown', onKeydown);
 
+  /* ---------- Look switch ----------
+   * The look itself is chosen by the inline boot script in app.html (the only place
+   * the hour map lives); this only wires the buttons and remembers the choice.
+   */
+  var lookBtns = Array.prototype.slice.call(document.querySelectorAll('.look-btn'));
+  var themeMeta = document.querySelector('meta[name="theme-color"]');
+  var setLook = function (look) {
+    document.documentElement.setAttribute('data-look', look);
+    lookBtns.forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-look') === look));
+    });
+    // the browser chrome should match the page it frames
+    if (themeMeta) {
+      themeMeta.setAttribute('content', getComputedStyle(document.documentElement).getPropertyValue('--ink-0').trim());
+    }
+  };
+  setLook(document.documentElement.getAttribute('data-look') || 'night');
+
+  lookBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var look = btn.getAttribute('data-look');
+      try { localStorage.setItem('look', look); } catch (e) {}
+      setLook(look);
+      if (reduced) return;
+      // the colour crossfade is scoped to this class so it never drags an ordinary hover
+      document.documentElement.classList.add('is-switching');
+      later(function () { document.documentElement.classList.remove('is-switching'); }, 500);
+    });
+  });
+
   /* ---------- Scroll state: sticky bar, back-to-top, section spy ---------- */
   var topbar = document.getElementById('topbar');
   var fabs = Array.prototype.slice.call(document.querySelectorAll('.fab'));
@@ -137,6 +167,53 @@ export function enhance() {
     later(tick, 500);
   }
 
+  /* ---------- 3D tilt: the hero terminal and the cards lean towards the pointer ----------
+   * Fine pointers only — on touch there is no hover to lean into. JS writes custom
+   * properties, never a transform string, so CSS keeps ownership of the resting pose.
+   */
+  var fine = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var tiltFrame = 0;
+
+  // one pending frame for the whole page: only one element is under the pointer at a time
+  var addTilt = function (host, box, ryRest, rxRest, ampY, ampX) {
+    var last = null;
+    host.addEventListener('pointermove', function (e) {
+      last = e;
+      if (tiltFrame) return;
+      tiltFrame = window.requestAnimationFrame(function () {
+        tiltFrame = 0;
+        if (!last) return; // the pointer left before this frame ran
+        var hr = host.getBoundingClientRect();
+        var br = box.getBoundingClientRect();
+        var dx = (last.clientX - hr.left) / hr.width * 2 - 1;
+        var dy = (last.clientY - hr.top) / hr.height * 2 - 1;
+        box.style.setProperty('--ry', (ryRest + dx * ampY) + 'deg');
+        box.style.setProperty('--rx', (rxRest - dy * ampX) + 'deg');
+        box.style.setProperty('--mx', ((last.clientX - br.left) / br.width * 100) + '%');
+        box.style.setProperty('--my', ((last.clientY - br.top) / br.height * 100) + '%');
+      });
+    });
+    host.addEventListener('pointerleave', function () {
+      last = null;
+      box.style.removeProperty('--ry');
+      box.style.removeProperty('--rx');
+      box.style.removeProperty('--mx');
+      box.style.removeProperty('--my');
+    });
+  };
+
+  var hero = document.querySelector('.hero');
+  if (fine && !reduced) {
+    // the terminal follows the whole hero, so it reacts before the pointer reaches it
+    if (hero && term) addTilt(hero, term, -7, 2, 6, 5);
+    Array.prototype.forEach.call(document.querySelectorAll('.service-card'), function (card) {
+      addTilt(card, card, 0, 0, 4, 4);
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('.flagship'), function (card) {
+      addTilt(card, card, 0, 0, 2.5, 2.5);
+    });
+  }
+
   /* ---------- Contact form ----------
    * AJAX submit with graceful failure (FormSubmit can be down — a plain POST
    * would strand the visitor on a raw Cloudflare error page). No-JS browsers
@@ -155,6 +232,12 @@ export function enhance() {
   }
 
   var form = document.querySelector('.contact-form');
+  var lookSwitch = document.querySelector('.look-switch');
+  // with the phone keyboard up, a fixed pill lands right on the field being typed in
+  if (form && lookSwitch) {
+    form.addEventListener('focusin', function () { lookSwitch.classList.add('is-off'); });
+    form.addEventListener('focusout', function () { lookSwitch.classList.remove('is-off'); });
+  }
   if (form && window.fetch) {
     form.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -191,9 +274,12 @@ export function enhance() {
   return function cleanup() {
     if (io) io.disconnect();
     if (fabIo) fabIo.disconnect();
+    if (tiltFrame) window.cancelAnimationFrame(tiltFrame);
     document.removeEventListener('scroll', onScrollQueue);
     document.removeEventListener('keydown', onKeydown);
     timers.forEach(function (t) { clearTimeout(t); });
     timers.length = 0;
+    // <html> outlives the route, so a pending crossfade would otherwise stay switched on
+    document.documentElement.classList.remove('is-switching');
   };
 }

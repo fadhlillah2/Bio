@@ -1,30 +1,29 @@
                                              FADHLILLAH
-    Software Engineer | Java · Spring Boot · Microservices @ 2M+ req/day | LLM · RAG · Python
+     Backend Software Engineer | Java · Spring Boot · 2M+ req/day | LLM · RAG · Python
                  South Jakarta, Indonesia | +62 851-5704-3131 | fadhlillah949699@gmail.com
           linkedin.com/in/fadhlillah2 | github.com/fadhlillah2 | fadhlillah2.github.io/Bio
 
 SUMMARY
-Backend Software Engineer (6+ yrs) specializing in Java/Spring Boot, adaptable across Python,
-Node, and Go. Operates microservices serving 2M+ requests/day in a regulated enterprise
-environment and ships fast with AI-augmented engineering — a production SFTP platform delivered in
-10 days against a 17-day plan. Builds LLM-integrated products end-to-end (RAG systems, AI
-chatbots, internal automation); Top 50 at the Meta Llama Hackathon. Open to full-time, remote (international) & consulting roles
-(WIB · UTC+7).
+Backend Software Engineer (6+ yrs) specializing in Java/Spring Boot, with experience across Python,
+Node.js, and Go. Builds and operates microservices serving 2M+ requests/day in regulated banking.
+Applied AI-augmented engineering to deliver a production SFTP platform in 10 days against a 17-day plan.
+Builds LLM-integrated products end to end (RAG, chatbots, automation); Top 50 at the Meta Llama
+Hackathon. Open to full-time roles, international remote work, and consulting (WIB · UTC+7).
 
 EXPERIENCE
-FOX ASSET (INFINITY WAVE SDN BHD)                                                MALAYSIA (REMOTE)
-Backend Software Engineer | Contract                                            Dec 2025 – Present
-- Primary backend engineer of the Safety Hub (Permit-to-Work/HIRARC forms + safety induction) on
-  a multi-tenant CMMS SaaS — 23 Django REST Framework models, 50+ REST endpoints, ~21,000 lines
-  of Python; async PDF pipelines (Celery, wkhtmltopdf, WeasyPrint) with QR-verified certificates
-- Solely built the Project Management backend — 21 REST endpoints, 10 models, Kanban/timeline,
+FOX ASSET — INFINITY WAVE SDN BHD                                                MALAYSIA (REMOTE)
+Backend Software Engineer | Freelance                                           Dec 2025 – Present
+- Primary backend engineer for the Safety Hub (Permit-to-Work/HIRARC forms + safety induction) on
+  a multi-tenant CMMS SaaS — 23 Django data models, 50+ REST endpoints, ~21,000 lines of Python;
+  async PDF pipelines (Celery, wkhtmltopdf, WeasyPrint) with QR-verified certificates
+- Built the Project Management backend independently — 21 REST endpoints, 10 models, Kanban/timeline,
   S-Curve analytics, field-level RBAC — with 196 unit tests, plus 105 for the Safety Hub apps
-- Hardened AWS/CI-CD security (2-week engagement): purged leaked credentials, added gitleaks
-  secret scanning and a migration-drift gate, built a staging environment and ECR deploy pipeline
+- Hardened AWS/CI/CD in a 2-week engagement: removed exposed credentials, added gitleaks and a
+  migration-drift gate, and built staging with an Amazon ECR deployment pipeline
 
 BANK DANAMON                                                                             JAKARTA, ID
 Software Engineer                                                                 Aug 2023 – Present
-- Built and operate Spring Boot microservices serving 2M+ requests/day at sub-200ms; run 12
+- Build and operate Spring Boot microservices serving 2M+ requests/day at sub-200ms; run 12
   microservices (hexagonal architecture) handling 500k+ daily transactions
 - Share service ownership within a 5-person engineering team; informally mentor peers
 - Support financial systems processing $10M+ daily volume, consistently meeting 48-hour reporting
@@ -39,7 +38,7 @@ Backend Software Engineer | Remote                                              
 - Developed and optimized 40+ RESTful APIs for the OML Innovoice platform using Spring Boot
 - Cut unauthorized access by 95% by adding multi-layer authentication; implemented enterprise SSO
   (OAuth 2.0/JWT) and session tracking; managed sessions with Redis
-- Hardened the app against OWASP Top 10 (input validation, SQL injection); Dockerized services on
+- Implemented input validation and SQL-injection protections for OWASP Top 10 risks; Dockerized services on
   Azure; held code quality at 90+ via SonarLint and peer reviews
 
 ASSIST.ID                                                                    PEKANBARU CITY, RIAU, ID
@@ -52,11 +51,11 @@ Backend Software Engineer                                                       
   and SMS messages daily across POS and Kitchen Display systems
 
 PROJECTS
-- High-Precision Contract-Advisor RAG — Top 50, Meta Llama Hackathon; LangChain + Flask pipeline with
-  hybrid search over ChromaDB, Groq (Llama 3.3 70B) inference, Hugging Face embeddings, and EasyOCR
-  ingestion for scanned contracts — github.com/fadhlillah2/llama-docs-auditor
-- Rate limiting service implemented in Go with support for multiple algorithms and distributed
-  deployments — github.com/fadhlillah2/rate-limiter-project-go
+- High-Precision Contract Advisor RAG — Top 50, Meta Llama Hackathon; EasyOCR for scanned Indonesian
+  contracts at 88%+ accuracy with PASAL/AYAT/BAB structure preserved; hybrid LangChain/ChromaDB
+  retrieval + Groq (Llama 3.3 70B) — github.com/fadhlillah2/llama-docs-auditor
+- Distributed Go rate limiter — fixed-window, sliding-window, and token-bucket algorithms; Redis
+  Lua for atomic enforcement — github.com/fadhlillah2/rate-limiter-project-go
 - expert-advisor-mt-5 (private) — 6 MQL5 trading robots, 24/7 Linux VPS, preregistered live A/B
   experiment
 
@@ -68,21 +67,21 @@ Languages    : Java, Python, JavaScript/TypeScript, Go (Golang), MQL5
 Backend      : Spring Boot, Django REST Framework, Celery, Quarkus, FastAPI, Flask, Node.js,
                Express.js
 Testing      : Unit testing (JUnit 5, Mockito)
-Architecture : Microservices, Distributed Systems, High Availability, REST, GraphQL, Event-Driven,
+Architecture : Microservices, Distributed Systems, High Availability, REST, GraphQL, Event-driven,
                Hexagonal Architecture
 Databases    : PostgreSQL, MySQL, Microsoft SQL Server, MongoDB (NoSQL), Redis
-Messaging    : Apache Kafka, RabbitMQ, gRPC, WebSocket
+Integration  : Apache Kafka, RabbitMQ, gRPC, WebSocket
 DevOps/Cloud : Docker, Kubernetes, Jenkins, CI/CD, GitHub Actions, Flyway, Maven, Git,
                AWS (ECS, ECR, EC2, S3), Azure
 Security     : OAuth 2.0, JWT, SSO, AES-256, OWASP Top 10, gitleaks
 
 EDUCATION
-GADJAH MADA UNIVERSITY                                                                YOGYAKARTA, ID
-Bachelor, Mathematics and Computer Science                                       Mar 2016 – May 2020
+UNIVERSITAS GADJAH MADA (UGM)                                                       YOGYAKARTA, ID
+Bachelor's degree in Mathematics and Computer Science                            Mar 2016 – May 2020
 
 CERTIFICATIONS
 Meta Llama Hackathon 2025 — Top 50 (Hacktiv8 Indonesia)
 freeCodeCamp — Machine Learning with Python, Scientific Computing with Python,
   JavaScript Algorithms & Data Structures
 HackerRank — SQL
-Also searchable as: Backend Developer, Golang Engineer, GenAI Engineer, LLM Engineer
+Target roles: Backend Software Engineer · Java/Spring Boot Engineer · GenAI/LLM Engineer

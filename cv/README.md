@@ -41,9 +41,9 @@ in two languages; every `.pdf` sits next to the same-named `.txt` it is generate
 | File                                                                 | Use it for                                                                                                        |
 |----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 | [`resume-v8.7.pdf`](resume-v8.7.pdf)                                 | Official full CV — LinkedIn **full mirror**, 2 pages                                                              |
-| [`resume-onepager-v1.8.pdf`](resume-onepager-v1.8.pdf)               | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
-| [`consulting-onepager-en-v1.4.pdf`](consulting-onepager-en-v1.4.pdf) | Business buyer / consulting lead (EN) — outcomes, services, proof links, process; linked from the site's Services |
-| [`consulting-onepager-id-v1.4.pdf`](consulting-onepager-id-v1.4.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
+| [`resume-onepager-v1.9.pdf`](resume-onepager-v1.9.pdf)               | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
+| [`consulting-onepager-en-v1.5.pdf`](consulting-onepager-en-v1.5.pdf) | Business buyer / consulting lead (EN) — outcomes, services, proof links, process; linked from the site's Services |
+| [`consulting-onepager-id-v1.5.pdf`](consulting-onepager-id-v1.5.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
 
 Each `.pdf` is generated from its same-named `.txt` (the `.txt` is the editable source of truth
 for that artifact); `build-pdf.ts` is the current generator and `build-pdf.py` is its reference
@@ -62,7 +62,7 @@ verifies the PDF wording is identical to the .txt (whitespace-insensitive) and f
 `COMPANY · LOCATION` / `Title · Date` line (ATS-friendly; the `·` separator is CSS-generated and
 ignored by the wording check). Consulting one-pagers (detected by filename) get a larger page-fill
 CSS profile so their shorter content fills the A4; the recruiter 1-pager gets a slight densify
-profile so the v1.4 keyword-expanded SKILLS stay on one page. The Bun implementation uses `unpdf`
+profile so the keyword-expanded SKILLS stay on one page. The Bun implementation uses `unpdf`
 for text extraction and `pdf-lib` for metadata; install root dependencies first with `bun install`.
 The Python implementation remains available as an independent parity oracle and needs `pypdf` for
 full PDF generation.
@@ -116,6 +116,14 @@ longer in the tree (see [Archive](#archive)).
 
 ### resume-onepager — recruiter/ATS edition
 
+- **v1.9** (2026-09-05, recruiter-wording audit) — tightens the summary and availability wording;
+  replaces the informal `@` headline notation and `CI-CD`; scopes the AWS security engagement more
+  precisely; leads the RAG project with its repo-documented Indonesian-contract differentiator (88%+
+  EasyOCR accuracy and PASAL/AYAT/BAB structure preservation) and de-hyphenates the name to
+  "High-Precision Contract Advisor RAG" (matches the upstream README title); clarifies the
+  Integration category and education line; "Also searchable as" keyword footer → "Target roles"
+  (parser branch widened so it keeps the de-emphasized style). No metrics strengthened and no new
+  unsourced claims added.
 - **v1.8** (2026-07-19, from the v8.7/v1.7 double-check audit) — "23 Django REST Framework models"
   → "23 Django data models" (models are Django ORM, not DRF — the DRF keyword stays in SKILLS
   Backend); FOX employer header aligned to the full resume's em-dash form
@@ -151,6 +159,13 @@ longer in the tree (see [Archive](#archive)).
 
 ### consulting-onepager — EN ⇄ ID in lock-step
 
+- **v1.5** (2026-09-05, wording-and-evidence audit) — uses direct first-person positioning; scopes
+  service claims to their supporting evidence; removes the IDstar-only `90+` quality score from the
+  forward-looking delivery process; leads proof with the repo-documented Indonesian-contract RAG
+  differentiator (88%+ EasyOCR accuracy, PASAL/AYAT/BAB structure) in place of the hackathon
+  Credential ID; de-hyphenates the project name to "High-Precision Contract Advisor RAG"; and
+  rewrites the Bahasa Indonesia edition in natural business language while keeping the EN claims
+  and headings in lock-step.
 - **v1.4** (2026-07-18, from the cv/ audit) — EN: service lines rewritten outcome-led (mirrors the
   site's Services cards), intro gains the 10-days-vs-17-day-plan differentiator, "dinner rush" →
   "peak restaurant load", headline leads with Remote (international), contact "South Jakarta,

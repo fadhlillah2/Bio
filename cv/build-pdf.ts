@@ -211,7 +211,7 @@ export function toHtml(txt: string, stem: string): string {
     } else if (/^\S.{0,12}? : /.test(line)) {  // skills row "Label : values"
       flush();
       unit = ["sk", line.trim().replace(/^(\S[^:]*?)\s+: /, "$1 : ")];
-    } else if (line.startsWith("Also searchable as")) {  // de-emphasized keyword footer, not a cert line
+    } else if (/^(Also searchable as|Target roles)/.test(line)) {  // de-emphasized keyword/role footer, not a cert line
       flush();
       out.push(`<p class="alias">${e(line.trim())}</p>`);
     } else if (line.startsWith(" ") && unit) {  // wrapped continuation
@@ -310,6 +310,8 @@ export function selftest(): void {
   assert(lk.includes('href="https://replit.com/@X"') && lk.includes('href="mailto:mail@gmail.com"'), "link schemes");
   assert(toHtml(src + "Also searchable as: X, Y\n", "resume-v9.9-test")
     .includes('<p class="alias">Also searchable as: X, Y</p>'), "keyword footer keeps its own style");
+  assert(toHtml(src + "Target roles: X · Y\n", "resume-v9.9-test")
+    .includes('<p class="alias">Target roles: X · Y</p>'), "role footer keeps alias style");
   assert(linkify("github.com/x/y.").includes('href="https://github.com/x/y"'), "trailing '.' stays outside the link");
   const wrap = toHtml(src.replace("- bullet one\n  wrapped tail",
     "Label line:\nAn unindented paragraph that\nwraps mid-sentence here."), "resume-v9.9-test");
