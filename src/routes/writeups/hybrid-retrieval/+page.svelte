@@ -69,7 +69,7 @@
       </a>
       <div class="topbar-actions">
         <a href="{base}/#portfolio" class="btn btn-quiet btn-sm"><svg class="ico" aria-hidden="true"><use href="#i-arrow-back"/></svg> Back to portfolio</a>
-        <a href="{base}/cv/resume-onepager-v1.9.pdf" class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV</a>
+        <a href="{base}/cv/resume-onepager-v1.10.pdf" class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV</a>
       </div>
     </div>
   </header>

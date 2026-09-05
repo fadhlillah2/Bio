@@ -41,7 +41,7 @@ in two languages; every `.pdf` sits next to the same-named `.txt` it is generate
 | File                                                                 | Use it for                                                                                                        |
 |----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 | [`resume-v8.7.pdf`](resume-v8.7.pdf)                                 | Official full CV — LinkedIn **full mirror**, 2 pages                                                              |
-| [`resume-onepager-v1.9.pdf`](resume-onepager-v1.9.pdf)               | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
+| [`resume-onepager-v1.10.pdf`](resume-onepager-v1.10.pdf)             | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
 | [`consulting-onepager-en-v1.6.pdf`](consulting-onepager-en-v1.6.pdf) | Business buyer / consulting lead (EN) — outcomes, services, proof links, process; linked from the site's Services |
 | [`consulting-onepager-id-v1.6.pdf`](consulting-onepager-id-v1.6.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
 
@@ -116,6 +116,16 @@ longer in the tree (see [Archive](#archive)).
 
 ### resume-onepager — recruiter/ATS edition
 
+- **v1.10** (2026-09-05, ATS keyword recovery after the v1.9 review — C-009/C-011/C-084) —
+  headline regains `Microservices` (`Java · Spring Boot · Microservices · 2M+ req/day`); the
+  "Target roles" footer recovers the four synonyms the v1.4–v1.8 "Also searchable as" line carried
+  (Backend Developer, Golang Engineer, GenAI Engineer, LLM Engineer) on top of v1.9's own two
+  (Backend Software Engineer, Java/Spring Boot Engineer), kept on one line so the parser keeps the
+  alias style; SKILLS AI/LLM writes `embeddings (Hugging Face)` (repo-verified project stack, the
+  same fact the site's project card carries; v1.0–v1.8 had it in PROJECTS). The `Integration`
+  label and `UNIVERSITAS GADJAH MADA (UGM)` stay: neither contradicts the mirror or the site —
+  `Integration` is the ≤13-char parser-safe form of the site's *Messaging & Integration*, and
+  `(UGM)` matches the site's education line. No metric changed; 1 page verified by both generators.
 - **v1.9** (2026-09-05, recruiter-wording audit) — tightens the summary and availability wording;
   replaces the informal `@` headline notation and `CI-CD`; scopes the AWS security engagement more
   precisely; leads the RAG project with its repo-documented Indonesian-contract differentiator (88%+
