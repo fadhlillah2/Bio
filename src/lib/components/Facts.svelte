@@ -35,7 +35,7 @@
           <li class="metric">
             <span class="metric-value">Top 50</span>
             <span class="metric-label">Meta Llama Hackathon 2025</span>
-            <span class="metric-note">Hacktiv8 Indonesia</span>
+            <span class="metric-note">(Hacktiv8 Indonesia)</span>
           </li>
         </ul>
 

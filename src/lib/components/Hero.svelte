@@ -45,7 +45,7 @@
 
       <div class="wrap">
         <div class="proof-strip">
-          <p class="proof-label">Professional experience across</p>
+          <p class="proof-label">Production systems built at</p>
           <ul class="proof-list">
             <li>Bank Danamon</li>
             <li>FOX Asset — Infinity Wave Sdn Bhd</li>

@@ -26,7 +26,7 @@
           </li>
           <li class="service-card">
             <span class="service-icon"><svg class="ico" aria-hidden="true"><use href="#i-cpu"/></svg></span>
-            <h3>LLM / RAG Integration</h3>
+            <h3>AI / LLM Integration</h3>
             <p>Build RAG systems, AI chatbots, and workflow automation end to end — from retrieval and orchestration to backend integration. Top 50, Meta Llama Hackathon 2025 (OpenAI, Llama, Groq).</p>
           </li>
           <li class="service-card">
