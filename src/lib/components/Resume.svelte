@@ -9,7 +9,7 @@
           <p class="section-index">04 &mdash; Experience</p>
           <h2>Experience, education, projects, and certifications</h2>
           <p class="section-deck cta-row">
-            <a href={base + "/cv/resume-onepager-v1.9.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
+            <a href={base + "/cv/resume-onepager-v1.10.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
             <a href={base + "/cv/resume-v8.7.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
             <a href={base + "/cv/resume-v8.7.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
           </p>
@@ -173,7 +173,7 @@
         </div>
 
         <p class="cta-row cta-row-center">
-          <a href={base + "/cv/resume-onepager-v1.9.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
+          <a href={base + "/cv/resume-onepager-v1.10.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
           <a href={base + "/cv/resume-v8.7.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
           <a href="#contact" class="btn btn-quiet btn-sm">Get in touch</a>
           <a href={base + "/cv/resume-v8.7.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
