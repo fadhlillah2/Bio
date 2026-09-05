@@ -30,7 +30,7 @@
             <a href={base + "/cv/resume-v8.7.pdf"} class="plain-link" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
           </div>
 
-          <p class="hero-buyer">Scaling a business and need software built? <a href="#services">See services &amp; proven outcomes <span aria-hidden="true">&rarr;</span></a> &middot; <a href={base + "/cv/consulting-onepager-en-v1.5.pdf"} download="Fadhlillah - Software Engineering Services.pdf">Consulting one-pager (PDF)</a></p>
+          <p class="hero-buyer">Scaling a business and need software built? <a href="#services">See services &amp; proven outcomes <span aria-hidden="true">&rarr;</span></a> &middot; <a href={base + "/cv/consulting-onepager-en-v1.6.pdf"} download="Fadhlillah - Software Engineering Services.pdf">Consulting one-pager (PDF)</a></p>
         </div>
 
         <div class="term" id="hero-term" role="img" aria-label="Terminal: curl api.fadhlillah.dev/whoami returns a JSON profile — backend software engineer, AI native, Java/Spring Boot, Python, Node.js, 2M+ requests per day at sub-200ms, RAG and LLM products, Top 50 Meta Llama Hackathon, Jakarta (UTC+7), open to opportunities.">
