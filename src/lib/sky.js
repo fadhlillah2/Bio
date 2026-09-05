@@ -72,9 +72,11 @@ void main() {
   vec3 zenith = mix(uSkyA, uSkyA * vec3(0.76, 0.87, 1.02), wM);
   vec3 col = mix(uSkyB, zenith, smoothstep(0.0, 0.85, uv.y));
 
-  // the light — morning sun high, dusk sun on the horizon, night moon — nudged by pointer and scroll
-  vec2 par = uPointer * vec2(0.025, 0.018) - vec2(0.0, uScroll * 0.10);
-  vec2 lightPos = vec2(0.80, 0.90) * wM + vec2(0.93, 0.30) * wD + vec2(0.80, 0.91) * wN + par;
+  // one camera for every layer: content slides against the pointer and lags the scroll,
+  // each layer by its depth (stars 0.15, light 0.45, far deck 0.7, near deck 1.4)
+  vec2 cam = uPointer * vec2(0.06, 0.045) + vec2(0.0, uScroll * 0.25);
+  // the light — morning sun high, dusk sun on the horizon, night moon
+  vec2 lightPos = vec2(0.80, 0.90) * wM + vec2(0.93, 0.30) * wD + vec2(0.80, 0.91) * wN - cam * 0.45;
   vec2 rel = (uv - lightPos) * ar;
   float dl = length(rel);
   vec3 sun = vec3(1.0, 0.94, 0.78) * (1.0 - smoothstep(0.036, 0.050, dl)) * 1.3
@@ -89,28 +91,29 @@ void main() {
   col += sun * wM + dsun * wD + moon * wN;
 
   // stars (night): one candidate per cell, few survive, they scintillate rather than blink
-  vec2 sp = uv * ar * 95.0 + uSeed;
+  vec2 sp = (uv + cam * 0.15) * ar * 95.0 + uSeed;
   vec2 c = floor(sp), f = fract(sp) - 0.5;
   float hs = hash21(c);
   vec2 o = vec2(hash21(c + 7.3), hash21(c + 13.9)) - 0.5;
   float mag = fract(hs * 41.7);
   float rad = 0.06 + 0.09 * mag * mag;
   float star = (1.0 - smoothstep(rad * 0.25, rad, length(f - o * 0.7))) * step(0.93, hs)
-             * (0.25 + 0.75 * mag * mag) * (0.9 + 0.1 * sin(uTime * (0.8 + 1.2 * hs) + hs * 80.0));
+             * (0.25 + 0.75 * mag * mag) * (0.85 + 0.15 * sin(uTime * (0.8 + 1.2 * hs) + hs * 80.0));
   star *= smoothstep(0.0, 0.3, uv.y) * smoothstep(0.05, 0.25, dl);
   col += vec3(0.8, 0.86, 1.0) * star * wN;
 
   // clouds: a fine far deck under a bigger near deck, each drifting and parallaxing at its own rate
-  float cover = 0.32 * wM + 0.50 * wD + 0.25 * wN;
+  float cover = 0.32 * wM + 0.50 * wD + 0.30 * wN;
   float th = 0.66 - cover * 0.32;
   vec2 lightDir = normalize((lightPos - uv) * ar + 1e-4);
-  vec2 q = (uv - 0.5) * ar + uSeed * 0.37;
-  vec2 drift = vec2(uTime * 0.006, uTime * 0.0015);
+  vec2 qFar = (uv + cam * 0.7 - 0.5) * ar + uSeed * 0.37;
+  vec2 qNear = (uv + cam * 1.4 - 0.5) * ar + uSeed * 0.37;
+  vec2 drift = vec2(uTime * 0.02, uTime * 0.004);
   vec3 litC = vec3(0.97, 0.98, 1.0) * wM + vec3(1.0, 0.72, 0.55) * wD + vec3(0.30, 0.34, 0.44) * wN;
   vec3 shdC = vec3(0.64, 0.71, 0.83) * wM + vec3(0.42, 0.27, 0.44) * wD + vec3(0.07, 0.09, 0.15) * wN;
-  float alpha = 0.92 * wM + 0.88 * wD + 0.60 * wN;
-  vec2 far = deck(q * 2.3 + drift + uPointer * 0.012 - vec2(0.0, uScroll * 0.06), lightDir, th + 0.04);
-  vec2 near = deck(q * 1.35 + drift * 1.9 + 11.0 + uPointer * 0.04 - vec2(0.0, uScroll * 0.16), lightDir, th);
+  float alpha = 0.92 * wM + 0.88 * wD + 0.70 * wN;
+  vec2 far = deck(qFar * 2.3 + drift, lightDir, th + 0.04);
+  vec2 near = deck(qNear * 1.35 + drift * 2.2 + 11.0, lightDir, th);
   col = mix(col, mix(shdC, litC, far.y) * 0.92, far.x * alpha * 0.85);
   col = mix(col, mix(shdC, litC, near.y), near.x * alpha);
 
@@ -213,7 +216,7 @@ export function mountSky(hero) {
       target = [(lastMove.clientX - r.left) / r.width * 2 - 1, 1 - (lastMove.clientY - r.top) / r.height * 2];
       lastMove = null;
     }
-    if (!reduced) { cur[0] += (target[0] - cur[0]) * 0.08; cur[1] += (target[1] - cur[1]) * 0.08; }
+    if (!reduced) { cur[0] += (target[0] - cur[0]) * 0.1; cur[1] += (target[1] - cur[1]) * 0.1; }
     var scroll = Math.min(1, Math.max(0, window.scrollY / height));
     gl.uniform2f(u.uRes, canvas.width, canvas.height);
     gl.uniform1f(u.uTime, reduced ? 0 : (now - start) / 1000);

@@ -19,3 +19,6 @@ bun-*.log
 
 # staged by `bun run cv` so SvelteKit publishes only current distributable CV files
 static/cv/
+
+# spec/plan lokal (keputusan user 2026-09-05)
+docs/superpowers/
