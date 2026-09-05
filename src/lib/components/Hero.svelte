@@ -27,7 +27,7 @@
           <div class="hero-cta">
             <a href={base + "/cv/resume-onepager-v1.11.pdf"} class="btn btn-solid" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
             <a href="https://wa.me/6285157043131?text=Hi%20Fadhlillah%2C%20I%20saw%20your%20portfolio" target="_blank" rel="noopener" class="btn btn-ghost" aria-label="Message on WhatsApp (opens in new tab)"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg> Message on WhatsApp</a>
-            <a href={base + "/cv/resume-v8.8.pdf"} class="plain-link" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
+            <a href={base + "/cv/resume-v8.9.pdf"} class="plain-link" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
           </div>
 
           <p class="hero-buyer">Scaling a business and need software built? <a href="#services">See services &amp; proven outcomes <span aria-hidden="true">&rarr;</span></a> &middot; <a href={base + "/cv/consulting-onepager-en-v1.7.pdf"} download="Fadhlillah - Software Engineering Services.pdf">Consulting one-pager (PDF)</a></p>
