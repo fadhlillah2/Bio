@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>OG cover — home</title>
+<style>
+  /* Rendered at exactly 1200×630 by scripts/og-render.ts. Copy mirrors Hero.svelte verbatim. */
+  @font-face { font-family: "Instrument Sans"; src: url("../../static/assets/fonts/instrument-sans-var.woff2") format("woff2"); font-weight: 400 700; }
+  @font-face { font-family: "JetBrains Mono"; src: url("../../static/assets/fonts/jetbrains-mono-var.woff2") format("woff2"); font-weight: 400 700; }
+
+  :root {
+    --ink-0: #070a10; --ink-2: #10151f; --ink-3: #161d29; --line: #1e2632; --line-2: #2b3648;
+    --head: #eef2f8; --bright: #d5dde8; --text: #a8b3c2; --muted: #788394;
+    --accent: #5ce1c6; --metric: #f2c078; --code-key: #8fd0ff; --code-punct: #5a6d87;
+    --sans: "Instrument Sans", sans-serif; --mono: "JetBrains Mono", monospace;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    position: relative;
+    font-family: var(--sans);
+    color: var(--text);
+    background:
+      radial-gradient(900px 520px at 82% 0%, rgba(92, 225, 198, 0.13), transparent 62%),
+      radial-gradient(700px 460px at 0% 100%, rgba(242, 192, 120, 0.08), transparent 60%),
+      var(--ink-0);
+    -webkit-font-smoothing: antialiased;
+  }
+  /* dot grid fades out downward so it never sits behind the headline */
+  body::before {
+    content: ""; position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(168, 179, 194, 0.13) 1px, transparent 1px);
+    background-size: 26px 26px;
+    -webkit-mask-image: linear-gradient(to bottom, #000, transparent 72%);
+  }
+  .eyebrow {
+    position: absolute; left: 60px; top: 50px;
+    display: flex; align-items: center; gap: 12px;
+    font-family: var(--mono); font-size: 15px; color: var(--muted); letter-spacing: 0.01em;
+  }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px rgba(92, 225, 198, 0.12); }
+
+  .who { position: absolute; left: 60px; top: 128px; display: flex; align-items: center; gap: 18px; }
+  .who img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 2px solid var(--line-2); box-shadow: 0 0 0 3px rgba(92, 225, 198, 0.25); }
+  .name { font-family: var(--mono); font-size: 18px; font-weight: 500; letter-spacing: 0.34em; color: var(--accent); }
+
+  .h1 { position: absolute; left: 60px; top: 238px; font-size: 54px; line-height: 1.06; font-weight: 600; letter-spacing: -0.03em; color: var(--head); }
+  .h1 em { font-style: normal; color: var(--metric); }
+  .sub { position: absolute; left: 60px; top: 410px; font-size: 26px; font-weight: 500; letter-spacing: -0.02em; color: var(--text); }
+  .role { position: absolute; left: 60px; top: 460px; font-size: 20px; color: var(--bright); }
+  .role .sep { color: var(--accent); padding: 0 4px; }
+
+  .term { position: absolute; left: 670px; top: 175px; width: 470px; background: var(--ink-2); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 30px 70px -34px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(92, 225, 198, 0.06); }
+  .bar { display: flex; align-items: center; gap: 8px; padding: 13px 16px; background: var(--ink-3); border-bottom: 1px solid var(--line); }
+  .bar i { width: 11px; height: 11px; border-radius: 50%; }
+  .bar span { margin-left: 8px; font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  pre { padding: 18px 20px 20px; font-family: var(--mono); font-size: 14px; line-height: 1.8; color: var(--bright); }
+  .tmut { color: var(--muted); } .tk { color: var(--code-key); } .tp { color: var(--code-punct); } .tm { color: var(--metric); } .tc { color: var(--accent); }
+
+  .proof { position: absolute; left: 60px; right: 60px; top: 538px; padding-top: 24px; border-top: 1px solid var(--line); display: flex; align-items: center; gap: 28px; }
+  .proof-label { font-family: var(--mono); font-size: 13px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+  .proof b { font-size: 15px; font-weight: 500; color: var(--bright); letter-spacing: -0.01em; white-space: nowrap; }
+</style>
+</head>
+<body>
+  <p class="eyebrow"><i class="dot"></i>Jakarta, Indonesia (UTC+7) · open to full‑time roles · international remote work · consulting</p>
+
+  <div class="who"><img src="../../static/assets/img/portrait.jpg" alt=""><span class="name">FADHLILLAH</span></div>
+
+  <h1 class="h1">Java/Spring Boot<br>microservices at<br><em>2M+ requests/day</em></h1>
+  <p class="sub">LLM-integrated products end to end.</p>
+  <p class="role">Backend Software Engineer <span class="sep">·</span> 6+ years <span class="sep">·</span> AI Native Engineer</p>
+
+  <div class="term">
+    <div class="bar"><i style="background:#ff5f57"></i><i style="background:#febc2e"></i><i style="background:#28c840"></i><span>fadhlillah@jakarta:~</span></div>
+<pre><span class="tmut">$</span> curl -s api.fadhlillah.dev/whoami
+<span class="tp">{</span>
+  <span class="tk">"scale"</span><span class="tp">:</span> <span class="tm">"2M+ req/day · sub-200ms"</span><span class="tp">,</span>
+  <span class="tk">"ai"</span><span class="tp">:</span> <span class="tp">[</span>"RAG"<span class="tp">,</span> "LLM integration"<span class="tp">],</span>
+  <span class="tk">"llama_hackathon"</span><span class="tp">:</span> <span class="tm">"Top 50"</span><span class="tp">,</span>
+  <span class="tk">"status"</span><span class="tp">:</span> <span class="tc">"open_to_opportunities"</span>
+<span class="tp">}</span></pre>
+  </div>
+
+  <div class="proof">
+    <span class="proof-label">Professional experience across</span>
+    <b>Bank Danamon</b><b>FOX Asset — Infinity Wave Sdn Bhd</b><b>IDstar</b><b>Assist.id</b>
+  </div>
+</body>
+</html>
