@@ -7,10 +7,7 @@ Output: sibling .pdf (A4) via Chrome headless print-to-pdf (native Linux/macOS
         Chrome, or Windows Chrome under WSL), then verifies the PDF's extracted
         wording is identical to the .txt (whitespace/bullet markers aside) and
         fits max_pages (default 1; a 2-page resume needs 2).
-Multi-page resumes wrap each company block in <div class="job"> with
-        break-inside:avoid so a single employer's bullets don't split across a
-        page boundary (1-page docs skip this — it would push a tall block to a
-        phantom page 2).
+Multi-page resumes keep each company or project group together.
 """
 import html
 import re
@@ -77,13 +74,43 @@ body.consulting a { white-space: nowrap; }
 """
 
 
-# v1.4 keyword expansion adds ~3 SKILLS lines, pushing the alias footer one line onto
-# page 2 — tighten leading and section gaps so the recruiter 1-pager stays exactly 1 page.
+# Resume profiles keep labels inline so column-aware extractors preserve the reading order.
+RESUME_CSS = """
+h1 { text-align: left; font-size: 22pt; line-height: 1.05; }
+.hl { text-align: left; font-size: 9.4pt; margin-top: 1.2mm; text-wrap: initial; }
+.ct { text-align: left; font-size: 8.2pt; line-height: 1.25; }
+h2 { font-size: 10pt; letter-spacing: 0; border-bottom: 0.5pt solid #aaa;
+     padding-bottom: 0.6mm; margin: 2mm 0 1mm; }
+.b { padding-left: 3.2mm; text-indent: -3.2mm; break-inside: avoid; }
+.b .m { display: inline-block; width: calc(3.2mm - 0.278em); text-indent: 0; }
+.crow { margin-top: 1.5mm; }
+.trow { margin: 0.3mm 0 0.5mm; }
+.crow .loc, .trow .d { font-size: 8.5pt; }
+.sk { padding-left: 0; text-indent: 0; }
+.alias { font-size: 7.4pt; color: #555; }
+p.body { orphans: 2; widows: 2; }
+a, .nowrap { white-space: nowrap; }
+"""
+
+# Long experience entries may break between project groups, with each bullet run kept together.
+FULL_RESUME_CSS = """
+@page { margin: 9mm 10mm; }
+body { font-size: 9pt; line-height: 1.15; }
+.job { break-inside: avoid; }
+.job:has(> p.body) { break-inside: auto; }
+.job > .b:has(+ .b) { break-after: avoid; }
+.job > p.body { margin-top: 0.7mm; break-after: avoid; }
+"""
+
+# The skills inventory uses a compact profile so all existing content still fits one page.
 ONEPAGER_CSS = """
-body.onepager { line-height: 1.15; }
-body.onepager h2 { margin-top: 1.5mm; }
+@page { margin: 8mm 10mm; }
+body.onepager { font-size: 8.9pt; line-height: 1.15; }
+body.onepager h2 { margin-top: 1.3mm; margin-bottom: 0.7mm; }
+body.onepager .crow { margin-top: 1mm; }
+body.onepager .trow { margin: 0.1mm 0 0.2mm; }
+body.onepager .sk { font-size: 8.6pt; line-height: 1.13; }
 body.onepager .alias { margin-top: 0.6mm; }
-/* same guard as consulting: a hyphenated proof URL must never wrap→de-hyphenate into a 404 */
 body.onepager a { white-space: nowrap; }
 """
 
@@ -120,7 +147,14 @@ def to_html(txt: str, stem: str) -> str:
         if lines[i].strip():
             head.append(lines[i].strip())
         i += 1
-    e = lambda s: linkify(html.escape(s))
+    def e(s):
+        linked = linkify(html.escape(s))
+        if "consulting" in stem:
+            return linked
+        # Keep compound words intact: PDF readers can remove a literal hyphen at a line break.
+        return re.sub(r'<a\b[^>]*>.*?</a>|[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+',
+                      lambda m: m[0] if m[0].startswith('<a ') else f'<span class="nowrap">{m[0]}</span>', linked)
+
     out = [f"<h1>{e(head[0])}</h1>", f'<p class="hl">{e(head[1])}</p>',
            f'<p class="ct">{e(head[2])}</p>', f'<p class="ct">{e(head[3])}</p>']
     section, unit = None, None  # unit: pending (kind, text) being accumulated
@@ -189,14 +223,13 @@ def to_html(txt: str, stem: str) -> str:
     lang = "id" if "-id-" in stem else "en"
     title = html.escape(doc_title(stem, head[0]))
     consulting = "consulting" in stem  # fills the page (see CONSULTING_CSS)
-    # break-inside:avoid on a 1-page doc pushes a tall block onto a phantom page 2,
-    # so only the multi-page resume gets it (1-pager & consulting stay single-page).
+    # Only the full resume groups experience across page boundaries.
     if consulting:
         body_attr, extra = ' class="consulting"', CONSULTING_CSS
     elif "onepager" in stem:
-        body_attr, extra = ' class="onepager"', ONEPAGER_CSS
+        body_attr, extra = ' class="onepager"', RESUME_CSS + ONEPAGER_CSS
     else:
-        body_attr, extra = "", ".job { break-inside: avoid; }"
+        body_attr, extra = "", RESUME_CSS + FULL_RESUME_CSS
     return (f"<!doctype html><html lang='{lang}'><head><meta charset='utf-8'>"
             f"<title>{title}</title><style>{CSS}{extra}</style></head><body{body_attr}>"
             + "".join(out) + "</body></html>")
@@ -252,7 +285,7 @@ def selftest():
     assert 'href="https://github.com/x/y"' in linkify("github.com/x/y.")  # trailing '.' stays outside the link
     wrap = to_html(src.replace("- bullet one\n  wrapped tail",
                                "Label line:\nAn unindented paragraph that\nwraps mid-sentence here."), "resume-v9.9-test")
-    assert '<p class="body">An unindented paragraph that wraps mid-sentence here.</p>' in wrap  # lowercase wrap joins
+    assert '<p class="body">An unindented paragraph that wraps <span class="nowrap">mid-sentence</span> here.</p>' in wrap  # lowercase wrap joins
     assert '<p class="body">Label line:</p>' in wrap  # uppercase start stays its own paragraph
     certs = to_html(src.replace("- bullet one\n  wrapped tail",
                                 "Cert one (Org)\nfreeCodeCamp — another item"), "resume-v9.9-test")
@@ -260,6 +293,9 @@ def selftest():
     assert '<p class="body">freeCodeCamp — another item</p>' in certs
     assert '<div class="b"><span class="m">&bull;</span> a : b</div>' in to_html(
         src.replace("- bullet one", "- a : b\n- bullet one"), "resume-v9.9-test")  # bullet with ' : ' stays a bullet
+    compounds = to_html(src.replace("- bullet one", "- field-level RBAC; github.com/x/rate-limiter"), "resume-v9.9-test")
+    assert '<span class="nowrap">field-level</span>' in compounds
+    assert '<a href="https://github.com/x/rate-limiter">github.com/x/rate-limiter</a>' in compounds
     # render-behaviour guards (can't run Chrome here, so lock the CSS the render depends on):
     assert "letter-spacing: 0" in CSS  # h1 name extracts as one token FADHLILLAH, not FA D H L...
     assert "white-space: nowrap" in CONSULTING_CSS  # proof URLs never wrap→de-hyphenate into 404s

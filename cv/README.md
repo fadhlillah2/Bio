@@ -60,9 +60,12 @@ Linux/macOS Chrome or WSL Windows Chrome, auto-detected), stamps Title/Author/la
 verifies the PDF wording is identical to the .txt (whitespace-insensitive) and fits `max_pages`
 (2nd CLI arg, default 1; only the full mirror resume needs `2`). Job headers render as one linear
 `COMPANY · LOCATION` / `Title · Date` line (ATS-friendly; the `·` separator is CSS-generated and
-ignored by the wording check). Consulting one-pagers (detected by filename) get a larger page-fill
-CSS profile so their shorter content fills the A4; the recruiter 1-pager gets a slight densify
-profile so the keyword-expanded SKILLS stay on one page. The Bun implementation uses `unpdf`
+ignored by the wording check). Resume PDFs use a left-aligned header, hanging bullets, inline
+skill labels, and unbroken URLs and hyphenated terms to preserve extraction order and spelling.
+The full resume keeps each company or project group together, allowing long experience entries
+to break between project groups. Consulting one-pagers (detected by filename) get a larger
+page-fill CSS profile; the recruiter 1-pager uses a compact skills profile to retain all content
+on one page. The Bun implementation uses `unpdf`
 for text extraction and `pdf-lib` for metadata; install root dependencies first with `bun install`.
 The Python implementation remains available as an independent parity oracle and needs `pypdf` for
 full PDF generation.
@@ -72,6 +75,13 @@ bun run cv:selftest
 bun cv/build-pdf.ts cv/resume-vX.Y.txt [max_pages]
 python3 cv/build-pdf.py --selftest  # independent parser oracle; no pypdf needed
 ```
+
+Layout refresh (2026-09-05): both current resume PDFs were rebuilt in place; their source text,
+content versions, and download URLs are unchanged. Body text is 9 pt in the full CV and 8.9 pt
+in the recruiter edition (8.6 pt for its skills inventory). Validation covered rendered pages,
+A4 text bounds, embedded fonts, and identical wording through `unpdf` and Poppler's default,
+raw, and layout extraction modes. Both generators produce identical HTML; consulting layouts
+are unchanged.
 
 ## Changelog
 
