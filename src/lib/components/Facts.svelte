@@ -10,7 +10,7 @@
           <li class="metric">
             <span class="metric-value">2M+</span>
             <span class="metric-label">Requests per day</span>
-            <span class="metric-note">served by Spring Boot microservices I build and operate</span>
+            <span class="metric-note">served by Spring Boot microservices I built and operated in banking</span>
           </li>
           <li class="metric">
             <span class="metric-value">100+</span>
@@ -23,9 +23,9 @@
             <span class="metric-note">achieved through query tuning and MongoDB materialized views</span>
           </li>
           <li class="metric">
-            <span class="metric-value">$10M+</span>
-            <span class="metric-label">Daily financial volume</span>
-            <span class="metric-note">processed by financial systems I support</span>
+            <span class="metric-value">500k+</span>
+            <span class="metric-label">Daily transactions</span>
+            <span class="metric-note">across 12 Spring Boot microservices on a hexagonal architecture</span>
           </li>
           <li class="metric">
             <span class="metric-value">99.5%</span>

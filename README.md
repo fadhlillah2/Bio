@@ -18,7 +18,7 @@ Backend Software Engineer (6+ yrs) — deep in **Java/Spring Boot**, adaptable a
 
 **Highlights:**
 - **2M+ requests/day at sub-200ms** — 12 Spring Boot microservices (hexagonal architecture), 500k+ daily transactions
-- **$10M+ daily volume** — financial systems with consistent 48-hour reporting SLAs
+- **48-hour reporting SLAs** — corporate reporting pipelines tuned (queries and caching) to meet them consistently
 - **700% faster reports** — query tuning & materialized views on a healthcare platform (99.5% uptime, 100+ APIs)
 - **Top 50, LLaMA Hackathon** — [High-Precision Contract Advisor RAG](https://github.com/fadhlillah2/llama-docs-auditor) (LangChain, ChromaDB, Groq, EasyOCR)
 

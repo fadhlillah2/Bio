@@ -9,9 +9,9 @@
           <p class="section-index">04 &mdash; Experience</p>
           <h2>Experience, education, projects, and certifications</h2>
           <p class="section-deck cta-row">
-            <a href={base + "/cv/resume-onepager-v1.10.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
-            <a href={base + "/cv/resume-v8.7.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
-            <a href={base + "/cv/resume-v8.7.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
+            <a href={base + "/cv/resume-onepager-v1.11.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
+            <a href={base + "/cv/resume-v8.8.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
+            <a href={base + "/cv/resume-v8.8.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
           </p>
         </header>
 
@@ -39,22 +39,21 @@
 
           <li class="tl-role" data-reveal>
             <div class="tl-meta">
-              <p class="tl-dates">Aug 2023 — Present</p>
+              <p class="tl-dates">Aug 2023 — Aug 2026</p>
               <p class="tl-org">Bank Danamon</p>
               <p class="tl-place">Jakarta, Indonesia</p>
             </div>
             <div class="tl-body">
               <h3>Software Engineer</h3>
               <ul>
-                <li>Automated technical documentation with LLMs, cutting cycle time from 40 hours to 4 hours</li>
-                <li>Generated test cases achieving 95% coverage on core modules, reducing prep time by 65%</li>
-                <li>Built SFTP automation platform in 10 days against a 17-day plan using AI coding tools</li>
-                <li>Running 12 microservices (Hexagonal arch). We handle 500k+ daily txs</li>
-                <li>Built and operate Spring Boot microservices serving 2M+ requests/day at sub-200ms response times</li>
-                <li>Supporting financial systems processing $10M+ daily volume; consistently meeting 48h reporting SLAs</li>
-                <li>Met urgent 48h deadline to deliver a critical financial reporting tool</li>
-                <li>Tuned DB queries and caching, improving response times across the platform's user base</li>
-                <li>Implemented OAuth 2.0, JWT, and AES-256; passed internal security audits</li>
+                <li>Built and maintained iRecon, a Java/GWT reconciliation platform spanning 660+ classes that serves as the bank's central engine for settling corporate transaction data end to end</li>
+                <li>Automated the daily reconciliation and reporting cycle with scheduled batch jobs producing 10 report formats, including SWIFT MT940/942/950 statements, securely delivered to corporate clients via Email, SFTP, and MFT with PGP/AES encryption</li>
+                <li>Shipped the FSC (Financial Supply Chain) modules, integrating with core-banking middleware over encrypted REST APIs and enforcing banking-grade controls: maker-checker approval, LDAP-based access management, and full audit trail</li>
+                <li>Tuned queries and caching on the corporate reporting pipeline to consistently meet 48-hour reporting SLAs</li>
+                <li>Delivered an SFTP automation platform in 10 days against a 17-day plan by leaning on AI-assisted development to compress the build cycle</li>
+                <li>Applied LLM-assisted workflows across the delivery cycle, cutting technical documentation turnaround from 40 hours to 4 and lifting core-module test coverage to 95%</li>
+                <li>Built and operate 12 Spring Boot microservices on a hexagonal architecture, serving 2M+ requests/day at sub-200ms response times across 500k+ daily transactions</li>
+                <li>Implemented OAuth 2.0, JWT, and AES-256 encryption across the services, passing internal security audits</li>
               </ul>
             </div>
           </li>
@@ -173,10 +172,10 @@
         </div>
 
         <p class="cta-row cta-row-center">
-          <a href={base + "/cv/resume-onepager-v1.10.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
-          <a href={base + "/cv/resume-v8.7.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
+          <a href={base + "/cv/resume-onepager-v1.11.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
+          <a href={base + "/cv/resume-v8.8.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
           <a href="#contact" class="btn btn-quiet btn-sm">Get in touch</a>
-          <a href={base + "/cv/resume-v8.7.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
+          <a href={base + "/cv/resume-v8.8.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
         </p>
 
       </div>

@@ -34,7 +34,7 @@
     "image": "https://fadhlillah2.github.io/Bio/assets/img/portrait.jpg",
     "telephone": "+6285157043131",
     "address": { "@type": "PostalAddress", "addressLocality": "Jakarta", "addressCountry": "ID" },
-    "worksFor": { "@type": "Organization", "name": "PT Bank Danamon Indonesia, Tbk." },
+    "worksFor": { "@type": "Organization", "name": "FOX Asset — Infinity Wave Sdn Bhd" },
     "award": "Top 50 — Meta Llama Hackathon 2025 (Hacktiv8 Indonesia)",
     "mainEntityOfPage": { "@type": "ProfilePage", "@id": "https://fadhlillah2.github.io/Bio/" },
     "alumniOf": { "@type": "CollegeOrUniversity", "name": "Universitas Gadjah Mada" },

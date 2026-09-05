@@ -1,0 +1,46 @@
+                                             FADHLILLAH
+       Backend & AI Engineering untuk Pertumbuhan Bisnis — Remote (internasional) · Jakarta (WIB · UTC+7)
+  Jakarta Selatan, Indonesia | +62 851-5704-3131 | fadhlillah949699@gmail.com | WA: wa.me/6285157043131
+          fadhlillah2.github.io/Bio | linkedin.com/in/fadhlillah2 | github.com/fadhlillah2
+
+APA YANG SAYA KERJAKAN
+Backend Software Engineer dengan pengalaman 6+ tahun. Saya membangun dan meningkatkan skala sistem
+ backend produksi serta produk dengan integrasi LLM, dan pernah mengoperasikan microservices
+ perbankan yang melayani 2 juta+ permintaan per hari. Dengan AI-augmented engineering, saya
+ menyelesaikan platform SFTP produksi dalam 10 hari dari rencana 17 hari. Berpengalaman di
+ healthcare, F&B, dan fintech. Terbuka untuk peran full-time, remote internasional, dan konsultasi.
+
+HASIL TERBUKTI
+- Skala — microservices Spring Boot melayani 2 juta+ permintaan per hari dengan respons di bawah
+  200 ms; 12 microservices yang pernah saya jalankan menangani 500k+ transaksi harian di perbankan
+- Keandalan — pipeline pelaporan korporat yang saya optimalkan konsisten memenuhi SLA pelaporan
+  48 jam; platform healthcare mempertahankan uptime 99,5% pada 100+ API
+- Kecepatan — platform SFTP produksi selesai dalam 10 hari dari rencana 17 hari, memakai
+  AI-augmented engineering
+- Efisiensi — pembuatan laporan dipercepat 700% lewat query tuning dan materialized views; Redis
+  caching memangkas query database 60% saat beban puncak restoran (F&B)
+- Jangkauan — sistem notifikasi yang mengirim 50k+ email dan SMS per hari
+- AI — produk dengan integrasi LLM end to end: sistem RAG, AI chatbot, otomasi internal; Top 50, Meta Llama
+  Hackathon 2025 (Hacktiv8 Indonesia)
+
+LAYANAN
+Backend APIs  : REST API dan microservices — Spring Boot, Django REST Framework, Node.js, Flask
+AI / LLM      : RAG, AI chatbot, otomasi alur kerja — OpenAI, Llama, Groq, LangChain, ChromaDB
+Database      : Query tuning, indexing, caching, dan desain model data — laporan dipercepat 700%
+Microservices : 12 layanan produksi perbankan; event processing Kafka; Docker dan Kubernetes
+Cloud & CI/CD : Layanan ter-Docker di Azure dan AWS; CI/CD GitHub Actions ke Amazon ECR; secret
+                scanning dan pemeriksaan migration drift
+Konsultasi    : Pemilihan arsitektur dan teknologi berdasarkan pengalaman langsung
+
+BUKTI YANG BISA DICEK
+- High-Precision Contract Advisor RAG — Top 50, Meta Llama Hackathon 2025; akurasi EasyOCR 88%+
+  dengan struktur PASAL/AYAT/BAB tetap terjaga — github.com/fadhlillah2/llama-docs-auditor
+- Rate limiter terdistribusi (Go) — algoritma fixed window, sliding window, dan token bucket; Redis Lua —
+  github.com/fadhlillah2/rate-limiter-project-go
+- Portfolio, CV lengkap, dan LinkedIn — fadhlillah2.github.io/Bio
+
+CARA SAYA BEKERJA
+- Mulai dengan chat WhatsApp singkat atau panggilan perkenalan — wa.me/6285157043131
+- Ruang lingkup, jadwal, dan kepemilikan kode disepakati secara tertulis sebelum pekerjaan dimulai
+- Pengerjaan mengikuti milestone yang disepakati, dengan tinjauan rutin dan progres transparan
+- Serah terima lengkap saat selesai: kode sumber, dokumentasi, dan detail deployment

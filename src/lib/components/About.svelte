@@ -25,7 +25,7 @@
         </div>
 
         <dl class="about-facts" data-reveal data-reveal-children>
-          <div><dt>Current</dt><dd>Software Engineer — Bank Danamon</dd></div>
+          <div><dt>Current</dt><dd>Backend Software Engineer — FOX Asset (freelance)</dd></div>
           <div><dt>Core</dt><dd>Java/Spring Boot &middot; LLM/RAG</dd></div>
           <div><dt>Experience</dt><dd>6+ years</dd></div>
           <div><dt>Degree</dt><dd>Bachelor’s — Mathematics &amp; Computer Science</dd></div>
