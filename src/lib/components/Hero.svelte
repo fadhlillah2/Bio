@@ -3,6 +3,11 @@
 </script>
 
     <section id="hero" class="hero">
+      <div class="sky" aria-hidden="true">
+        <span class="sky-haze sky-haze-far"></span>
+        <span class="sky-orb"></span>
+        <span class="sky-haze sky-haze-near"></span>
+      </div>
 
       <div class="wrap hero-grid">
 

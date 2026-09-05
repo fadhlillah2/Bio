@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import { base } from "$app/paths";
   import IconSprite from "$lib/components/IconSprite.svelte";
+  import LookSwitch from "$lib/components/LookSwitch.svelte";
   import { enhance } from "$lib/enhance.js";
 
   // Svelte reads { } in markup as expressions and ends a <script> at the first
@@ -180,3 +181,4 @@ r'\s+'.join(re.escape(p) for p in "Section II.3".split())  <span class="tmut">â†
 
   <a href="#top" class="fab fab-top" aria-label="Back to top"><svg class="ico" aria-hidden="true"><use href="#i-arrow-up"/></svg></a>
 
+  <LookSwitch />

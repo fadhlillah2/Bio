@@ -9,4 +9,7 @@
     <symbol id="i-nodes" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2.4"/><circle cx="5" cy="18" r="2.4"/><circle cx="19" cy="18" r="2.4"/><path d="M10.6 7 6.4 15.8M13.4 7l4.2 8.8M7.4 18h9.2"/></symbol>
     <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3.5 19 6v5.2c0 4.3-2.9 7.3-7 8.8-4.1-1.5-7-4.5-7-8.8V6Z"/><path d="m9.2 12 2 2 3.6-3.8"/></symbol>
     <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="m7.5 15 3.5-4 3 2.5L19 7.5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 3v2.4M12 18.6V21M3 12h2.4M18.6 12H21M5.6 5.6l1.7 1.7M16.7 16.7l1.7 1.7M18.4 5.6l-1.7 1.7M7.3 16.7l-1.7 1.7"/></symbol>
+    <symbol id="i-dusk" viewBox="0 0 24 24"><path d="M3 19h18"/><path d="M8 15a4 4 0 0 1 8 0"/><path d="M12 4.6V7M5.8 8.2l1.7 1.7M18.2 8.2l-1.7 1.7"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.6A8 8 0 0 1 9.4 4 8.2 8.2 0 1 0 20 14.6Z"/></symbol>
   </svg>

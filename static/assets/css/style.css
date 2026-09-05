@@ -72,6 +72,41 @@
   --r-sm: 8px;
   --r-md: 12px;
   --r-lg: 18px;
+
+  /* Everything below is a look token: the values here are night, which is also what
+     no-JS gets (no [data-look] attribute). The two other looks override them. */
+  --accent-hover: #8befd9;
+  --solid-hover: #fff;
+  --code-key: #8fd0ff;
+  --code-punct: #5a6d87;
+  --bar-bg: rgba(7, 10, 16, 0.78);
+  --bar-bg-stuck: rgba(7, 10, 16, 0.92);
+  --grid-dot: rgba(168, 179, 194, 0.11);
+  --shadow-ink: rgba(0, 0, 0, 0.9);
+
+  /* a console reads as a console — the terminal keeps its own surfaces in light looks */
+  --term-deep: var(--ink-0);
+  --term-bg: var(--ink-2);
+  --term-bar: var(--ink-3);
+  --term-line: var(--line);
+  --term-fg: var(--bright);
+  --term-muted: var(--muted);
+  --term-accent: var(--accent);
+  --term-metric: var(--metric);
+
+  /* hero sky: night keeps its two radial tints on .hero, so only the moon is drawn */
+  --sky-orb: #e9eef6;
+  --sky-orb-rim: #aeb9cc;
+  --sky-glow: rgba(200, 215, 240, 0.22);
+  --sky-haze: transparent;
+
+  /* switch spheres — the same three swatches in every look, so the control is a constant */
+  --sw-morning-a: #dfe7ee;
+  --sw-morning-b: #f1cf9c;
+  --sw-dusk-a: #ff9d6c;
+  --sw-dusk-b: #3a1f3f;
+  --sw-night-a: #2b3648;
+  --sw-night-b: #070a10;
 }
 
 /* Readers who ask the OS for more contrast get lighter body text and borders.
@@ -83,6 +118,126 @@
     --line: #33415a;
     --line-2: #4a5c78;
   }
+}
+
+/*--------------------------------------------------------------
+# Looks — the palette follows the visitor's local time (morning / dusk / night),
+# and the bottom-left switch overrides it. Night is the base :root above, so a
+# page without the attribute (no JS) is exactly the dark theme.
+--------------------------------------------------------------*/
+:root[data-look="morning"] {
+  /* warm ivory paper under a cool sky; light UA chrome to match */
+  color-scheme: light;
+  --ink-0: #f4efe6;
+  --ink-1: #ebe4d8;
+  --ink-2: #fbf8f3;
+  --ink-3: #e4dccd;
+  --line: #d9cfbf;
+  --line-2: #bfb29d;
+  --head: #1c1915;
+  --bright: #2b2620;
+  --text: #4a4338;
+  --muted: #665e51;
+  --accent: #0a6f5f;
+  --accent-2: #086657;
+  --accent-hover: #075e50;
+  --accent-wash: rgba(10, 111, 95, 0.1);
+  --metric: #845402;
+  --solid: #1c1915;
+  --solid-ink: #f7f3ec;
+  --solid-hover: #000;
+  --bar-bg: rgba(244, 239, 230, 0.8);
+  --bar-bg-stuck: rgba(244, 239, 230, 0.92);
+  --grid-dot: rgba(28, 25, 21, 0.1);
+  --shadow-ink: rgba(60, 45, 20, 0.35);
+  --term-deep: #070a10;
+  --term-bg: #10151f;
+  --term-bar: #161d29;
+  --term-line: #1e2632;
+  --term-fg: #d5dde8;
+  --term-muted: #8a95a6;
+  --term-accent: #5ce1c6;
+  --term-metric: #f2c078;
+  --sky-a: #dbe6ef;
+  --sky-b: #f4efe6;
+  --sky-orb: #ffe3ad;
+  --sky-orb-rim: #f0b85c;
+  --sky-glow: rgba(255, 210, 140, 0.55);
+  --sky-haze: rgba(255, 226, 178, 0.5);
+}
+
+:root[data-look="dusk"] {
+  /* warm plum twilight — the terminal tokens inherit, so a dusk console is dusk */
+  --ink-0: #1b1320;
+  --ink-1: #211826;
+  --ink-2: #2a1e31;
+  --ink-3: #35263e;
+  --line: #402f4c;
+  --line-2: #574260;
+  --head: #f8f0ea;
+  --bright: #e8dbd3;
+  --text: #c6b6b1;
+  --muted: #a3928f;
+  --accent: #ff9d80;
+  --accent-2: #ff8660;
+  --accent-hover: #ffb9a3;
+  --accent-wash: rgba(255, 157, 128, 0.12);
+  --metric: #f2c96a;
+  --solid: #f8f0ea;
+  --solid-ink: #1b1320;
+  --solid-hover: #fff;
+  --code-key: #d8b4ff;
+  --code-punct: #8a7699;
+  --bar-bg: rgba(27, 19, 32, 0.78);
+  --bar-bg-stuck: rgba(27, 19, 32, 0.92);
+  --grid-dot: rgba(248, 240, 234, 0.1);
+  --shadow-ink: rgba(0, 0, 0, 0.85);
+  --sky-a: #2a1a3c;
+  --sky-b: #4a2440;
+  --sky-orb: #ff8f5a;
+  --sky-orb-rim: #c8401f;
+  --sky-glow: rgba(255, 120, 80, 0.45);
+  --sky-haze: rgba(255, 120, 110, 0.18);
+}
+
+/* the dark looks lighten body text for extra contrast; morning has to darken it instead */
+@media (prefers-contrast: more) {
+  :root[data-look="morning"] {
+    --text: #2b2620;
+    --muted: #4a4338;
+    --line: #b8ab95;
+    --line-2: #9c8f79;
+  }
+}
+
+/* Crossfade only while a look change is in flight: a standing transition on these
+   surfaces would smear every hover and every scrollspy update. */
+html.is-switching body,
+html.is-switching section,
+html.is-switching .topbar,
+html.is-switching .hero,
+html.is-switching .term,
+html.is-switching .term-bar,
+html.is-switching .flagship,
+html.is-switching .flagship-term,
+html.is-switching .metric,
+html.is-switching .service-card,
+html.is-switching .quote-card,
+html.is-switching .cred-card,
+html.is-switching .channel,
+html.is-switching .contact-form,
+html.is-switching .how-we-work,
+html.is-switching .early-practice,
+html.is-switching .about-facts > div,
+html.is-switching .tag-row li,
+html.is-switching .btn,
+html.is-switching .nav-link,
+html.is-switching .brand-mark,
+html.is-switching .fab,
+html.is-switching .look-switch,
+html.is-switching .site-footer,
+html.is-switching .code-block {
+  transition: background-color 0.45s ease, border-color 0.45s ease, color 0.45s ease;
 }
 
 /*--------------------------------------------------------------
@@ -141,7 +296,7 @@ a {
 }
 
 a:hover {
-  color: #8befd9;
+  color: var(--accent-hover);
 }
 
 ::selection {
@@ -182,28 +337,33 @@ a:hover {
 # Motion is an enhancement: without JS the .js class is never stamped,
 # so the hidden state below never applies and all content stays visible.
 --------------------------------------------------------------*/
+/* the block tips up from its own bottom edge, so it reads as swinging into place
+   rather than sliding — the rotation is what makes the reveal feel like depth */
 html.js [data-reveal] {
   opacity: 0;
-  transform: translateY(14px);
+  transform: perspective(900px) translateY(14px) rotateX(5deg);
+  transform-origin: 50% 100%;
   transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* --card-3d is the pointer tilt of the cards that have one; everything else lands flat */
 html.js [data-reveal].is-in {
   opacity: 1;
-  transform: none;
+  transform: var(--card-3d, none);
 }
 
 /* Grid children stagger in once their container crosses the threshold. Pure CSS
    off the container's own .is-in — no second observer, no per-item JS. */
 html.js [data-reveal-children] > * {
   opacity: 0;
-  transform: translateY(10px);
+  transform: perspective(900px) translateY(10px) rotateX(6deg);
+  transform-origin: 50% 100%;
   transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html.js [data-reveal-children].is-in > * {
   opacity: 1;
-  transform: none;
+  transform: var(--card-3d, none);
 }
 
 html.js [data-reveal-children].is-in > :nth-child(2) { transition-delay: 55ms; }
@@ -226,13 +386,55 @@ html.js [data-reveal-children].is-in > :nth-child(n + 9) { transition-delay: 440
 }
 
 /*--------------------------------------------------------------
+# Card tilt — shared by the service cards and the flagship cards.
+# JS writes only --rx/--ry/--mx/--my; the transform itself is the
+# --card-3d the revealed state picks up, so the two never fight.
+--------------------------------------------------------------*/
+.service-card,
+.flagship {
+  position: relative;
+  --card-3d: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--ty, 0px));
+  transform: var(--card-3d);
+}
+
+/* glare sits above the card and follows the pointer; at rest it is invisible,
+   so a card nobody is pointing at looks exactly as it did before */
+.service-card::after,
+.flagship::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  opacity: 0;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, 0.07), transparent 60%);
+  transition: opacity 0.25s ease;
+}
+
+.service-card:hover::after,
+.flagship:hover::after {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .service-card,
+  .flagship {
+    --card-3d: none;
+  }
+  .service-card::after,
+  .flagship::after {
+    transition: none;
+  }
+}
+
+/*--------------------------------------------------------------
 # Top bar
 --------------------------------------------------------------*/
 .topbar {
   position: sticky;
   top: 0;
   z-index: 100;
-  background: rgba(7, 10, 16, 0.78);
+  background: var(--bar-bg);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   border-bottom: 1px solid transparent;
@@ -241,7 +443,7 @@ html.js [data-reveal-children].is-in > :nth-child(n + 9) { transition-delay: 440
 
 .topbar.is-stuck {
   border-bottom-color: var(--line);
-  background: rgba(7, 10, 16, 0.92);
+  background: var(--bar-bg-stuck);
 }
 
 .topbar-inner {
@@ -475,8 +677,8 @@ html.js [data-reveal-children].is-in > :nth-child(n + 9) { transition-delay: 440
 }
 
 .btn-solid:hover {
-  background: #fff;
-  border-color: #fff;
+  background: var(--solid-hover);
+  border-color: var(--solid-hover);
   color: var(--solid-ink);
   transform: translateY(-1px);
 }
@@ -656,21 +858,136 @@ section {
     var(--ink-0);
 }
 
+/* the light looks paint a sky instead of the flat tint; night keeps the two radial
+   washes above, so the dark page is unchanged */
+:root[data-look="morning"] .hero,
+:root[data-look="dusk"] .hero {
+  background: linear-gradient(180deg, var(--sky-a) 0%, var(--sky-b) 70%, var(--ink-0) 100%);
+}
+
 /* dot grid, faded out downward so it never fights the text */
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(rgba(168, 179, 194, 0.11) 1px, transparent 1px);
+  background-image: radial-gradient(var(--grid-dot) 1px, transparent 1px);
   background-size: 26px 26px;
   -webkit-mask-image: linear-gradient(to bottom, #000, transparent 68%);
   mask-image: linear-gradient(to bottom, #000, transparent 68%);
   pointer-events: none;
 }
 
+/*--------------------------------------------------------------
+# Hero sky — the depth scene behind the hero: orb, two haze layers,
+# each drifting at its own rate off the native scroll timeline.
+--------------------------------------------------------------*/
+.sky {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* night default: a small moon high on the right; the light looks resize and move it */
+.sky-orb {
+  position: absolute;
+  right: 12%;
+  top: 34px;
+  width: 120px;
+  height: 120px;
+}
+
+/* halo as a gradient rather than a filter: blurring a box this size would repaint
+   the whole hero on every parallax frame */
+.sky-orb::before {
+  content: "";
+  position: absolute;
+  inset: -90%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--sky-glow) 0%, transparent 60%);
+}
+
+/* the disc — masked into a crescent for the moon, so the halo behind it survives */
+.sky-orb::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, var(--sky-orb) 0%, var(--sky-orb) 28%, var(--sky-orb-rim) 60%, transparent 62%);
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 68% 32%, transparent 99%, #000 100%);
+  mask-image: radial-gradient(ellipse 50% 50% at 68% 32%, transparent 99%, #000 100%);
+}
+
+.sky-haze {
+  position: absolute;
+  width: 70vw;
+  height: 60%;
+  background: radial-gradient(ellipse at center, var(--sky-haze) 0%, transparent 65%);
+}
+
+.sky-haze-far {
+  top: 0;
+  left: -12vw;
+  opacity: 0.6;
+}
+
+.sky-haze-near {
+  right: -12vw;
+  bottom: 0;
+  opacity: 0.9;
+}
+
+:root[data-look="morning"] .sky-orb {
+  right: 18%;
+  top: -70px;
+  width: 260px;
+  height: 260px;
+}
+
+:root[data-look="dusk"] .sky-orb {
+  right: 8%;
+  top: auto;
+  bottom: 120px;
+  width: 340px;
+  height: 340px;
+}
+
+/* only the moon is a crescent */
+:root[data-look="morning"] .sky-orb::after,
+:root[data-look="dusk"] .sky-orb::after {
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+
+/* three layers, three speeds, one native scroll timeline — the depth cue costs no JS */
+@supports (animation-timeline: scroll()) {
+  .sky-orb,
+  .sky-haze {
+    animation: sky-drift linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 100vh;
+  }
+  .sky-orb { --drift: 90px; }
+  .sky-haze-far { --drift: 30px; }
+  .sky-haze-near { --drift: 140px; }
+}
+
+@keyframes sky-drift {
+  to { transform: translate3d(0, var(--drift), 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sky-orb,
+  .sky-haze {
+    animation: none;
+  }
+}
+
 .hero-grid {
   position: relative;
   z-index: 1;
+  perspective: 1400px;
   display: grid;
   grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
   align-items: center;
@@ -775,6 +1092,11 @@ section {
   .hero-grid {
     grid-template-columns: minmax(0, 1fr);
   }
+  /* one column is text edge to edge — every orb position lands behind the
+     eyebrow line, so the sky keeps only its gradient and haze here */
+  .sky-orb {
+    display: none;
+  }
 }
 
 @media (max-width: 520px) {
@@ -825,16 +1147,45 @@ section {
 /*--------------------------------------------------------------
 # Terminal chrome — shared by the hero and the flagship cards
 --------------------------------------------------------------*/
+/* Remapping the look tokens once here beats patching every rule below: a console
+   reads as a console, so both terminals keep dark surfaces even in the light look. */
 .term,
 .flagship-term {
+  --ink-0: var(--term-deep);
+  --ink-2: var(--term-bg);
+  --ink-3: var(--term-bar);
+  --line: var(--term-line);
+  --bright: var(--term-fg);
+  --muted: var(--term-muted);
+  --accent: var(--term-accent);
+  --metric: var(--term-metric);
   background: var(--ink-2);
   overflow: hidden;
+}
+
+/* the hero terminal is the one object with real depth: a fixed 3D pose that the
+   pointer nudges. JS only ever writes --ry/--rx/--mx/--my. */
+.hero .term {
+  position: relative;
+  transform: rotateY(var(--ry, -7deg)) rotateX(var(--rx, 2deg));
+  transform-style: preserve-3d;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: transform;
+}
+
+.hero .term::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(255, 255, 255, 0.07), transparent 60%);
 }
 
 .term {
   border: 1px solid var(--line);
   border-radius: var(--r-md);
-  box-shadow: 0 30px 70px -34px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(92, 225, 198, 0.05);
+  box-shadow: 0 30px 70px -34px var(--shadow-ink), 0 0 0 1px rgba(92, 225, 198, 0.05);
 }
 
 .term-bar {
@@ -883,8 +1234,8 @@ section {
 .tm { color: var(--metric); }
 .tc { color: var(--accent); }
 .tmut { color: var(--muted); }
-.tk { color: #8fd0ff; }
-.tp { color: #5a6d87; }
+.tk { color: var(--code-key); }
+.tp { color: var(--code-punct); }
 
 /* Default (no JS / reduced motion): everything visible, no animation.
    Motion is an enhancement: JS staggers .tl-on per line; transition animates it. */
@@ -918,6 +1269,14 @@ section {
   50% { opacity: 0; }
 }
 
+/* single column: the terminal runs full width, where a tilt only clips its own corners */
+@media (max-width: 980px) {
+  .hero .term {
+    transform: none;
+    will-change: auto;
+  }
+}
+
 @media (max-width: 520px) {
   .term-body {
     font-size: 11.5px;
@@ -926,6 +1285,9 @@ section {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .hero .term {
+    transition: none;
+  }
   .term-cursor {
     animation: none;
   }
@@ -1030,6 +1392,11 @@ section {
   border: 1px solid var(--line-2);
   border-radius: var(--r-lg);
   filter: brightness(0.94) contrast(1.03);
+}
+
+/* the dimming was tuned to sit a light backdrop on a dark page — on paper it just greys the face */
+:root[data-look="morning"] .about-portrait img {
+  filter: none;
 }
 
 .about-caption {
@@ -1623,7 +1990,7 @@ section {
 
 .service-card:hover {
   border-color: var(--line-2);
-  transform: translateY(-3px);
+  --ty: -3px;
 }
 
 .service-icon {
@@ -1726,10 +2093,8 @@ section {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .service-card,
-  .service-card:hover {
+  .service-card {
     transition: none;
-    transform: none;
   }
 }
 
@@ -2070,7 +2435,7 @@ a.channel:hover {
   border: 1px solid var(--line-2);
   background: var(--ink-2);
   color: var(--head);
-  box-shadow: 0 10px 30px -12px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 10px 30px -12px var(--shadow-ink);
   opacity: 0;
   visibility: hidden;
   transition: border-color 0.2s ease, background 0.2s ease, opacity 0.3s ease, visibility 0.3s;
@@ -2086,7 +2451,8 @@ html:not(.js) .fab {
 
 /* inside the contact section the shortcut is redundant, and on mobile it
    overlaps the message field — must outrank .is-on, so it comes after */
-.fab.is-off {
+.fab.is-off,
+.look-switch.is-off {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
@@ -2110,8 +2476,8 @@ html:not(.js) .fab {
 }
 
 .fab-contact:hover {
-  background: #8befd9;
-  border-color: #8befd9;
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
   color: var(--solid-ink);
 }
 
@@ -2122,6 +2488,88 @@ html:not(.js) .fab {
 @media (prefers-reduced-motion: reduce) {
   .fab {
     transition: none;
+  }
+}
+
+/*--------------------------------------------------------------
+# Look switch — bottom-left, opposite the floating actions
+--------------------------------------------------------------*/
+.look-switch {
+  position: fixed;
+  left: 18px;
+  bottom: 18px;
+  z-index: 90;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: var(--ink-2);
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  box-shadow: 0 10px 30px -12px var(--shadow-ink);
+  transition: opacity 0.3s ease, visibility 0.3s;
+}
+
+/* the buttons only do something once JS can store the choice */
+html:not(.js) .look-switch {
+  display: none;
+}
+
+.look-btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+
+/* lit from the top-left: the sphere shading is what makes a flat swatch read as 3D */
+.look-btn-morning {
+  background: radial-gradient(circle at 32% 28%, var(--sw-morning-a), var(--sw-morning-b));
+}
+
+.look-btn-dusk {
+  background: radial-gradient(circle at 32% 28%, var(--sw-dusk-a), var(--sw-dusk-b));
+}
+
+.look-btn-night {
+  background: radial-gradient(circle at 32% 28%, var(--sw-night-a), var(--sw-night-b));
+}
+
+.look-btn .ico {
+  width: 16px;
+  height: 16px;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+
+.look-btn:hover {
+  transform: scale(1.06);
+}
+
+.look-btn[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px var(--ink-2), 0 0 0 4px var(--accent);
+  transform: scale(1.06);
+}
+
+/* touch targets clear 44px; the pill grows with them */
+@media (pointer: coarse) {
+  .look-btn {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .look-switch,
+  .look-btn,
+  .look-btn:hover,
+  .look-btn[aria-pressed="true"] {
+    transition: none;
+    transform: none;
   }
 }
 
@@ -2313,6 +2761,8 @@ html:not(.js) .fab {
   }
   .topbar,
   .fab,
+  .look-switch,
+  .sky,
   .skip-link,
   .contact-form,
   .read-progress,

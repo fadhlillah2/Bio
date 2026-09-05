@@ -14,6 +14,7 @@
   import Testimonials from "$lib/components/Testimonials.svelte";
   import Contact from "$lib/components/Contact.svelte";
   import SiteFooter from "$lib/components/SiteFooter.svelte";
+  import LookSwitch from "$lib/components/LookSwitch.svelte";
 
   // enhance() returns its own cleanup; Svelte runs it on teardown.
   onMount(() => enhance());
@@ -41,3 +42,5 @@
 </main><!-- End #main -->
 
 <SiteFooter />
+
+<LookSwitch />
