@@ -889,6 +889,29 @@ section {
   z-index: 0;
 }
 
+/* the WebGL sky: one canvas behind everything; when it is live the CSS orb, haze and
+   dot grid step aside and the hero background is the look's own paper */
+.sky-gl {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hero.is-gl .sky-orb,
+.hero.is-gl .sky-haze,
+.hero.is-gl::before {
+  display: none;
+}
+
+@media screen {
+  :root[data-look="morning"] .hero.is-gl,
+  :root[data-look="dusk"] .hero.is-gl {
+    background: var(--ink-0);
+  }
+}
+
 /* night default: a small moon high on the right; the light looks resize and move it */
 .sky-orb {
   position: absolute;

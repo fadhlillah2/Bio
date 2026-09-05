@@ -7,12 +7,13 @@
     "cv": "rm -rf static/cv && mkdir -p static/cv && cp cv/*.pdf cv/*.txt static/cv/",
     "cv:selftest": "bun cv/build-pdf.ts --selftest",
     "check:looks": "bun scripts/looks-contrast.ts",
+    "check:sky": "bun scripts/sky-check.ts",
     "og": "bun scripts/og-render.ts",
     "dev": "bun run cv && vite dev",
     "build": "bun run cv && vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check",
-    "validate": "bun run check:looks && bun run cv:selftest && bun run check && bun run build"
+    "validate": "bun run check:looks && bun run cv:selftest && bun run check && bun run build && bun run check:sky"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "3.0.10",

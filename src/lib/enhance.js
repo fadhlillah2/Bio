@@ -1,3 +1,5 @@
+import { mountSky } from './sky.js';
+
 /**
  * Fadhlillah — portfolio behavior. No dependencies.
  * Everything here is an enhancement: without JS the page stays fully readable
@@ -203,6 +205,8 @@ export function enhance() {
   };
 
   var hero = document.querySelector('.hero');
+  // the WebGL sky mounts behind the hero; without WebGL2 the CSS orb/haze stay
+  var unmountSky = hero ? mountSky(hero) : null;
   if (fine && !reduced) {
     // the terminal follows the whole hero, so it reacts before the pointer reaches it
     if (hero && term) addTilt(hero, term, -7, 2, 6, 5);
@@ -277,6 +281,7 @@ export function enhance() {
     if (tiltFrame) window.cancelAnimationFrame(tiltFrame);
     document.removeEventListener('scroll', onScrollQueue);
     document.removeEventListener('keydown', onKeydown);
+    if (unmountSky) unmountSky();
     timers.forEach(function (t) { clearTimeout(t); });
     timers.length = 0;
     // <html> outlives the route, so a pending crossfade would otherwise stay switched on
