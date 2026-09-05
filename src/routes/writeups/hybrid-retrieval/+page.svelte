@@ -85,7 +85,7 @@
           <p class="article-meta">
             <span>August 2026</span>
             <span aria-hidden="true">·</span>
-            <span>~6 min read</span>
+            <span>~7 min read</span>
             <span aria-hidden="true">·</span>
             <a href="https://github.com/fadhlillah2/llama-docs-auditor" target="_blank" rel="noopener">Source on GitHub <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
           </p>
@@ -116,7 +116,7 @@
 
         <h2>Retrieval: two lists, weighted, plus a bonus</h2>
 
-        <p>The retriever runs both strategies and merges them rather than choosing between them. Semantic search returns 15 candidates; a TF-IDF keyword search returns 10. The merge in <a href="https://github.com/fadhlillah2/llama-docs-auditor/blob/main/rag/retriever.py" target="_blank" rel="noopener">retriever.py</a> weights them 0.7 to 0.3 in favor of semantics — but the detail that does the real work is the third term:</p>
+        <p>The in-memory retriever runs both strategies and merges them rather than choosing between them. Semantic search returns 15 candidates; a TF-IDF keyword search returns 10. The merge in <a href="https://github.com/fadhlillah2/llama-docs-auditor/blob/main/rag/retriever.py" target="_blank" rel="noopener">retriever.py</a> weights them 0.7 to 0.3 in favor of semantics — but the detail that does the real work is the third term:</p>
 
         <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
         <pre class="code-block" tabindex="0" role="region" aria-label="Code sample"><code>combined_scores[doc_id]['combined_score'] += keyword_score + 0.1  <span class="tmut"># bonus for appearing in both</span></code></pre>
@@ -129,7 +129,7 @@
 
         <h2>What changed — and what remains</h2>
 
-        <p>Three findings matter here. The first is now fixed, but it remains useful because the regression it exposed is more instructive than the patch itself.</p>
+        <p>Five findings matter here. The first is now fixed, but it remains useful because the regression it exposed is more instructive than the patch itself.</p>
 
         <p><strong>The exact-match fallback was hard-coded.</strong> <span class="tag-fixed">Fixed Aug 2026</span> The pattern extraction in <code>_exact_section_search</code> tested for <code>'IV.15' in query</code> — a debugging shortcut from the hackathon that never got generalized, so every other clause reference fell through to semantic search. All section-detection paths now read from one shared <code>SECTION_PATTERNS</code> list.</p>
 
@@ -144,7 +144,11 @@ r'\s+'.join(re.escape(p) for p in "Section II.3".split())  <span class="tmut">�
 
         <p>Every prefixed reference failed silently, and the tests still passed — the bare <code>II.3</code> form matched the same chunk and masked it. What caught it was reading the debug trace rather than the green checkmark. The regression test now puts the bare form in an earlier chunk so the prefixed reference has to win on its own; the suite is 11 cases, and I checked that it fails when either bug is put back — one failure for the escaping, six for the hard-coding.</p>
 
-        <p><strong>The section patterns still target English conventions.</strong> Those regexes match <code>Section IV.15</code> and <code>Article IV</code>. The OCR layer handles <code>PASAL</code> and <code>AYAT</code>, but the retriever never learned to look for them, so the exact path does not currently fire for the Indonesian documents the OCR pipeline was built for. The two halves were developed against different sample documents and never met.</p>
+        <p><strong>The section patterns still target English conventions.</strong> Those regexes match <code>Section IV.15</code> and <code>Article IV</code>. Even where the OCR output is clean, the retriever never learned to look for <code>PASAL</code> or <code>AYAT</code>, so the exact path does not currently fire for the Indonesian documents the OCR pipeline was built for. The two halves were developed against different sample documents and never met.</p>
+
+        <p><strong>The OCR clean-up corrupts the token it was written to protect.</strong> The normalization pass in <a href="https://github.com/fadhlillah2/llama-docs-auditor/blob/main/rag/easyocr_implementation.py" target="_blank" rel="noopener">easyocr_implementation.py</a> applies a substitution table before the <code>PASAL</code> spacing fix, and two of its entries are global: every <code>S</code> becomes <code>5</code> and every <code>l</code> becomes <code>1</code>, written for digits but applied to the whole string. So <code>PASAL 5</code> leaves the OCR layer as <code>PA5AL 5</code>, the spacing fix that follows never matches, and the structure pass that inserts a line break before <code>PASAL</code> never fires for it — <code>AYAT</code> and <code>BAB</code> survive only because they contain neither letter. The fix is a digit-context rule for those two substitutions; it is not in the repo yet.</p>
+
+        <p><strong>The hybrid path is not the default wiring.</strong> <code>Retriever.get_retriever()</code> sets <code>_use_chromadb = True</code> and, whenever ChromaDB comes up, returns a <code>ChromaDBEnhancedRetriever</code> whose query is a plain <code>similarity_search(query, k=4)</code>. The merge, the consensus bonus, and the exact-match fallback described above all live in <code>SimpleRetriever</code>, which that wrapper only calls when ChromaDB throws or returns nothing. In a normal run the hybrid retrieval is the fallback, not the path a question takes first. Routing section-bearing queries to it is the obvious next change.</p>
 
         <p><strong>Retrieval quality is not measured.</strong> There is an evaluation harness, and it does record real numbers — 9 of 9 questions answered, 15.5s average response, context utilization at 0.35. But the RAGAS metrics in the committed results are all zero because the runs had <code>include_ragas: false</code>, so faithfulness and context precision are unmeasured rather than good. Everything above is an argument from design, not from measurement. The weighting is 0.7/0.3 and the consensus bonus is 0.1 because those were reasonable starting values, not because a sweep said so.</p>
 
