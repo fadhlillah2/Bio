@@ -4,7 +4,7 @@
         <header class="section-head">
           <p class="section-index">08 &mdash; Contact</p>
           <h2>Let's discuss your project or role</h2>
-          <p class="section-deck">Fastest response: <a href="https://wa.me/6285157043131?text=Hi%20Fadhlillah%2C%20I%20saw%20your%20portfolio" target="_blank" rel="noopener">WhatsApp</a> or <a href="mailto:fadhlillah949699@gmail.com">email</a> — the form below reaches me too.</p>
+          <p class="section-deck">Reach me directly via <a href="https://wa.me/6285157043131?text=Hi%20Fadhlillah%2C%20I%20saw%20your%20portfolio" target="_blank" rel="noopener">WhatsApp</a> or <a href="mailto:fadhlillah949699@gmail.com">email</a>, or use the form below.</p>
         </header>
 
         <div class="contact-grid">
@@ -13,7 +13,7 @@
             <a class="channel channel-primary" href="https://wa.me/6285157043131?text=Hi%20Fadhlillah%2C%20I%20saw%20your%20portfolio" target="_blank" rel="noopener">
               <span class="channel-label">WhatsApp</span>
               <span class="channel-value">Chat on WhatsApp <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></span>
-              <span class="channel-note">Fastest reply</span>
+              <span class="channel-note">Direct message</span>
             </a>
             <a class="channel" href="mailto:fadhlillah949699@gmail.com">
               <span class="channel-label">Email</span>
@@ -26,12 +26,12 @@
             <div class="channel channel-static">
               <span class="channel-label">Location</span>
               <span class="channel-value">Jakarta, Indonesia</span>
-              <span class="channel-note">WIB &middot; UTC+7 — remote-friendly across time zones</span>
+              <span class="channel-note">WIB &middot; UTC+7 — available for international remote collaboration</span>
             </div>
             <div class="channel channel-static">
               <span class="channel-label">Open to</span>
-              <span class="channel-value">Full-time &middot; remote (international) &middot; consulting</span>
-              <span class="channel-note">Already working cross-border: currently freelancing remotely for Infinity Wave Sdn Bhd (Malaysia) since Dec 2025.</span>
+              <span class="channel-value">Full-time roles &middot; international remote work &middot; consulting</span>
+              <span class="channel-note">Current cross-border experience: remote freelance work for Infinity Wave Sdn Bhd (Malaysia) since December 2025.</span>
             </div>
           </div>
 
@@ -43,11 +43,11 @@
 
             <div class="field-row">
               <p class="field">
-                <label for="name">Your Name</label>
+                <label for="name">Your name</label>
                 <input type="text" name="name" id="name" autocomplete="name" required>
               </p>
               <p class="field">
-                <label for="email">Your Email</label>
+                <label for="email">Your email</label>
                 <input type="email" name="email" id="email" autocomplete="email" required>
               </p>
             </div>
@@ -64,7 +64,7 @@
             <div class="sent-message" id="contact-sent" role="status"></div>
             <div class="error-message" id="contact-error" role="alert"></div>
 
-            <button type="submit" class="btn btn-solid">Send Message</button>
+            <button type="submit" class="btn btn-solid">Send message</button>
           </form>
 
         </div>

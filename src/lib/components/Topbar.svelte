@@ -25,7 +25,7 @@
     </nav>
 
     <div class="topbar-actions">
-      <a href="{base}/cv/resume-onepager-v1.8.pdf" class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV</a>
+      <a href="{base}/cv/resume-onepager-v1.9.pdf" class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV</a>
       <button class="nav-toggle" type="button" aria-label="Toggle navigation menu" aria-controls="site-nav" aria-expanded="false">
         <span class="nav-toggle-bars" aria-hidden="true"></span>
       </button>

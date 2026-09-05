@@ -11,8 +11,8 @@
       <a href="mailto:fadhlillah949699@gmail.com">Email</a>
     </nav>
     <p class="footer-colophon">
-      <span>Prerendered with SvelteKit &middot; hand-written CSS/JS &middot; self-hosted fonts.</span>
-      <span>Updated <time datetime="2026-09-04">September 2026</time></span>
+      <span>Prerendered with SvelteKit &middot; handwritten CSS and JavaScript &middot; self-hosted fonts.</span>
+      <span>Updated <time datetime="2026-09-05">September 2026</time></span>
     </p>
   </div>
 </footer>

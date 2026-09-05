@@ -161,7 +161,7 @@ def to_html(txt: str, stem: str) -> str:
         elif re.match(r"^\S.{0,12}? : ", line):  # skills row "Label : values"
             flush()
             unit = ("sk", re.sub(r"^(\S[^:]*?)\s+: ", r"\1 : ", line.strip()))
-        elif line.startswith("Also searchable as"):  # de-emphasized keyword footer, not a cert line
+        elif line.startswith(("Also searchable as", "Target roles")):  # de-emphasized keyword/role footer, not a cert line
             flush()
             out.append(f'<p class="alias">{e(line.strip())}</p>')
         elif line.startswith(" ") and unit:  # wrapped continuation
@@ -247,6 +247,8 @@ def selftest():
     assert 'href="https://replit.com/@X"' in lk and 'href="mailto:mail@gmail.com"' in lk
     assert '<p class="alias">Also searchable as: X, Y</p>' in to_html(
         src + "Also searchable as: X, Y\n", "resume-v9.9-test")  # keyword footer keeps its own style
+    assert '<p class="alias">Target roles: X · Y</p>' in to_html(
+        src + "Target roles: X · Y\n", "resume-v9.9-test")  # role footer keeps alias style
     assert 'href="https://github.com/x/y"' in linkify("github.com/x/y.")  # trailing '.' stays outside the link
     wrap = to_html(src.replace("- bullet one\n  wrapped tail",
                                "Label line:\nAn unindented paragraph that\nwraps mid-sentence here."), "resume-v9.9-test")
