@@ -1,0 +1,46 @@
+                                             FADHLILLAH
+       Backend & AI Engineering for Scaling Businesses — Remote (international) · Jakarta (WIB · UTC+7)
+  South Jakarta, Indonesia | +62 851-5704-3131 | fadhlillah949699@gmail.com | WA: wa.me/6285157043131
+          fadhlillah2.github.io/Bio | linkedin.com/in/fadhlillah2 | github.com/fadhlillah2
+
+WHAT I DO
+Backend Software Engineer with 6+ years of experience. I build and scale production backend systems
+ and LLM-integrated products, and I built and operated banking microservices serving 2M+ requests/day.
+ With AI-augmented engineering, I delivered a production SFTP platform in 10 days against a 17-day
+ plan. My experience spans healthcare, F&B, and fintech. Open to full-time roles, international
+ remote opportunities, and consulting engagements.
+
+PROVEN OUTCOMES
+- Scale — Spring Boot microservices served 2M+ requests/day at sub-200ms; the 12 microservices I ran
+  handled 500k+ daily transactions in banking
+- Reliability — corporate reporting pipelines I tuned consistently met 48-hour reporting SLAs; a
+  healthcare platform sustained 99.5% uptime across 100+ APIs
+- Speed — a production SFTP platform delivered in 10 days against a 17-day plan, using
+  AI-augmented engineering
+- Efficiency — report generation accelerated 700% via query tuning and materialized views; Redis
+  caching cut DB queries by 60% during peak restaurant load (F&B)
+- Reach — notification system delivering 50k+ emails and SMS messages daily
+- AI — LLM-integrated products end to end: RAG systems, AI chatbots, internal automation; Top 50,
+  Meta Llama Hackathon 2025 (Hacktiv8 Indonesia)
+
+SERVICES
+Backend APIs  : REST APIs and microservices — Spring Boot, Django REST Framework, Node.js, Flask
+AI / LLM      : RAG, AI chatbots, workflow automation — OpenAI, Llama, Groq, LangChain, ChromaDB
+Databases     : Query tuning, indexing, caching, and data-model design — reports accelerated 700%
+Microservices : 12 services delivered in production banking; Kafka event processing; Docker and Kubernetes
+Cloud & CI/CD : Dockerized services on Azure and AWS; GitHub Actions CI/CD to Amazon ECR; secret
+                scanning and migration-drift checks
+Consulting    : Architecture and technology selection grounded in hands-on delivery
+
+PROOF YOU CAN CHECK
+- High-Precision Contract Advisor RAG — Top 50, Meta Llama Hackathon 2025; EasyOCR at 88%+ accuracy
+  with PASAL/AYAT/BAB structure preserved — github.com/fadhlillah2/llama-docs-auditor
+- Distributed Go rate limiter — fixed-window, sliding-window, and token-bucket algorithms; Redis Lua —
+  github.com/fadhlillah2/rate-limiter-project-go
+- Portfolio, full CV, and LinkedIn — fadhlillah2.github.io/Bio
+
+HOW I WORK
+- Start with a short WhatsApp chat or introductory call — wa.me/6285157043131
+- Scope, timeline, and code ownership agreed in writing before any work starts
+- Deliver against agreed milestones with regular check-ins and transparent updates
+- Complete handover on delivery: source code, documentation, and deployment details

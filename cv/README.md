@@ -40,10 +40,10 @@ in two languages; every `.pdf` sits next to the same-named `.txt` it is generate
 
 | File                                                                 | Use it for                                                                                                        |
 |----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| [`resume-v8.7.pdf`](resume-v8.7.pdf)                                 | Official full CV — LinkedIn **full mirror**, 2 pages                                                              |
-| [`resume-onepager-v1.10.pdf`](resume-onepager-v1.10.pdf)             | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
-| [`consulting-onepager-en-v1.6.pdf`](consulting-onepager-en-v1.6.pdf) | Business buyer / consulting lead (EN) — outcomes, services, proof links, process; linked from the site's Services |
-| [`consulting-onepager-id-v1.6.pdf`](consulting-onepager-id-v1.6.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
+| [`resume-v8.8.pdf`](resume-v8.8.pdf)                                 | Official full CV — LinkedIn **full mirror**, 2 pages                                                              |
+| [`resume-onepager-v1.11.pdf`](resume-onepager-v1.11.pdf)             | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
+| [`consulting-onepager-en-v1.7.pdf`](consulting-onepager-en-v1.7.pdf) | Business buyer / consulting lead (EN) — outcomes, services, proof links, process; linked from the site's Services |
+| [`consulting-onepager-id-v1.7.pdf`](consulting-onepager-id-v1.7.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
 
 Each `.pdf` is generated from its same-named `.txt` (the `.txt` is the editable source of truth
 for that artifact); `build-pdf.ts` is the current generator and `build-pdf.py` is its reference
@@ -80,6 +80,14 @@ longer in the tree (see [Archive](#archive)).
 
 ### resume — full LinkedIn mirror
 
+- **v8.8** (2026-09-05, LinkedIn sync — snapshot v5) — the Bank Danamon entry mirrors the rewritten
+  live profile: dates **Aug 2023 – Aug 2026** (was Present) and the 8 new bullets (iRecon Java/GWT
+  reconciliation platform, batch reporting with SWIFT MT940/942/950 over Email/SFTP/MFT with PGP/AES,
+  FSC modules with maker-checker/LDAP/audit trail, query + caching tuning for 48-hour SLAs, the
+  10-day SFTP platform, LLM-assisted docs 40 h → 4 and 95 % coverage, 12 Spring Boot microservices
+  at 2M+ req/day / sub-200ms / 500k+ daily transactions, OAuth 2.0/JWT/AES-256). Dropped with the
+  profile: "$10M+ daily volume", "65 % prep time", "urgent 48h deadline" bullets. Everything else
+  verbatim from v8.7; 2 pages verified by both generators.
 - **v8.7** (2026-07-18, user correction) — FOX role employment type **Contract → Freelance**
   (user: the FOX engagement is freelance work) — one-word role-header fix; PDF rebuilt &
   2-page-verified; `linkedin-fox-role-v1.txt` (paste-ready working draft — kept **untracked** in
@@ -116,6 +124,20 @@ longer in the tree (see [Archive](#archive)).
 
 ### resume-onepager — recruiter/ATS edition
 
+- **v1.11** (2026-09-05, LinkedIn sync — snapshot v5, lock-step with resume-v8.8) — Bank Danamon
+  dates **Aug 2023 – Aug 2026** (was Present) and the block rewritten from the new profile bullets:
+  12 Spring Boot microservices (hexagonal) at 2M+ req/day / sub-200ms / 500k+ daily transactions;
+  iRecon Java/GWT reconciliation platform (660+ classes) with batch reporting incl. SWIFT
+  MT940/942/950 over Email/SFTP/MFT (PGP/AES); FSC modules over encrypted REST APIs with
+  maker-checker, LDAP-based access and audit trail, query + caching tuning for 48-hour SLAs; the
+  10-day SFTP platform and LLM-assisted docs 40 h → 4 with 95 % coverage (JUnit 5, Mockito); the
+  user-confirmed 5-person-team/mentoring line stays. Dropped with the profile: "$10M+ daily
+  volume" and "65 % test-prep time"; the OAuth/JWT/AES-256 clause lives on in SKILLS Security.
+  SUMMARY now past tense for banking ("Built and operated") and drops its standalone SFTP 10-day
+  sentence (the claim stays in the Danamon block). To hold 1 page: IDstar SSO bullet
+  loses "enterprise" and "managed sessions with Redis" (Redis stays in SKILLS), Assist.id API bullet
+  loses "Designed and", HackerRank joins the freeCodeCamp line, DevOps row drops "Maven, Git".
+  1 page (≈20 pt slack) verified by both generators.
 - **v1.10** (2026-09-05, ATS keyword recovery after the v1.9 review — C-009/C-011/C-084) —
   headline regains `Microservices` (`Java · Spring Boot · Microservices · 2M+ req/day`); the
   "Target roles" footer recovers the four synonyms the v1.4–v1.8 "Also searchable as" line carried
@@ -169,6 +191,13 @@ longer in the tree (see [Archive](#archive)).
 
 ### consulting-onepager — EN ⇄ ID in lock-step
 
+- **v1.7** (2026-09-05, LinkedIn sync — snapshot v5; EN/ID lock-step) — the Bank Danamon role ended
+  Aug 2026, so the first-person banking claims move to past tense ("built and operated", "the 12
+  microservices I ran handled"), and the "$10M+ daily volume" reliability line — no longer on the
+  profile — becomes "corporate reporting pipelines I tuned consistently met 48-hour reporting SLAs"
+  (ID: "pipeline pelaporan korporat yang saya optimalkan"); SERVICES Microservices row reads "12
+  services delivered in production banking" (ID row unchanged: Indonesian carries no tense marker); ID Scale bullet drops the
+  word "sektor" for line budget. No other claim changed; 1 page each.
 - **v1.6** (2026-09-05, review decisions C-024/C-136) — opener restores the sourced "6+ years";
   PROVEN OUTCOMES restores the resume's hedges in first person ("12 microservices I run",
   "financial systems I support"); SERVICES gains the "Cloud & CI/CD" line mirroring the site's

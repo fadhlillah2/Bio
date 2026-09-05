@@ -22,15 +22,15 @@
 
           <p class="hero-role">Backend Software Engineer <span class="sep">&middot;</span> 6+ years <span class="sep">&middot;</span> AI Native Engineer</p>
 
-          <p class="hero-value">Spring Boot microservices in production banking serve 2M+ requests/day with sub-200ms response times &middot; LLM/RAG products end to end, including Indonesian contract AI with 88%+ OCR accuracy &middot; Top 50, Meta Llama Hackathon 2025</p>
+          <p class="hero-value">Spring Boot microservices in production banking served 2M+ requests/day with sub-200ms response times &middot; LLM/RAG products end to end, including Indonesian contract AI with 88%+ OCR accuracy &middot; Top 50, Meta Llama Hackathon 2025</p>
 
           <div class="hero-cta">
-            <a href={base + "/cv/resume-onepager-v1.10.pdf"} class="btn btn-solid" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
+            <a href={base + "/cv/resume-onepager-v1.11.pdf"} class="btn btn-solid" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
             <a href="https://wa.me/6285157043131?text=Hi%20Fadhlillah%2C%20I%20saw%20your%20portfolio" target="_blank" rel="noopener" class="btn btn-ghost" aria-label="Message on WhatsApp (opens in new tab)"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg> Message on WhatsApp</a>
-            <a href={base + "/cv/resume-v8.7.pdf"} class="plain-link" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
+            <a href={base + "/cv/resume-v8.8.pdf"} class="plain-link" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
           </div>
 
-          <p class="hero-buyer">Scaling a business and need software built? <a href="#services">See services &amp; proven outcomes <span aria-hidden="true">&rarr;</span></a> &middot; <a href={base + "/cv/consulting-onepager-en-v1.6.pdf"} download="Fadhlillah - Software Engineering Services.pdf">Consulting one-pager (PDF)</a></p>
+          <p class="hero-buyer">Scaling a business and need software built? <a href="#services">See services &amp; proven outcomes <span aria-hidden="true">&rarr;</span></a> &middot; <a href={base + "/cv/consulting-onepager-en-v1.7.pdf"} download="Fadhlillah - Software Engineering Services.pdf">Consulting one-pager (PDF)</a></p>
         </div>
 
         <div class="term" id="hero-term" role="img" aria-label="Terminal: curl api.fadhlillah.dev/whoami returns a JSON profile — backend software engineer, AI native, Java/Spring Boot, Python, Node.js, 2M+ requests per day at sub-200ms, RAG and LLM products, Top 50 Meta Llama Hackathon, Jakarta (UTC+7), open to opportunities.">
