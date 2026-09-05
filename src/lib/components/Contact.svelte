@@ -13,7 +13,7 @@
             <a class="channel channel-primary" href="https://wa.me/6285157043131?text=Hi%20Fadhlillah%2C%20I%20saw%20your%20portfolio" target="_blank" rel="noopener">
               <span class="channel-label">WhatsApp</span>
               <span class="channel-value">Chat on WhatsApp <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></span>
-              <span class="channel-note">Direct message</span>
+              <span class="channel-note">Preferred channel</span>
             </a>
             <a class="channel" href="mailto:fadhlillah949699@gmail.com">
               <span class="channel-label">Email</span>

@@ -232,8 +232,9 @@ artifact.
 - **Artifact roles:** `resume-vX.Y` = official CV (LinkedIn mirror);
   `resume-onepager` = recruiter/ATS edition (curated; may use user-confirmed + archive-audited facts;
   must never *contradict* LinkedIn); `consulting-onepager-{en,id}` = business-buyer artifact
-  (site-Services wording + resume-sourced metrics only; keep EN/ID in lock-step — same claims,
-  translated wording only). Regenerate each PDF via `build-pdf.ts` on any change.
+  (site-Services wording; metrics must be resume-sourced or, for portfolio projects, verified
+  against the project repo's README the same way the site's portfolio cards are; keep EN/ID in
+  lock-step — same claims, translated wording only). Regenerate each PDF via `build-pdf.ts` on any change.
 - New version → add a **Changelog** entry, swap the file in **Current**, and move the superseded
   files to `archive/`, then prune `archive/` back to the two newest per artifact (`resume-v8.2`
   stays regardless). **Current** and the **Changelog** are the only two places a version number

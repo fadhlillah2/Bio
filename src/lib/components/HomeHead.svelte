@@ -9,7 +9,7 @@
   <meta property="og:site_name" content="Fadhlillah — Bio">
   <meta property="og:locale" content="en_US">
   <meta property="og:title" content="Fadhlillah — Backend Software Engineer · Java/Spring Boot · Jakarta">
-  <meta property="og:description" content="6+ years building Java/Spring Boot microservices at 2M+ requests/day and LLM/RAG products end to end. Top 50, Meta Llama Hackathon 2025.">
+  <meta property="og:description" content="6+ years building Java/Spring Boot microservices at 2M+ requests/day and LLM/RAG products end to end. Top 50, Meta Llama Hackathon 2025. Jakarta (UTC+7), open to full-time and international remote.">
   <meta property="og:url" content="https://fadhlillah2.github.io/Bio/">
   <meta property="og:image" content="https://fadhlillah2.github.io/Bio/assets/img/og-cover.png">
   <meta property="og:image:width" content="1200">
@@ -17,7 +17,7 @@
   <meta property="og:image:alt" content="Fadhlillah — Backend Software Engineer: Java/Spring Boot microservices and LLM/RAG products">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Fadhlillah — Backend Software Engineer · Java/Spring Boot · Jakarta">
-  <meta name="twitter:description" content="6+ years building Java/Spring Boot microservices at 2M+ requests/day and LLM/RAG products end to end. Top 50, Meta Llama Hackathon 2025.">
+  <meta name="twitter:description" content="6+ years building Java/Spring Boot microservices at 2M+ requests/day and LLM/RAG products end to end. Top 50, Meta Llama Hackathon 2025. Jakarta (UTC+7), open to full-time and international remote.">
   <meta name="twitter:image" content="https://fadhlillah2.github.io/Bio/assets/img/og-cover.png">
   <meta name="twitter:image:alt" content="Fadhlillah — Backend Software Engineer: Java/Spring Boot microservices and LLM/RAG products">
 
