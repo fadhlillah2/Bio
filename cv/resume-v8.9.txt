@@ -15,7 +15,7 @@ systems and fast-moving AI builds.
 
 EXPERIENCE
 FOX ASSET — INFINITY WAVE SDN BHD                                                MALAYSIA (REMOTE)
-Backend Software Engineer | Contract                                            Dec 2025 – Present
+Backend Software Engineer | Freelance                                           Dec 2025 – Present
 - Primary backend engineer of the Safety Hub (Permit-to-Work/HIRARC forms + safety induction) on
   FOX Asset, a multi-tenant asset management & maintenance (CMMS) SaaS built on Django REST
   Framework — 23 data models, 50+ REST endpoints, ~21,000 lines of Python across the two modules
@@ -35,17 +35,25 @@ Backend Software Engineer | Contract                                            
   and 987 lines of deployment runbooks
 
 PT BANK DANAMON INDONESIA, TBK.                                                          JAKARTA, ID
-Software Engineer | Full-time                                                     Aug 2023 – Present
-- Automated technical documentation with LLMs, cutting cycle time from 40 hours to 4 hours
-- Generated test cases achieving 95% coverage on core modules, reducing prep time by 65%
-- Built SFTP automation platform in 10 days against a 17-day plan using AI coding tools
-- Running 12 microservices (Hexagonal arch). We handle 500k+ daily txs
-- Built and operate Spring Boot microservices serving 2M+ requests/day at sub-200ms response times
-- Supporting financial systems processing $10M+ daily volume; consistently meeting 48h reporting
-  SLAs
-- Met urgent 48h deadline to deliver a critical financial reporting tool
-- Tuned DB queries and caching, improving response times across the platform's user base
-- Implemented OAuth 2.0, JWT, and AES-256; passed internal security audits
+Software Engineer | Full-time                                                    Aug 2023 – Aug 2026
+- Built and maintained iRecon, a Java/GWT reconciliation platform spanning 660+ classes that serves
+  as the bank's central engine for settling corporate transaction data end to end
+- Automated the daily reconciliation and reporting cycle with scheduled batch jobs producing 10
+  report formats, including SWIFT MT940/942/950 statements, securely delivered to corporate clients
+  via Email, SFTP, and MFT with PGP/AES encryption
+- Shipped the FSC (Financial Supply Chain) modules, integrating with core-banking middleware over
+  encrypted REST APIs and enforcing banking-grade controls: maker-checker approval, LDAP-based
+  access management, and full audit trail
+- Tuned queries and caching on the corporate reporting pipeline to consistently meet 48-hour
+  reporting SLAs
+- Delivered an SFTP automation platform in 10 days against a 17-day plan by leaning on AI-assisted
+  development to compress the build cycle
+- Applied LLM-assisted workflows across the delivery cycle, cutting technical documentation
+  turnaround from 40 hours to 4 and lifting core-module test coverage to 95%
+- Built and operated 12 Spring Boot microservices on a hexagonal architecture, serving 2M+
+  requests/day at sub-200ms response times across 500k+ daily transactions
+- Implemented OAuth 2.0, JWT, and AES-256 encryption across the services, passing internal security
+  audits
 
 PT. IDSTAR CIPTA TEKNOLOGI (IDSTAR)                                                SOUTH JAKARTA, ID
 Backend Software Engineer | Remote                                               Mar 2023 – Jul 2023

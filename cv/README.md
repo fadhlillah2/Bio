@@ -1,7 +1,7 @@
 # CV Sources
 
 Single source of truth chain (per 2026-07-06): **live LinkedIn profile** is the SoT for career
-claims → captured verbatim in a `linkedin-profile-vN` snapshot (currently `v4`; kept **outside this
+claims → captured verbatim in a `linkedin-profile-vN` snapshot (currently `v6`; kept **outside this
 repo** since 2026-07-10 — see "Removed from the tree" below) → **resume mirrors it in full**
 (user decision 2026-07-06: "mirror penuh" — the resume contains all LinkedIn content and nothing
 that is not on LinkedIn). Files at this level are **current**; `archive/` is the audit trail.
@@ -40,7 +40,7 @@ in two languages; every `.pdf` sits next to the same-named `.txt` it is generate
 
 | File                                                                 | Use it for                                                                                                        |
 |----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| [`resume-v8.8.pdf`](resume-v8.8.pdf)                                 | Official full CV — LinkedIn **full mirror**, 2 pages                                                              |
+| [`resume-v8.9.pdf`](resume-v8.9.pdf)                                 | Official full CV — LinkedIn **full mirror**, 2 pages                                                              |
 | [`resume-onepager-v1.11.pdf`](resume-onepager-v1.11.pdf)             | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
 | [`consulting-onepager-en-v1.7.pdf`](consulting-onepager-en-v1.7.pdf) | Business buyer / consulting lead (EN) — outcomes, services, proof links, process; linked from the site's Services |
 | [`consulting-onepager-id-v1.7.pdf`](consulting-onepager-id-v1.7.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
@@ -80,6 +80,9 @@ longer in the tree (see [Archive](#archive)).
 
 ### resume — full LinkedIn mirror
 
+- **v8.9** (2026-09-05, LinkedIn sync — snapshot v6) — one word: the Danamon microservices bullet now
+  reads "Built and operat**ed** 12 Spring Boot microservices…" after the user corrected the tense on
+  the live profile (the role ended Aug 2026). Nothing else changed; 2 pages verified by both generators.
 - **v8.8** (2026-09-05, LinkedIn sync — snapshot v5) — the Bank Danamon entry mirrors the rewritten
   live profile: dates **Aug 2023 – Aug 2026** (was Present) and the 8 new bullets (iRecon Java/GWT
   reconciliation platform, batch reporting with SWIFT MT940/942/950 over Email/SFTP/MFT with PGP/AES,

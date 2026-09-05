@@ -10,8 +10,8 @@
           <h2>Experience, education, projects, and certifications</h2>
           <p class="section-deck cta-row">
             <a href={base + "/cv/resume-onepager-v1.11.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
-            <a href={base + "/cv/resume-v8.8.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
-            <a href={base + "/cv/resume-v8.8.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
+            <a href={base + "/cv/resume-v8.9.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
+            <a href={base + "/cv/resume-v8.9.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
           </p>
         </header>
 
@@ -52,7 +52,7 @@
                 <li>Tuned queries and caching on the corporate reporting pipeline to consistently meet 48-hour reporting SLAs</li>
                 <li>Delivered an SFTP automation platform in 10 days against a 17-day plan by leaning on AI-assisted development to compress the build cycle</li>
                 <li>Applied LLM-assisted workflows across the delivery cycle, cutting technical documentation turnaround from 40 hours to 4 and lifting core-module test coverage to 95%</li>
-                <li>Built and operate 12 Spring Boot microservices on a hexagonal architecture, serving 2M+ requests/day at sub-200ms response times across 500k+ daily transactions</li>
+                <li>Built and operated 12 Spring Boot microservices on a hexagonal architecture, serving 2M+ requests/day at sub-200ms response times across 500k+ daily transactions</li>
                 <li>Implemented OAuth 2.0, JWT, and AES-256 encryption across the services, passing internal security audits</li>
               </ul>
             </div>
@@ -173,9 +173,9 @@
 
         <p class="cta-row cta-row-center">
           <a href={base + "/cv/resume-onepager-v1.11.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
-          <a href={base + "/cv/resume-v8.8.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
+          <a href={base + "/cv/resume-v8.9.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
           <a href="#contact" class="btn btn-quiet btn-sm">Get in touch</a>
-          <a href={base + "/cv/resume-v8.8.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
+          <a href={base + "/cv/resume-v8.9.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
         </p>
 
       </div>
