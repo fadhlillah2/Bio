@@ -8,10 +8,7 @@
  *         Chrome, or Windows Chrome under WSL), then verifies the PDF's extracted
  *         wording is identical to the .txt (whitespace/bullet markers aside) and
  *         fits max_pages (default 1; a 2-page resume needs 2).
- * Multi-page resumes wrap each company block in <div class="job"> with
- *         break-inside:avoid so a single employer's bullets don't split across a
- *         page boundary (1-page docs skip this — it would push a tall block to a
- *         phantom page 2).
+ * Multi-page resumes keep each company or project group together.
  *
  * Port of build-pdf.py (kept alongside as the reference oracle). pypdf has no Bun
  * equivalent, so the read side (page count + text extraction) is unpdf and the
@@ -28,10 +25,7 @@ Output: sibling .pdf (A4) via Chrome headless print-to-pdf (native Linux/macOS
         Chrome, or Windows Chrome under WSL), then verifies the PDF's extracted
         wording is identical to the .txt (whitespace/bullet markers aside) and
         fits max_pages (default 1; a 2-page resume needs 2).
-Multi-page resumes wrap each company block in <div class="job"> with
-        break-inside:avoid so a single employer's bullets don't split across a
-        page boundary (1-page docs skip this — it would push a tall block to a
-        phantom page 2).`;
+Multi-page resumes keep each company or project group together.`;
 
 const WSL_CHROME = "/mnt/c/Program Files/Google/Chrome/Application/chrome.exe";
 
@@ -97,13 +91,43 @@ body.consulting p.body { margin-top: 1.2mm; }
 body.consulting a { white-space: nowrap; }
 `;
 
-// v1.4 keyword expansion adds ~3 SKILLS lines, pushing the alias footer one line onto
-// page 2 — tighten leading and section gaps so the recruiter 1-pager stays exactly 1 page.
+// Resume profiles keep labels inline so column-aware extractors preserve the reading order.
+export const RESUME_CSS = `
+h1 { text-align: left; font-size: 22pt; line-height: 1.05; }
+.hl { text-align: left; font-size: 9.4pt; margin-top: 1.2mm; text-wrap: initial; }
+.ct { text-align: left; font-size: 8.2pt; line-height: 1.25; }
+h2 { font-size: 10pt; letter-spacing: 0; border-bottom: 0.5pt solid #aaa;
+     padding-bottom: 0.6mm; margin: 2mm 0 1mm; }
+.b { padding-left: 3.2mm; text-indent: -3.2mm; break-inside: avoid; }
+.b .m { display: inline-block; width: calc(3.2mm - 0.278em); text-indent: 0; }
+.crow { margin-top: 1.5mm; }
+.trow { margin: 0.3mm 0 0.5mm; }
+.crow .loc, .trow .d { font-size: 8.5pt; }
+.sk { padding-left: 0; text-indent: 0; }
+.alias { font-size: 7.4pt; color: #555; }
+p.body { orphans: 2; widows: 2; }
+a, .nowrap { white-space: nowrap; }
+`;
+
+// Long experience entries may break between project groups, with each bullet run kept together.
+export const FULL_RESUME_CSS = `
+@page { margin: 9mm 10mm; }
+body { font-size: 9pt; line-height: 1.15; }
+.job { break-inside: avoid; }
+.job:has(> p.body) { break-inside: auto; }
+.job > .b:has(+ .b) { break-after: avoid; }
+.job > p.body { margin-top: 0.7mm; break-after: avoid; }
+`;
+
+// The skills inventory uses a compact profile so all existing content still fits one page.
 export const ONEPAGER_CSS = `
-body.onepager { line-height: 1.15; }
-body.onepager h2 { margin-top: 1.5mm; }
+@page { margin: 8mm 10mm; }
+body.onepager { font-size: 8.9pt; line-height: 1.15; }
+body.onepager h2 { margin-top: 1.3mm; margin-bottom: 0.7mm; }
+body.onepager .crow { margin-top: 1mm; }
+body.onepager .trow { margin: 0.1mm 0 0.2mm; }
+body.onepager .sk { font-size: 8.6pt; line-height: 1.13; }
 body.onepager .alias { margin-top: 0.6mm; }
-/* same guard as consulting: a hyphenated proof URL must never wrap→de-hyphenate into a 404 */
 body.onepager a { white-space: nowrap; }
 `;
 
@@ -165,7 +189,13 @@ export function toHtml(txt: string, stem: string): string {
     if (lines[i].trim()) head.push(lines[i].trim());
     i++;
   }
-  const e = (s: string) => linkify(escapeHtml(s));
+  const e = (s: string) => {
+    const linked = linkify(escapeHtml(s));
+    if (stem.includes("consulting")) return linked;
+    // Keep compound words intact: PDF readers can remove a literal hyphen at a line break.
+    return linked.replace(/<a\b[^>]*>.*?<\/a>|[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+/g,
+      (part) => part.startsWith("<a ") ? part : `<span class="nowrap">${part}</span>`);
+  };
   const out = [`<h1>${e(head[0])}</h1>`, `<p class="hl">${e(head[1])}</p>`,
     `<p class="ct">${e(head[2])}</p>`, `<p class="ct">${e(head[3])}</p>`];
   let section: string | null = null;
@@ -242,15 +272,14 @@ export function toHtml(txt: string, stem: string): string {
   const lang = stem.includes("-id-") ? "id" : "en";
   const title = escapeHtml(docTitle(stem, head[0]));
   const consulting = stem.includes("consulting");  // fills the page (see CONSULTING_CSS)
-  // break-inside:avoid on a 1-page doc pushes a tall block onto a phantom page 2,
-  // so only the multi-page resume gets it (1-pager & consulting stay single-page).
+  // Only the full resume groups experience across page boundaries.
   let bodyAttr: string, extra: string;
   if (consulting) {
     [bodyAttr, extra] = [' class="consulting"', CONSULTING_CSS];
   } else if (stem.includes("onepager")) {
-    [bodyAttr, extra] = [' class="onepager"', ONEPAGER_CSS];
+    [bodyAttr, extra] = [' class="onepager"', RESUME_CSS + ONEPAGER_CSS];
   } else {
-    [bodyAttr, extra] = ["", ".job { break-inside: avoid; }"];
+    [bodyAttr, extra] = ["", RESUME_CSS + FULL_RESUME_CSS];
   }
   return `<!doctype html><html lang='${lang}'><head><meta charset='utf-8'>`
     + `<title>${title}</title><style>${CSS}${extra}</style></head><body${bodyAttr}>`
@@ -315,7 +344,7 @@ export function selftest(): void {
   assert(linkify("github.com/x/y.").includes('href="https://github.com/x/y"'), "trailing '.' stays outside the link");
   const wrap = toHtml(src.replace("- bullet one\n  wrapped tail",
     "Label line:\nAn unindented paragraph that\nwraps mid-sentence here."), "resume-v9.9-test");
-  assert(wrap.includes('<p class="body">An unindented paragraph that wraps mid-sentence here.</p>'), "lowercase wrap joins");
+  assert(wrap.includes('<p class="body">An unindented paragraph that wraps <span class="nowrap">mid-sentence</span> here.</p>'), "lowercase wrap joins");
   assert(wrap.includes('<p class="body">Label line:</p>'), "uppercase start stays its own paragraph");
   const certs = toHtml(src.replace("- bullet one\n  wrapped tail",
     "Cert one (Org)\nfreeCodeCamp — another item"), "resume-v9.9-test");
@@ -323,6 +352,10 @@ export function selftest(): void {
   assert(certs.includes('<p class="body">freeCodeCamp — another item</p>'), "freeCodeCamp own paragraph");
   assert(toHtml(src.replace("- bullet one", "- a : b\n- bullet one"), "resume-v9.9-test")
     .includes('<div class="b"><span class="m">&bull;</span> a : b</div>'), "bullet with ' : ' stays a bullet");
+  const compounds = toHtml(src.replace("- bullet one", "- field-level RBAC; github.com/x/rate-limiter"), "resume-v9.9-test");
+  assert(compounds.includes('<span class="nowrap">field-level</span>'), "literal hyphen survives a line wrap");
+  assert(compounds.includes('<a href="https://github.com/x/rate-limiter">github.com/x/rate-limiter</a>'),
+    "compound-word formatting leaves proof links intact");
   // render-behaviour guards (can't run Chrome here, so lock the CSS the render depends on):
   assert(CSS.includes("letter-spacing: 0"), "h1 name extracts as one token FADHLILLAH, not FA D H L...");
   assert(CONSULTING_CSS.includes("white-space: nowrap"), "proof URLs never wrap→de-hyphenate into 404s");
