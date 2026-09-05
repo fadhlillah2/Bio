@@ -11,11 +11,11 @@
           <p class="section-index">06 &mdash; Services</p>
           <h2>Backend, cloud, and LLM integration for production systems</h2>
           <p class="section-deck cta-row">
-            <a href={base + "/cv/consulting-onepager-en-v1.5.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Software Engineering Services.pdf">Download one-pager (PDF)</a>
-            <a href={base + "/cv/consulting-onepager-id-v1.5.pdf"} class="btn btn-ghost btn-sm" lang="id" download="Fadhlillah - Layanan Software Engineering.pdf">Versi Bahasa Indonesia</a>
+            <a href={base + "/cv/consulting-onepager-en-v1.6.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Software Engineering Services.pdf">Download one-pager (PDF)</a>
+            <a href={base + "/cv/consulting-onepager-id-v1.6.pdf"} class="btn btn-ghost btn-sm" lang="id" download="Fadhlillah - Layanan Software Engineering.pdf">Versi Bahasa Indonesia</a>
             <a href="https://wa.me/6285157043131?text=Hi%20Fadhlillah%2C%20I%20need%20software%20built%20for%20my%20business" target="_blank" rel="noopener" class="btn btn-quiet btn-sm"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg> Chat on WhatsApp</a>
           </p>
-          <p class="section-deck" lang="id">Butuh membangun atau meningkatkan sistem backend dan AI? Unduh <a href={base + "/cv/consulting-onepager-id-v1.5.pdf"} download="Fadhlillah - Layanan Software Engineering.pdf">ringkasan layanan dalam bahasa Indonesia (PDF)</a> atau hubungi saya melalui WhatsApp.</p>
+          <p class="section-deck" lang="id">Butuh membangun atau meningkatkan sistem backend dan AI? Unduh <a href={base + "/cv/consulting-onepager-id-v1.6.pdf"} download="Fadhlillah - Layanan Software Engineering.pdf">ringkasan layanan dalam bahasa Indonesia (PDF)</a> atau hubungi saya melalui WhatsApp.</p>
         </header>
 
         <ul class="service-grid" data-reveal data-reveal-children>

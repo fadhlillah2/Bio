@@ -42,8 +42,8 @@ in two languages; every `.pdf` sits next to the same-named `.txt` it is generate
 |----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 | [`resume-v8.7.pdf`](resume-v8.7.pdf)                                 | Official full CV — LinkedIn **full mirror**, 2 pages                                                              |
 | [`resume-onepager-v1.9.pdf`](resume-onepager-v1.9.pdf)               | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
-| [`consulting-onepager-en-v1.5.pdf`](consulting-onepager-en-v1.5.pdf) | Business buyer / consulting lead (EN) — outcomes, services, proof links, process; linked from the site's Services |
-| [`consulting-onepager-id-v1.5.pdf`](consulting-onepager-id-v1.5.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
+| [`consulting-onepager-en-v1.6.pdf`](consulting-onepager-en-v1.6.pdf) | Business buyer / consulting lead (EN) — outcomes, services, proof links, process; linked from the site's Services |
+| [`consulting-onepager-id-v1.6.pdf`](consulting-onepager-id-v1.6.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
 
 Each `.pdf` is generated from its same-named `.txt` (the `.txt` is the editable source of truth
 for that artifact); `build-pdf.ts` is the current generator and `build-pdf.py` is its reference
@@ -159,6 +159,14 @@ longer in the tree (see [Archive](#archive)).
 
 ### consulting-onepager — EN ⇄ ID in lock-step
 
+- **v1.6** (2026-09-05, review decisions C-024/C-136) — opener restores the sourced "6+ years";
+  PROVEN OUTCOMES restores the resume's hedges in first person ("12 microservices I run",
+  "financial systems I support"); SERVICES gains the "Cloud & CI/CD" line mirroring the site's
+  Cloud & Delivery Engineering card (Azure/AWS, GitHub Actions CI/CD to Amazon ECR, secret
+  scanning, migration-drift checks) and tightens the Backend/AI/Databases lines to one line each
+  so the page budget holds; handover step reads "Complete handover on delivery". ID: same claims,
+  plus "2M+"/"$10M+" localized to "2 juta+"/"$10 juta+" so "M" is not read as miliar ("500k+"/"50k+"
+  unchanged).
 - **v1.5** (2026-09-05, wording-and-evidence audit) — uses direct first-person positioning; scopes
   service claims to their supporting evidence; removes the IDstar-only `90+` quality score from the
   forward-looking delivery process; leads proof with the repo-documented Indonesian-contract RAG
