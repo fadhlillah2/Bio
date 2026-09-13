@@ -21,4 +21,5 @@ bun-*.log
 static/cv/
 
 # spec/plan lokal (keputusan user 2026-09-05)
-docs/superpowers/
+docs/superpowers
+memory/
