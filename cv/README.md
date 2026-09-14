@@ -41,7 +41,7 @@ in two languages; every `.pdf` sits next to the same-named `.txt` it is generate
 | File                                                                 | Use it for                                                                                                        |
 |----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 | [`resume-v8.9.pdf`](resume-v8.9.pdf)                                 | Official full CV — LinkedIn **full mirror**, 2 pages                                                              |
-| [`resume-onepager-v1.11.pdf`](resume-onepager-v1.11.pdf)             | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
+| [`resume-onepager-v1.12.pdf`](resume-onepager-v1.12.pdf)             | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
 | [`consulting-onepager-en-v1.7.pdf`](consulting-onepager-en-v1.7.pdf) | Business buyer / consulting lead (EN) — outcomes, services, proof links, process; linked from the site's Services |
 | [`consulting-onepager-id-v1.7.pdf`](consulting-onepager-id-v1.7.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
 
@@ -55,20 +55,37 @@ verifiably visible.
 
 ## Generator — [`build-pdf.ts`](build-pdf.ts)
 
-Parses the .txt, typesets it (Arial/Liberation Sans, A4), prints via Chrome headless (native
-Linux/macOS Chrome or WSL Windows Chrome, auto-detected), stamps Title/Author/lang metadata,
+Parses the .txt, typesets it (Times New Roman / Liberation Serif, A4), prints via Chrome headless
+(native Linux/macOS Chrome or WSL Windows Chrome, auto-detected), stamps Title/Author/lang metadata,
 verifies the PDF wording is identical to the .txt (whitespace-insensitive) and fits `max_pages`
-(2nd CLI arg, default 1; only the full mirror resume needs `2`). Job headers render as one linear
-`COMPANY · LOCATION` / `Title · Date` line (ATS-friendly; the `·` separator is CSS-generated and
-ignored by the wording check). Resume PDFs use a left-aligned header, hanging bullets, inline
-skill labels, and unbroken URLs and hyphenated terms to preserve extraction order and spelling.
-The full resume keeps each company or project group together, allowing long experience entries
-to break between project groups. Consulting one-pagers (detected by filename) get a larger
-page-fill CSS profile; the recruiter 1-pager uses a compact skills profile to retain all content
-on one page. The Bun implementation uses `unpdf`
-for text extraction and `pdf-lib` for metadata; install root dependencies first with `bun install`.
-The Python implementation remains available as an independent parity oracle and needs `pypdf` for
-full PDF generation.
+(2nd CLI arg, default 1; only the full mirror resume needs `2`).
+
+Header block: the first non-blank line is the name, and every line up to the first blank line
+belongs to the header — a line carrying a link is the centred contact line, a line without one is
+the headline. Inside a header line, `label <target>` renders as a link whose visible text is only
+the label (`email <me@gmail.com>` → a `mailto:` link reading "email"); the target is an email
+address or a domain path (`github.com/…`, `linkedin.com/in/…`, `wa.me/…`,
+`fadhlillah2.github.io/…`). The wording check ignores ` <target>`, and both generators also verify
+that every target came out of Chrome as a clickable URI annotation with exactly that href and that
+its label is visible in the PDF text.
+
+Job headers put the location/date column flush right on the header row's own baseline, in DOM order,
+so plain-text extraction still reads `COMPANY` → `LOCATION` → `Title` → `Dates` in that order in
+Poppler's `-raw` and `-layout` modes, which keep each pair on one line. Its default mode is
+column-aware and is the cost of this look: it emits the right-hand column as its own block, so in
+EDUCATION `YOGYAKARTA, ID` lands after the degree line, and the fixed-width skills label column
+pulls `Also listed` one row early — two word pairs out of order in the whole document. The reference
+export fares worse in that same mode: it hoists `LOCATION` above every `COMPANY` and splits each
+skills label from its values. No text is lost and `-raw`/`-layout`/`unpdf` are all exact, so the
+wording check runs on `unpdf`; the old inline `COMPANY · LOCATION` was clean in all four modes and
+was traded away for the reference's flush-right column. Resume PDFs use a centred name and contact
+line, underlined section rules, hanging `●` bullets, a fixed-width skills label column, and unbroken
+URLs and hyphenated terms to preserve extraction order and spelling. The full resume keeps each
+company or project group together, allowing long experience entries to break between project groups.
+Consulting one-pagers (detected by filename) keep their own Arial page-fill profile, untouched by
+the resume look. The Bun implementation uses `unpdf` for text extraction and `pdf-lib` for metadata;
+install root dependencies first with `bun install`. The Python implementation remains available as
+an independent parity oracle and needs `pypdf` for full PDF generation.
 
 ```bash
 bun run cv:selftest
@@ -76,12 +93,17 @@ bun cv/build-pdf.ts cv/resume-vX.Y.txt [max_pages]
 python3 cv/build-pdf.py --selftest  # independent parser oracle; no pypdf needed
 ```
 
-Layout refresh (2026-09-05): both current resume PDFs were rebuilt in place; their source text,
-content versions, and download URLs are unchanged. Body text is 9 pt in the full CV and 8.9 pt
-in the recruiter edition (8.6 pt for its skills inventory). Validation covered rendered pages,
-A4 text bounds, embedded fonts, and identical wording through `unpdf` and Poppler's default,
-raw, and layout extraction modes. Both generators produce identical HTML; consulting layouts
-are unchanged.
+Layout refresh (2026-09-14): both resume artifacts follow the user's own Google Docs resume export
+(`img/Resume-Fadhlillah-7.1 (6).pdf`, local-only) — A4 with 36 pt top/bottom and 43 pt side margins,
+Times New Roman (Liberation Serif locally) on a 1.35 line, a centred name at 1.45 em over a centred
+contact line whose link labels are #1155cc and underlined, 1.09 em underlined section headings,
+0.91 em bold grey locations flush right, bold-italic degree lines in EDUCATION, `●` bullets hanging
+at 1.6/3.3 em, and a skills label column 6.5 em wide so every colon lines up. The reference sets
+body text at 11 pt. The recruiter one-pager keeps that size and is cut to fit instead (one line per
+bullet — see the latest one-pager entry in the Changelog); the full mirror cannot be cut, so its profile scales the same
+look to 8.5 pt, the largest size that still fits 2 pages (9.5 → 8.6 pt all spill onto a third page;
+~78 pt spare on page 2). Consulting one-pagers are untouched — both generators still emit
+byte-identical HTML for them. The earlier refresh (2026-09-05) had put both resumes on 9/8.9 pt Arial.
 
 ## Changelog
 
@@ -137,6 +159,27 @@ longer in the tree (see [Archive](#archive)).
 
 ### resume-onepager — recruiter/ATS edition
 
+- **v1.12** (2026-09-14, layout switch to the user's Google Docs resume format — user decision) — the
+  recruiter edition now has the layout of the resume the user was sending out: Times 11 pt on A4, five
+  sections (OBJECTIVE / EXPERIENCE / SKILLS / EDUCATION / PROJECTS & CERTIFICATIONS), one centred
+  contact line whose values live only in the hyperlinks (`email • phone • LinkedIn • GitHub`), no
+  headline line, no site URL, no "Target roles" footer. To hold one page at the reference's type size
+  every bullet was cut to a single line; the Danamon LLM bullet became two (docs 40 h → 4; core-module
+  test coverage (JUnit 5, Mockito) to 95 %). Dropped — facts: the "5-person team / mentored peers"
+  line, the IDstar OWASP/Azure/SonarLint bullet, "Permit-to-Work/HIRARC forms + safety induction",
+  "Kanban/timeline", "S-Curve analytics, field-level RBAC", the Celery/wkhtmltopdf/WeasyPrint +
+  QR-verified-certificates clause, the ECR staging clause, "session tracking", "LDAP-based access", the
+  Email/SFTP/MFT (PGP/AES) delivery clause, the 48-hour-SLA clause, "(payments, logistics, SMS)",
+  "across POS and Kitchen Display systems", the 88 %+/PASAL clause, the rate-limiter algorithm names
+  and the "preregistered live A/B experiment" phrase, both project URLs; dropped — metrics: "~21,000
+  lines of Python", "plus 105 [unit tests] for the Safety Hub apps", "across 500k+ daily transactions",
+  "10 [report] formats"; dropped — skills/keywords: "embeddings (Hugging Face)", "AI chatbots",
+  Celery, Flyway, "High Availability", and the parenthetical ATS expansions; the `Integration` row is
+  labelled `Messaging` (same items); the three freeCodeCamp certificate names are summarised as
+  "(Python, JavaScript)". Regained from the live profile: "Digital Talent Scholarship, Progate" on the
+  certification line. Every remaining number is verbatim from v1.11, no verb was strengthened, and no
+  claim widened (the "core-module" qualifier on the 95 % coverage is kept). 1 page (~35 pt spare)
+  verified by both generators.
 - **v1.11** (2026-09-05, LinkedIn sync — snapshot v5, lock-step with resume-v8.8) — Bank Danamon
   dates **Aug 2023 – Aug 2026** (was Present) and the block rewritten from the new profile bullets:
   12 Spring Boot microservices (hexagonal) at 2M+ req/day / sub-200ms / 500k+ daily transactions;

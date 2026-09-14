@@ -27,6 +27,7 @@ def find_chrome() -> str:
         return WSL_CHROME
     sys.exit("FAIL no Chrome found (native google-chrome/chromium or WSL Windows Chrome)")
 
+# Base look, used as-is by the consulting one-pagers; RESUME_CSS overrides the header columns.
 CSS = """
 @page { size: A4; margin: 7.5mm 12mm; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -74,43 +75,53 @@ body.consulting a { white-space: nowrap; }
 """
 
 
-# Resume profiles keep labels inline so column-aware extractors preserve the reading order.
+# Resume + recruiter one-pager: the Google Docs reference look (see README "Layout refresh").
+# Everything but the page box is sized in em, so a profile can rescale the whole page by
+# setting one body font-size. Measurements mirror img/Resume-Fadhlillah-7.1 (6).pdf at 11pt.
 RESUME_CSS = """
-h1 { text-align: left; font-size: 22pt; line-height: 1.05; }
-.hl { text-align: left; font-size: 9.4pt; margin-top: 1.2mm; text-wrap: initial; }
-.ct { text-align: left; font-size: 8.2pt; line-height: 1.25; }
-h2 { font-size: 10pt; letter-spacing: 0; border-bottom: 0.5pt solid #aaa;
-     padding-bottom: 0.6mm; margin: 2mm 0 1mm; }
-.b { padding-left: 3.2mm; text-indent: -3.2mm; break-inside: avoid; }
-.b .m { display: inline-block; width: calc(3.2mm - 0.278em); text-indent: 0; }
-.crow { margin-top: 1.5mm; }
-.trow { margin: 0.3mm 0 0.5mm; }
-.crow .loc, .trow .d { font-size: 8.5pt; }
-.sk { padding-left: 0; text-indent: 0; }
-.alias { font-size: 7.4pt; color: #555; }
-p.body { orphans: 2; widows: 2; }
+@page { margin: 36pt 43pt; }
+body { font-family: "Times New Roman", "Liberation Serif", Times, serif;
+       font-size: 11pt; line-height: 1.35; color: #000; }
+h1 { font-size: 1.4545em; text-align: center; line-height: 1.1; }
+.hl { text-align: center; font-size: 1em; font-weight: normal; margin-top: 0; text-wrap: initial; }
+.ct { text-align: center; font-size: 1em; color: #000; line-height: 1.35; }
+.ct a { color: #1155cc; text-decoration: underline; }
+h2 { font-size: 1.0909em; letter-spacing: 0; border-bottom: 1px solid #000;
+     padding-bottom: 0; margin: 0.55em 0 0.333em; }
+/* Location/date sit flush right on the header's own row, in DOM order on a shared baseline.
+   Poppler -raw/-layout keep each pair on one line; its default mode gives the right-hand column
+   a line of its own, still in reading order (COMPANY -> LOCATION). See README "Job headers". */
+.crow, .trow { display: flex; justify-content: space-between; align-items: baseline; gap: 1em;
+               line-height: 1.15; }
+.crow { margin-top: 0; }
+.trow { margin: 0; }
+.crow .loc::before, .trow .d::before { content: none; }
+.crow .loc { font-size: 0.909em; font-weight: bold; color: #666666; white-space: nowrap; }
+.trow .t { font-weight: bold; font-style: normal; }
+.trow .d { font-size: 1em; font-weight: bold; color: #000; white-space: nowrap; }
+.edu .t, .deg { font-weight: bold; font-style: italic; }  /* degree line, with or without a date column */
+.b { padding-left: 3.273em; text-indent: -1.636em; break-inside: avoid; }
+.b .m { font-family: Arial, "Liberation Sans", Helvetica, sans-serif; color: #000;
+        display: inline-block; width: calc(1.636em - 0.25em); text-indent: 0; }
+.sk { padding-left: 7.3em; text-indent: -7.3em; line-height: 1.15; }
+.sk b { display: inline-block; width: 6.545em; text-indent: 0; }
+.alias { font-size: 0.8em; color: #555; }
+p.body { text-align: justify; orphans: 2; widows: 2; }
 a, .nowrap { white-space: nowrap; }
 """
 
 # Long experience entries may break between project groups, with each bullet run kept together.
+# Body size is the one knob that rescales a profile; 8.5pt is the largest that still fits 2 pages.
 FULL_RESUME_CSS = """
-@page { margin: 9mm 10mm; }
-body { font-size: 9pt; line-height: 1.15; }
+body { font-size: 8.5pt; }
 .job { break-inside: avoid; }
 .job:has(> p.body) { break-inside: auto; }
 .job > .b:has(+ .b) { break-after: avoid; }
 .job > p.body { margin-top: 0.7mm; break-after: avoid; }
 """
 
-# The skills inventory uses a compact profile so all existing content still fits one page.
+# The recruiter one-pager keeps the reference's 11pt: its content is cut to fit one page, never its type.
 ONEPAGER_CSS = """
-@page { margin: 8mm 10mm; }
-body.onepager { font-size: 8.9pt; line-height: 1.15; }
-body.onepager h2 { margin-top: 1.3mm; margin-bottom: 0.7mm; }
-body.onepager .crow { margin-top: 1mm; }
-body.onepager .trow { margin: 0.1mm 0 0.2mm; }
-body.onepager .sk { font-size: 8.6pt; line-height: 1.13; }
-body.onepager .alias { margin-top: 0.6mm; }
 body.onepager a { white-space: nowrap; }
 """
 
@@ -126,9 +137,49 @@ def linkify(escaped: str) -> str:
     )
 
 
+PROSE = ("SUMMARY", "OBJECTIVE")  # prose sections wrap without indent
+
+
 def two_col(line: str):
     parts = re.split(r"\s{2,}", line.strip())
     return parts if len(parts) == 2 else None
+
+
+LINK_LABEL = re.compile(r"(\S+)\s*<([^<>]+)>")  # header link syntax "label <target>"
+
+
+def link_href(target: str) -> str:
+    # email is the only target without '/' — profile paths like replit.com/@X contain '@' too
+    return f"https://{target}" if "/" in target else f"mailto:{target}"
+
+
+def header_lines(txt: str):
+    """Name line plus every following non-blank line, i.e. everything above the first blank line."""
+    lines = txt.splitlines()
+    i = 0
+    while i < len(lines) and not lines[i].strip():
+        i += 1
+    head = []
+    while i < len(lines) and lines[i].strip():
+        head.append(lines[i].strip())
+        i += 1
+    if len(head) < 2:
+        sys.exit("FAIL header incomplete: need a name line plus at least one header line")
+    return head
+
+
+def header_targets(txt: str):
+    """(label, href) for every "label <target>" in the header block."""
+    return [(m.group(1), link_href(m.group(2))) for line in header_lines(txt) for m in LINK_LABEL.finditer(line)]
+
+
+def header_html(s: str, e) -> str:
+    """Header lines only: "label <target>" renders as a link whose visible text is only the label."""
+    out, last = "", 0
+    for m in LINK_LABEL.finditer(s):
+        out += e(s[last:m.start()]) + f'<a href="{html.escape(link_href(m.group(2)))}">{html.escape(m.group(1))}</a>'
+        last = m.end()
+    return out + e(s[last:])
 
 
 def doc_title(stem: str, name: str) -> str:
@@ -140,13 +191,11 @@ def doc_title(stem: str, name: str) -> str:
 
 def to_html(txt: str, stem: str) -> str:
     lines = txt.splitlines()
-    head, i = [], 0
-    while len(head) < 4:  # name, headline, contact x2
-        if i >= len(lines):
-            sys.exit("FAIL header incomplete: need 4 non-blank lines (name, headline, contact x2)")
-        if lines[i].strip():
-            head.append(lines[i].strip())
+    head = header_lines(txt)
+    i = 0
+    while not lines[i].strip():
         i += 1
+    i += len(head)
     def e(s):
         linked = linkify(html.escape(s))
         if "consulting" in stem:
@@ -155,27 +204,33 @@ def to_html(txt: str, stem: str) -> str:
         return re.sub(r'<a\b[^>]*>.*?</a>|[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+',
                       lambda m: m[0] if m[0].startswith('<a ') else f'<span class="nowrap">{m[0]}</span>', linked)
 
-    out = [f"<h1>{e(head[0])}</h1>", f'<p class="hl">{e(head[1])}</p>',
-           f'<p class="ct">{e(head[2])}</p>', f'<p class="ct">{e(head[3])}</p>']
+    out = [f"<h1>{header_html(head[0], e)}</h1>"]
+    for line in head[1:]:  # a header line carrying any link is the contact line
+        h = header_html(line, e)
+        out.append(f'<p class="{"ct" if "<a " in h else "hl"}">{h}</p>')
+    bullet = "&bull;" if "consulting" in stem else "&#9679;"  # reference uses U+25CF
     section, unit = None, None  # unit: pending (kind, text) being accumulated
     job_open = False  # a <div class="job"> wraps each company block so it won't split across pages
+    edu_deg = False  # the line right after an EDUCATION company row is the degree line
 
     def flush():
-        nonlocal unit
+        nonlocal unit, edu_deg
         if not unit:
-            return
+            return  # an empty flush keeps the flag: the degree line has not been read yet
+        deg, edu_deg = edu_deg, False
         kind, text = unit
         if kind == "b":
-            out.append(f'<div class="b"><span class="m">&bull;</span> {e(text)}</div>')
+            out.append(f'<div class="b"><span class="m">{bullet}</span> {e(text)}</div>')
         elif kind == "sk":
             label, _, rest = text.partition(" : ")
             out.append(f'<div class="sk"><b>{e(label)}</b> : {e(rest)}</div>')
         else:
-            out.append(f'<p class="body">{e(text)}</p>')
+            out.append(f'<p class="body{" deg" if deg else ""}">{e(text)}</p>')
         unit = None
 
     def close_job():
-        nonlocal job_open
+        nonlocal job_open, edu_deg
+        edu_deg = False
         if job_open:
             out.append('</div>')
             job_open = False
@@ -200,16 +255,20 @@ def to_html(txt: str, stem: str) -> str:
             out.append(f'<p class="alias">{e(line.strip())}</p>')
         elif line.startswith(" ") and unit:  # wrapped continuation
             unit = (unit[0], unit[1] + " " + line.strip())
-        elif (cols := two_col(line)) and section not in ("SUMMARY",):
+        elif (cols := two_col(line)) and section not in PROSE:
             flush()
             cls = ("crow", "c", "loc") if cols[0].isupper() else ("trow", "t", "d")
             if cls[0] == "crow":  # a new company block starts — keep it on one page
                 close_job()
                 out.append('<div class="job">')
                 job_open = True
-            out.append(f'<div class="{cls[0]}"><span class="{cls[1]}">{e(cols[0])}</span>'
+                edu_deg = section == "EDUCATION"  # a degree line without a date column still renders italic
+            edu = " edu" if cls[0] == "trow" and section == "EDUCATION" else ""  # degree line is italic
+            if cls[0] == "trow":
+                edu_deg = False  # a dated degree row is the degree line itself
+            out.append(f'<div class="{cls[0]}{edu}"><span class="{cls[1]}">{e(cols[0])}</span>'
                        f'<span class="{cls[2]}">{e(cols[1])}</span></div>')
-        elif section == "SUMMARY" and unit:  # summary wraps without indent
+        elif section in PROSE and unit:  # summary/objective wraps without indent
             unit = (unit[0], unit[1] + " " + line.strip())
         elif unit and unit[0] == "p" and line[:1].islower() and unit[1][-1:].isalnum():
             # unindented mid-sentence wrap: joins only lowercase lines after a word break,
@@ -235,9 +294,20 @@ def to_html(txt: str, stem: str) -> str:
             + "".join(out) + "</body></html>")
 
 
+def visible_text(txt: str) -> str:
+    """The .txt as the PDF text layer should read it: header "label <target>" targets are not rendered."""
+    head = header_lines(txt)
+    lines = txt.splitlines()
+    i = 0
+    while not lines[i].strip():
+        i += 1
+    return "\n".join(re.sub(r"\s*<[^<>]*>", "", l) if i <= k < i + len(head) else l for k, l in enumerate(lines))
+
+
 def canon(s: str) -> str:
     s = re.sub(r"(?m)^\s*- ", " ", s)        # txt bullet markers
     s = s.replace("•", " ")             # rendered bullet glyphs
+    s = s.replace("●", " ")
     s = s.replace("·", " ")             # job-header separator (CSS ::before, absent from the .txt)
     return re.sub(r"\s+", "", s)             # wording only: drop all whitespace
 
@@ -262,18 +332,36 @@ def selftest():
     assert "<title>Name — Resume v9.9 Test</title>" in h and "<html lang='en'>" in h
     assert '<div class="crow"><span class="c">COMPANY</span>' in h
     assert '<div class="trow"><span class="t">Role Title</span>' in h
-    assert '<div class="b"><span class="m">&bull;</span> bullet one wrapped tail</div>' in h
+    assert '<div class="b"><span class="m">&#9679;</span> bullet one wrapped tail</div>' in h
+    assert '<span class="m">&bull;</span>' in to_html(src, "consulting-onepager-en-v9.9")  # consulting keeps its bullet glyph
     assert '<div class="sk"><b>AI/LLM</b> : RAG, agents</div>' in h
     assert '<p class="body">Prose line one wrapping without indent.</p>' in h
     assert "<html lang='id'>" in to_html(src, "consulting-onepager-id-v9.9")
     assert canon("- a  b\nc") == canon("• a b c") and canon("ab") != canon("ac")
+    assert canon("- a  b\nc") == canon("● a b c")  # reference bullet glyph ignored in verify
     assert canon("Bank·Jakarta") == canon("Bank Jakarta")  # header separator middot ignored in verify
+    assert canon(visible_text("NAME\nemail <a@b.com> • GitHub <github.com/x>\n\nSUMMARY\nP <kept>\n")) == \
+        canon("NAME\nemail • GitHub\n\nSUMMARY\nP <kept>\n")  # link targets dropped in the header only
+    assert canon("a <b>") != canon("a")  # body angle brackets still count as wording
     assert 'class="consulting"' in to_html(src, "consulting-onepager-en-v9.9") and \
         "body.consulting" in to_html(src, "consulting-onepager-en-v9.9")  # page-fill overrides applied
     assert 'class="consulting"' not in to_html(src, "resume-v9.9-test")  # only for consulting docs
     assert 'class="onepager"' in to_html(src, "resume-onepager-v9.9") and \
         "body.onepager" in to_html(src, "resume-onepager-v9.9")  # 1-pager densify applied
     assert "<title>Name — Resume One-Pager v9.9</title>" in to_html(src, "resume-onepager-v9.9")
+    # header: name, then any number of lines up to the first blank; a line with a link is the contact line
+    assert '<h1>NAME</h1><p class="hl">Headline here</p><p class="ct">' in h
+    labelled = to_html("NAME\nCity • email <a@b.com> • GitHub <github.com/x>\n\nSUMMARY\nP\n", "resume-v9.9-test")
+    assert ('<p class="ct">City • <a href="mailto:a@b.com">email</a> • '
+            '<a href="https://github.com/x">GitHub</a></p>') in labelled  # link-label renders label only
+    assert 'class="hl"' not in labelled  # a two-line header is name + contact, no headline
+    assert header_targets("NAME\nemail <a@b.com> • WA <wa.me/1>\n\nX\n") == [
+        ("email", "mailto:a@b.com"), ("WA", "https://wa.me/1")]  # header targets for the link check
+    try:
+        to_html("NAME\n\nSUMMARY\n", "resume-v9.9-test")
+        raise AssertionError("a lone name line is not a header")
+    except SystemExit:
+        pass
     lk = linkify("see replit.com/@X and mail@gmail.com")
     assert lk.count("<a href=") == 2
     # scheme guard: a URL containing '@' must stay https, only bare emails get mailto
@@ -291,8 +379,17 @@ def selftest():
                                 "Cert one (Org)\nfreeCodeCamp — another item"), "resume-v9.9-test")
     assert '<p class="body">Cert one (Org)</p>' in certs  # lowercase-brand item after ')' is NOT merged
     assert '<p class="body">freeCodeCamp — another item</p>' in certs
-    assert '<div class="b"><span class="m">&bull;</span> a : b</div>' in to_html(
+    assert '<div class="b"><span class="m">&#9679;</span> a : b</div>' in to_html(
         src.replace("- bullet one", "- a : b\n- bullet one"), "resume-v9.9-test")  # bullet with ' : ' stays a bullet
+    assert '<div class="trow edu">' in to_html(
+        src.replace("EXPERIENCE", "EDUCATION"), "resume-v9.9-test")  # EDUCATION degree line is marked for italics
+    no_date = to_html("NAME\nX <a@b.com>\n\nEDUCATION\nUNIV    CITY, ID\nBachelor of Things\nActivities: none\n",
+                      "resume-v9.9-test")  # a dateless degree line is italic, the line after it is not
+    assert '<p class="body deg">Bachelor of Things</p>' in no_date
+    assert '<p class="body">Activities: none</p>' in no_date
+    dated = to_html("NAME\nX <a@b.com>\n\nEDUCATION\nUNIV    CITY, ID\nBachelor of Things    Mar 2016 – May 2020\nActivities: none\n",
+                    "resume-v9.9-test")  # a dated degree row does not italicize the line after it
+    assert '<div class="trow edu">' in dated and '<p class="body">Activities: none</p>' in dated
     compounds = to_html(src.replace("- bullet one", "- field-level RBAC; github.com/x/rate-limiter"), "resume-v9.9-test")
     assert '<span class="nowrap">field-level</span>' in compounds
     assert '<a href="https://github.com/x/rate-limiter">github.com/x/rate-limiter</a>' in compounds
@@ -300,6 +397,9 @@ def selftest():
     assert "letter-spacing: 0" in CSS  # h1 name extracts as one token FADHLILLAH, not FA D H L...
     assert "white-space: nowrap" in CONSULTING_CSS  # proof URLs never wrap→de-hyphenate into 404s
     assert "white-space: nowrap" in ONEPAGER_CSS  # same URL guard for the recruiter 1-pager
+    assert "align-items: baseline" in RESUME_CSS  # job header columns share one baseline → linear extraction
+    # each resume profile owns one body size — the single knob that fits it to its page budget
+    assert "font-size" in FULL_RESUME_CSS and "font-size" not in ONEPAGER_CSS  # one-pager stays at the reference 11pt
     print("selftest OK")
 
 
@@ -342,7 +442,17 @@ def main():
         reader = PdfReader(str(tmp_path))
         pages = len(reader.pages)
         pdf_text = "".join(p.extract_text() or "" for p in reader.pages)
-        a, b = canon(txt), canon(pdf_text)
+
+        # every "label <target>" in the header must survive as a clickable URI action
+        if targets := header_targets(txt):
+            annots = [a for page in reader.pages for a in (page["/Annots"] if "/Annots" in page else [])]
+            uris = {str(act["/URI"]) for annot in annots
+                    if (act := annot.get_object().get("/A")) and act.get("/URI")}
+            if missing := [href for _, href in targets if href not in uris]:
+                sys.exit(f"FAIL header link annotation missing: {', '.join(missing)} (found: {', '.join(uris) or 'none'})")
+            if unlabelled := [label for label, _ in targets if label not in pdf_text]:
+                sys.exit(f"FAIL header link label not visible in the PDF text: {', '.join(unlabelled)}")
+        a, b = canon(visible_text(txt)), canon(pdf_text)
         if a != b:
             k = next((j for j, (x, y) in enumerate(zip(a, b)) if x != y), min(len(a), len(b)))
             sys.exit(f"FAIL wording mismatch at char {k}: txt=...{a[k:k+60]!r} pdf=...{b[k:k+60]!r}")

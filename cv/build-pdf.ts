@@ -45,6 +45,7 @@ export function findChrome(): string {
   fail("FAIL no Chrome found (native google-chrome/chromium or WSL Windows Chrome)");
 }
 
+// Base look, used as-is by the consulting one-pagers; RESUME_CSS overrides the header columns.
 export const CSS = `
 @page { size: A4; margin: 7.5mm 12mm; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -91,43 +92,53 @@ body.consulting p.body { margin-top: 1.2mm; }
 body.consulting a { white-space: nowrap; }
 `;
 
-// Resume profiles keep labels inline so column-aware extractors preserve the reading order.
+// Resume + recruiter one-pager: the Google Docs reference look (see README "Layout refresh").
+// Everything but the page box is sized in em, so a profile can rescale the whole page by
+// setting one body font-size. Measurements mirror img/Resume-Fadhlillah-7.1 (6).pdf at 11pt.
 export const RESUME_CSS = `
-h1 { text-align: left; font-size: 22pt; line-height: 1.05; }
-.hl { text-align: left; font-size: 9.4pt; margin-top: 1.2mm; text-wrap: initial; }
-.ct { text-align: left; font-size: 8.2pt; line-height: 1.25; }
-h2 { font-size: 10pt; letter-spacing: 0; border-bottom: 0.5pt solid #aaa;
-     padding-bottom: 0.6mm; margin: 2mm 0 1mm; }
-.b { padding-left: 3.2mm; text-indent: -3.2mm; break-inside: avoid; }
-.b .m { display: inline-block; width: calc(3.2mm - 0.278em); text-indent: 0; }
-.crow { margin-top: 1.5mm; }
-.trow { margin: 0.3mm 0 0.5mm; }
-.crow .loc, .trow .d { font-size: 8.5pt; }
-.sk { padding-left: 0; text-indent: 0; }
-.alias { font-size: 7.4pt; color: #555; }
-p.body { orphans: 2; widows: 2; }
+@page { margin: 36pt 43pt; }
+body { font-family: "Times New Roman", "Liberation Serif", Times, serif;
+       font-size: 11pt; line-height: 1.35; color: #000; }
+h1 { font-size: 1.4545em; text-align: center; line-height: 1.1; }
+.hl { text-align: center; font-size: 1em; font-weight: normal; margin-top: 0; text-wrap: initial; }
+.ct { text-align: center; font-size: 1em; color: #000; line-height: 1.35; }
+.ct a { color: #1155cc; text-decoration: underline; }
+h2 { font-size: 1.0909em; letter-spacing: 0; border-bottom: 1px solid #000;
+     padding-bottom: 0; margin: 0.55em 0 0.333em; }
+/* Location/date sit flush right on the header's own row, in DOM order on a shared baseline.
+   Poppler -raw/-layout keep each pair on one line; its default mode gives the right-hand column
+   a line of its own, still in reading order (COMPANY -> LOCATION). See README "Job headers". */
+.crow, .trow { display: flex; justify-content: space-between; align-items: baseline; gap: 1em;
+               line-height: 1.15; }
+.crow { margin-top: 0; }
+.trow { margin: 0; }
+.crow .loc::before, .trow .d::before { content: none; }
+.crow .loc { font-size: 0.909em; font-weight: bold; color: #666666; white-space: nowrap; }
+.trow .t { font-weight: bold; font-style: normal; }
+.trow .d { font-size: 1em; font-weight: bold; color: #000; white-space: nowrap; }
+.edu .t, .deg { font-weight: bold; font-style: italic; }  /* degree line, with or without a date column */
+.b { padding-left: 3.273em; text-indent: -1.636em; break-inside: avoid; }
+.b .m { font-family: Arial, "Liberation Sans", Helvetica, sans-serif; color: #000;
+        display: inline-block; width: calc(1.636em - 0.25em); text-indent: 0; }
+.sk { padding-left: 7.3em; text-indent: -7.3em; line-height: 1.15; }
+.sk b { display: inline-block; width: 6.545em; text-indent: 0; }
+.alias { font-size: 0.8em; color: #555; }
+p.body { text-align: justify; orphans: 2; widows: 2; }
 a, .nowrap { white-space: nowrap; }
 `;
 
 // Long experience entries may break between project groups, with each bullet run kept together.
+// Body size is the one knob that rescales a profile; 8.5pt is the largest that still fits 2 pages.
 export const FULL_RESUME_CSS = `
-@page { margin: 9mm 10mm; }
-body { font-size: 9pt; line-height: 1.15; }
+body { font-size: 8.5pt; }
 .job { break-inside: avoid; }
 .job:has(> p.body) { break-inside: auto; }
 .job > .b:has(+ .b) { break-after: avoid; }
 .job > p.body { margin-top: 0.7mm; break-after: avoid; }
 `;
 
-// The skills inventory uses a compact profile so all existing content still fits one page.
+// The recruiter one-pager keeps the reference's 11pt: its content is cut to fit one page, never its type.
 export const ONEPAGER_CSS = `
-@page { margin: 8mm 10mm; }
-body.onepager { font-size: 8.9pt; line-height: 1.15; }
-body.onepager h2 { margin-top: 1.3mm; margin-bottom: 0.7mm; }
-body.onepager .crow { margin-top: 1mm; }
-body.onepager .trow { margin: 0.1mm 0 0.2mm; }
-body.onepager .sk { font-size: 8.6pt; line-height: 1.13; }
-body.onepager .alias { margin-top: 0.6mm; }
 body.onepager a { white-space: nowrap; }
 `;
 
@@ -165,10 +176,45 @@ export function linkify(escaped: string): string {
   );
 }
 
+/** Header link syntax: "label <target>" renders as a link whose visible text is only the label. */
+const LINK_LABEL = /(\S+)\s*<([^<>]+)>/g;
+
+export const linkHref = (target: string) =>
+  // email is the only target without '/' — profile paths like replit.com/@X contain '@' too
+  target.includes("/") ? `https://${target}` : `mailto:${target}`;
+
+/** [label, href] for every "label <target>" in the header block (name + lines up to the first blank) */
+export function headerTargets(txt: string): [string, string][] {
+  const head = headerLines(txt);
+  return head.flatMap((l) => [...l.matchAll(LINK_LABEL)].map((m): [string, string] => [m[1], linkHref(m[2])]));
+}
+
+export function headerHtml(s: string, e: (t: string) => string): string {
+  let out = "", last = 0;
+  for (const m of s.matchAll(LINK_LABEL)) {
+    out += e(s.slice(last, m.index)) + `<a href="${escapeHtml(linkHref(m[2]))}">${escapeHtml(m[1])}</a>`;
+    last = m.index + m[0].length;
+  }
+  return out + e(s.slice(last));
+}
+
+/** Name line plus every following non-blank line, i.e. everything above the first blank line. */
+export function headerLines(txt: string): string[] {
+  const lines = splitlines(txt);
+  let i = 0;
+  while (i < lines.length && !lines[i].trim()) i++;
+  const head: string[] = [];
+  while (i < lines.length && lines[i].trim()) head.push(lines[i++].trim());
+  if (head.length < 2) fail("FAIL header incomplete: need a name line plus at least one header line");
+  return head;
+}
+
 export function twoCol(line: string): string[] | null {
   const parts = line.trim().split(/\s{2,}/);
   return parts.length === 2 ? parts : null;
 }
+
+const PROSE = new Set(["SUMMARY", "OBJECTIVE"]);  // prose sections wrap without indent
 
 const TITLE_WORDS = new Map([["id", "ID"], ["en", "EN"], ["onepager", "One-Pager"]]);
 
@@ -182,13 +228,10 @@ export function docTitle(stem: string, name: string): string {
 
 export function toHtml(txt: string, stem: string): string {
   const lines = splitlines(txt);
-  const head: string[] = [];
+  const head = headerLines(txt);
   let i = 0;
-  while (head.length < 4) {  // name, headline, contact x2
-    if (i >= lines.length) fail("FAIL header incomplete: need 4 non-blank lines (name, headline, contact x2)");
-    if (lines[i].trim()) head.push(lines[i].trim());
-    i++;
-  }
+  while (!lines[i].trim()) i++;
+  i += head.length;
   const e = (s: string) => {
     const linked = linkify(escapeHtml(s));
     if (stem.includes("consulting")) return linked;
@@ -196,28 +239,36 @@ export function toHtml(txt: string, stem: string): string {
     return linked.replace(/<a\b[^>]*>.*?<\/a>|[A-Za-z0-9]+(?:-[A-Za-z0-9]+)+/g,
       (part) => part.startsWith("<a ") ? part : `<span class="nowrap">${part}</span>`);
   };
-  const out = [`<h1>${e(head[0])}</h1>`, `<p class="hl">${e(head[1])}</p>`,
-    `<p class="ct">${e(head[2])}</p>`, `<p class="ct">${e(head[3])}</p>`];
+  const out = [`<h1>${headerHtml(head[0], e)}</h1>`];
+  for (const l of head.slice(1)) {  // a header line carrying any link is the contact line
+    const h = headerHtml(l, e);
+    out.push(`<p class="${h.includes("<a ") ? "ct" : "hl"}">${h}</p>`);
+  }
+  const bullet = stem.includes("consulting") ? "&bull;" : "&#9679;";  // reference uses U+25CF
   let section: string | null = null;
   let unit: [string, string] | null = null;  // pending (kind, text) being accumulated
   let jobOpen = false;  // a <div class="job"> wraps each company block so it won't split across pages
+  let eduDeg = false;  // the line right after an EDUCATION company row is the degree line
 
   const flush = () => {
     if (!unit) return;
+    const deg = eduDeg;  // an empty flush keeps the flag: the degree line has not been read yet
+    eduDeg = false;
     const [kind, text] = unit;
     if (kind === "b") {
-      out.push(`<div class="b"><span class="m">&bull;</span> ${e(text)}</div>`);
+      out.push(`<div class="b"><span class="m">${bullet}</span> ${e(text)}</div>`);
     } else if (kind === "sk") {
       const at = text.indexOf(" : ");  // str.partition
       const [label, rest] = at < 0 ? [text, ""] : [text.slice(0, at), text.slice(at + 3)];
       out.push(`<div class="sk"><b>${e(label)}</b> : ${e(rest)}</div>`);
     } else {
-      out.push(`<p class="body">${e(text)}</p>`);
+      out.push(`<p class="body${deg ? " deg" : ""}">${e(text)}</p>`);
     }
     unit = null;
   };
 
   const closeJob = () => {
+    eduDeg = false;
     if (jobOpen) {
       out.push("</div>");
       jobOpen = false;
@@ -246,17 +297,20 @@ export function toHtml(txt: string, stem: string): string {
       out.push(`<p class="alias">${e(line.trim())}</p>`);
     } else if (line.startsWith(" ") && unit) {  // wrapped continuation
       unit = [unit[0], unit[1] + " " + line.trim()];
-    } else if (cols && section !== "SUMMARY") {
+    } else if (cols && !PROSE.has(section!)) {
       flush();
       const cls = isUpper(cols[0]) ? ["crow", "c", "loc"] : ["trow", "t", "d"];
       if (cls[0] === "crow") {  // a new company block starts — keep it on one page
         closeJob();
         out.push('<div class="job">');
         jobOpen = true;
+        eduDeg = section === "EDUCATION";  // a degree line without a date column still renders italic
       }
-      out.push(`<div class="${cls[0]}"><span class="${cls[1]}">${e(cols[0])}</span>`
+      const edu = cls[0] === "trow" && section === "EDUCATION" ? " edu" : "";  // degree line is italic
+      if (cls[0] === "trow") eduDeg = false;  // a dated degree row is the degree line itself
+      out.push(`<div class="${cls[0]}${edu}"><span class="${cls[1]}">${e(cols[0])}</span>`
         + `<span class="${cls[2]}">${e(cols[1])}</span></div>`);
-    } else if (section === "SUMMARY" && unit) {  // summary wraps without indent
+    } else if (PROSE.has(section!) && unit) {  // summary/objective wraps without indent
       unit = [unit[0], unit[1] + " " + line.trim()];
     } else if (unit && unit[0] === "p" && isLower(line.slice(0, 1)) && isAlnum(unit[1].slice(-1))) {
       // unindented mid-sentence wrap: joins only lowercase lines after a word break,
@@ -286,9 +340,19 @@ export function toHtml(txt: string, stem: string): string {
     + out.join("") + "</body></html>";
 }
 
+/** The .txt as the PDF text layer should read it: header "label <target>" targets are not rendered. */
+export function visibleText(txt: string): string {
+  const head = headerLines(txt);
+  const lines = splitlines(txt);
+  let i = 0;
+  while (!lines[i].trim()) i++;
+  return lines.map((l, k) => (k >= i && k < i + head.length ? l.replace(/\s*<[^<>]*>/g, "") : l)).join("\n");
+}
+
 export function canon(s: string): string {
   s = s.replace(/^\s*- /gm, " ");   // txt bullet markers
   s = s.replaceAll("•", " ");       // rendered bullet glyphs
+  s = s.replaceAll("●", " ");
   s = s.replaceAll("·", " ");       // job-header separator (CSS ::before, absent from the .txt)
   return s.replace(/\s+/g, "");     // wording only: drop all whitespace
 }
@@ -321,18 +385,33 @@ export function selftest(): void {
   assert(h.includes("<title>Name — Resume v9.9 Test</title>") && h.includes("<html lang='en'>"), "title/lang");
   assert(h.includes('<div class="crow"><span class="c">COMPANY</span>'), "crow");
   assert(h.includes('<div class="trow"><span class="t">Role Title</span>'), "trow");
-  assert(h.includes('<div class="b"><span class="m">&bull;</span> bullet one wrapped tail</div>'), "bullet wrap");
+  assert(h.includes('<div class="b"><span class="m">&#9679;</span> bullet one wrapped tail</div>'), "bullet wrap");
+  assert(toHtml(src, "consulting-onepager-en-v9.9").includes('<span class="m">&bull;</span>'), "consulting keeps its bullet glyph");
   assert(h.includes('<div class="sk"><b>AI/LLM</b> : RAG, agents</div>'), "skills row");
   assert(h.includes('<p class="body">Prose line one wrapping without indent.</p>'), "summary wrap");
   assert(toHtml(src, "consulting-onepager-id-v9.9").includes("<html lang='id'>"), "id lang");
   assert(canon("- a  b\nc") === canon("• a b c") && canon("ab") !== canon("ac"), "canon");
+  assert(canon("- a  b\nc") === canon("● a b c"), "reference bullet glyph ignored in verify");
   assert(canon("Bank·Jakarta") === canon("Bank Jakarta"), "header separator middot ignored in verify");
+  assert(canon(visibleText("NAME\nemail <a@b.com> • GitHub <github.com/x>\n\nSUMMARY\nP <kept>\n"))
+    === canon("NAME\nemail • GitHub\n\nSUMMARY\nP <kept>\n"), "link targets dropped in the header only");
+  assert(canon("a <b>") !== canon("a"), "body angle brackets still count as wording");
   assert(toHtml(src, "consulting-onepager-en-v9.9").includes('class="consulting"')
     && toHtml(src, "consulting-onepager-en-v9.9").includes("body.consulting"), "page-fill overrides applied");
   assert(!toHtml(src, "resume-v9.9-test").includes('class="consulting"'), "only for consulting docs");
   assert(toHtml(src, "resume-onepager-v9.9").includes('class="onepager"')
     && toHtml(src, "resume-onepager-v9.9").includes("body.onepager"), "1-pager densify applied");
   assert(toHtml(src, "resume-onepager-v9.9").includes("<title>Name — Resume One-Pager v9.9</title>"), "1-pager title");
+  // header: name, then any number of lines up to the first blank; a line with a link is the contact line
+  assert(h.includes('<h1>NAME</h1><p class="hl">Headline here</p><p class="ct">'), "headline vs contact split");
+  const labelled = toHtml("NAME\nCity • email <a@b.com> • GitHub <github.com/x>\n\nSUMMARY\nP\n", "resume-v9.9-test");
+  assert(labelled.includes('<p class="ct">City • <a href="mailto:a@b.com">email</a> • '
+    + '<a href="https://github.com/x">GitHub</a></p>'), "link-label renders label only");
+  assert(!labelled.includes('class="hl"'), "a two-line header is name + contact, no headline");
+  assert(JSON.stringify(headerTargets("NAME\nemail <a@b.com> • WA <wa.me/1>\n\nX\n"))
+    === '[["email","mailto:a@b.com"],["WA","https://wa.me/1"]]', "header targets for the link check");
+  assert(((): boolean => { try { toHtml("NAME\n\nSUMMARY\n", "resume-v9.9-test"); return false; } catch { return true; } })(),
+    "a lone name line is not a header");
   const lk = linkify("see replit.com/@X and mail@gmail.com");
   assert(lk.split("<a href=").length - 1 === 2, "two links");
   // scheme guard: a URL containing '@' must stay https, only bare emails get mailto
@@ -351,7 +430,18 @@ export function selftest(): void {
   assert(certs.includes('<p class="body">Cert one (Org)</p>'), "lowercase-brand item after ')' is NOT merged");
   assert(certs.includes('<p class="body">freeCodeCamp — another item</p>'), "freeCodeCamp own paragraph");
   assert(toHtml(src.replace("- bullet one", "- a : b\n- bullet one"), "resume-v9.9-test")
-    .includes('<div class="b"><span class="m">&bull;</span> a : b</div>'), "bullet with ' : ' stays a bullet");
+    .includes('<div class="b"><span class="m">&#9679;</span> a : b</div>'), "bullet with ' : ' stays a bullet");
+  assert(toHtml(src.replace("EXPERIENCE", "EDUCATION"), "resume-v9.9-test").includes('<div class="trow edu">'),
+    "EDUCATION degree line is marked for italics");
+  const noDate = toHtml("NAME\nX <a@b.com>\n\nEDUCATION\nUNIV    CITY, ID\nBachelor of Things\nActivities: none\n",
+    "resume-v9.9-test");
+  assert(noDate.includes('<p class="body deg">Bachelor of Things</p>')
+    && noDate.includes('<p class="body">Activities: none</p>'),
+    "a dateless degree line is italic, the line after it is not");
+  const dated = toHtml("NAME\nX <a@b.com>\n\nEDUCATION\nUNIV    CITY, ID\nBachelor of Things    Mar 2016 – May 2020\nActivities: none\n",
+    "resume-v9.9-test");
+  assert(dated.includes('<div class="trow edu">') && dated.includes('<p class="body">Activities: none</p>'),
+    "a dated degree row does not italicize the line after it");
   const compounds = toHtml(src.replace("- bullet one", "- field-level RBAC; github.com/x/rate-limiter"), "resume-v9.9-test");
   assert(compounds.includes('<span class="nowrap">field-level</span>'), "literal hyphen survives a line wrap");
   assert(compounds.includes('<a href="https://github.com/x/rate-limiter">github.com/x/rate-limiter</a>'),
@@ -360,6 +450,9 @@ export function selftest(): void {
   assert(CSS.includes("letter-spacing: 0"), "h1 name extracts as one token FADHLILLAH, not FA D H L...");
   assert(CONSULTING_CSS.includes("white-space: nowrap"), "proof URLs never wrap→de-hyphenate into 404s");
   assert(ONEPAGER_CSS.includes("white-space: nowrap"), "same URL guard for the recruiter 1-pager");
+  assert(RESUME_CSS.includes("align-items: baseline"), "job header columns share one baseline → linear extraction");
+  assert(FULL_RESUME_CSS.includes("font-size") && !ONEPAGER_CSS.includes("font-size"),
+    "the mirror owns its one body size; the one-pager stays at the reference 11pt — content is cut, not type");
   console.log("selftest OK");
 }
 
@@ -406,9 +499,25 @@ async function main(): Promise<void> {
   try {
     const bytes = new Uint8Array(await Bun.file(tmpPath).arrayBuffer());
     // pdf.js detaches the buffer it is handed, so give it a copy — bytes is reused for the stamp
-    const { totalPages, text } = await extractText(await getDocumentProxy(new Uint8Array(bytes)), { mergePages: true });
+    const doc = await getDocumentProxy(new Uint8Array(bytes));
+    const { totalPages, text } = await extractText(doc, { mergePages: true });
     pages = totalPages;
-    const a = canon(txt), b = canon(text);
+
+    // every "label <target>" in the header must survive as a clickable URI action
+    const targets = headerTargets(txt);
+    if (targets.length) {
+      const uris = new Set<string>();
+      for (let p = 1; p <= totalPages; p++) {
+        for (const a of await (await doc.getPage(p)).getAnnotations()) {
+          if (a.url ?? a.unsafeUrl) uris.add(a.url ?? a.unsafeUrl);
+        }
+      }
+      const missing = targets.filter(([, href]) => !uris.has(href)).map(([, href]) => href);
+      if (missing.length) fail(`FAIL header link annotation missing: ${missing.join(", ")} (found: ${[...uris].join(", ") || "none"})`);
+      const unlabelled = targets.filter(([label]) => !text.includes(label)).map(([label]) => label);
+      if (unlabelled.length) fail(`FAIL header link label not visible in the PDF text: ${unlabelled.join(", ")}`);
+    }
+    const a = canon(visibleText(txt)), b = canon(text);
     if (a !== b) {
       const n = Math.min(a.length, b.length);
       let k = n;

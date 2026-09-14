@@ -69,7 +69,7 @@
       </a>
       <div class="topbar-actions">
         <a href="{base}/#portfolio" class="btn btn-quiet btn-sm"><svg class="ico" aria-hidden="true"><use href="#i-arrow-back"/></svg> Back to portfolio</a>
-        <a href="{base}/cv/resume-onepager-v1.11.pdf" class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV</a>
+        <a href="{base}/cv/resume-onepager-v1.12.pdf" class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV</a>
       </div>
     </div>
   </header>
@@ -178,7 +178,7 @@ r'\s+'.join(re.escape(p) for p in "Section II.3".split())  <span class="tmut">â†
       </nav>
       <p class="footer-colophon">
         <span>Prerendered with SvelteKit &middot; handwritten CSS and JavaScript &middot; self-hosted fonts.</span>
-        <span>Updated <time datetime="2026-09-05">September 2026</time></span>
+        <span>Updated <time datetime="2026-09-14">September 2026</time></span>
       </p>
     </div>
   </footer>
