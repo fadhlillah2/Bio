@@ -8,17 +8,30 @@
 
         <header class="section-head">
           <p class="section-index">03 &mdash; Selected work</p>
-          <h2>Flagship AI &amp; backend systems</h2>
-          <p class="section-deck">Flagship engineering work first; nine early JavaScript practice projects from 2021 remain available below.</p>
+          <h2>Commercial delivery and public engineering work</h2>
+          <p class="section-deck">A commercial backend delivery account, followed by projects with public source. Nine early JavaScript practice projects from 2021 remain available below.</p>
         </header>
 
-        <!-- Flagship case study: designed card (no screenshot), links to the live repo -->
+        <article class="flagship" data-reveal>
+          <div class="flagship-body">
+            <p class="flagship-badge">Commercial delivery &middot; Freelance backend engineering</p>
+            <h3 class="flagship-title">FOX Asset: Project Management backend</h3>
+            <p class="flagship-desc">I solely built the Project Management module backend within FOX Asset, a multi-tenant asset management and maintenance SaaS: Kanban and timeline support, weightage distribution, and S-Curve planned-vs-actual analytics.</p>
+            <p class="flagship-result">Project Management backend: <strong>21 REST endpoints &middot; 10 models &middot; 196 unit tests</strong>.</p>
+            <div class="flagship-cta">
+              <a href={base + "/writeups/fox-asset-project-management"} class="btn btn-solid btn-sm">Read the delivery case</a>
+              <a href="#services" class="btn btn-ghost btn-sm">Explore services</a>
+            </div>
+          </div>
+        </article>
+
+        <!-- Public project: source and implementation limits are linked below. -->
         <article class="flagship" data-reveal>
           <div class="flagship-body">
             <p class="flagship-badge">Top 50 &middot; Meta Llama Hackathon 2025 &middot; Hacktiv8 Indonesia</p>
             <h3 class="flagship-title">High-Precision Contract Advisor RAG</h3>
-            <p class="flagship-desc">A retrieval-augmented contract analysis system: ingests scanned and digital contracts, runs EasyOCR optimized for Indonesian contract documents (preserving PASAL/AYAT/BAB structure), and answers questions with hybrid retrieval over a ChromaDB vector store and Groq Llama&nbsp;3.3&nbsp;70B inference.</p>
-            <p class="flagship-result">EasyOCR ingestion at <strong>88%+ accuracy</strong> on scanned Indonesian contracts &middot; PASAL/AYAT/BAB structure preserved</p>
+            <p class="flagship-desc">A retrieval-augmented contract analysis project using EasyOCR, ChromaDB, and Groq Llama&nbsp;3.3&nbsp;70B, with hybrid retrieval and exact-reference matching in its fallback path.</p>
+            <p class="flagship-result">Reported <strong>88%+ OCR accuracy</strong> on scanned Indonesian contracts. Read the writeup for the evaluation scope and known limitations.</p>
             <ul class="tag-row">
               <li>RAG</li><li>LangChain</li><li>ChromaDB</li><li>Groq · Llama 3.3 70B</li><li>EasyOCR</li><li>Flask</li><li>Next.js / TypeScript</li>
             </ul>

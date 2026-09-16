@@ -24,6 +24,11 @@
 
           <p class="hero-value">Spring Boot microservices in production banking served 2M+ requests/day with sub-200ms response times &middot; LLM/RAG products end to end, including Indonesian contract AI with 88%+ OCR accuracy &middot; Top 50, Meta Llama Hackathon 2025</p>
 
+          <nav class="cta-row" aria-label="Find what you need">
+            <a href="#resume" class="plain-link">Hiring an engineer? Review experience &amp; CV</a>
+            <a href="#services" class="plain-link">Planning a project? Explore services</a>
+          </nav>
+
           <div class="hero-cta">
             <a href={base + "/cv/resume-onepager-v1.12.pdf"} class="btn btn-solid" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
             <a href="https://wa.me/6285157043131?text=Hi%20Fadhlillah%2C%20I%20saw%20your%20portfolio" target="_blank" rel="noopener" class="btn btn-ghost" aria-label="Message on WhatsApp (opens in new tab)"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg> Message on WhatsApp</a>

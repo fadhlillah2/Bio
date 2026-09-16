@@ -1,3 +1,7 @@
+<script>
+  import { base } from "$app/paths";
+</script>
+
 <footer class="site-footer">
   <div class="wrap footer-inner">
     <div class="footer-brand">
@@ -18,4 +22,4 @@
 </footer>
 
 <a href="#top" class="fab fab-top" aria-label="Back to top"><svg class="ico" aria-hidden="true"><use href="#i-arrow-up"/></svg></a>
-<a href="#contact" class="fab fab-contact" aria-label="Jump to contact section"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg></a>
+<a href="{base}/#contact" class="fab fab-contact" aria-label="Jump to contact section"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg></a>

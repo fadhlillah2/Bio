@@ -75,12 +75,27 @@ try {
   await send("Fetch.enable", { patterns: [{ urlPattern: "http://*" }, { urlPattern: "https://*" }] });
   await send("Page.enable");
   await viewport(390);
+  await send("Page.navigate", { url: origin + "/Bio/writeups/fox-asset-project-management.html" });
+  await wait("!!document.querySelector('.article h1')");
+  await check("document.documentElement.scrollWidth <= innerWidth", "FOX case direct static route fits mobile viewport");
+  const caseLinks: string[] = await js("[...new Set([...document.querySelectorAll('a[href]')].map(a=>a.href).filter(h=>new URL(h).origin === location.origin))]");
+  assert(caseLinks.length, "FOX case has internal navigation");
+  for (const url of caseLinks) assert((await fetch(url)).ok, `FOX case link unavailable: ${url}`);
+  console.log("OK FOX case internal links resolve");
+  await send("Emulation.setEmulatedMedia", { media: "print" });
+  await wait("[...document.querySelectorAll('.article h1,.article h2,.article p')].every(e=>{for(let p=e;p;p=p.parentElement){const s=getComputedStyle(p);if(s.display==='none'||s.visibility!=='visible'||s.opacity!=='1')return false;}return true;})");
+  console.log("OK FOX case content visible in print media");
+  await send("Emulation.setEmulatedMedia", { media: "screen" });
+  await js("document.querySelector('.fab-contact').click()");
+  await wait("location.pathname === '/Bio/' && location.hash === '#contact' && !!document.querySelector('#contact')");
+  console.log("OK FOX footer contact action reaches home contact section");
   await send("Page.navigate", { url: origin + "/Bio/writeups/hybrid-retrieval.html" });
   await wait("!!document.querySelector('.read-progress')");
   console.log("OK direct .html article route served");
   await send("Page.navigate", { url: origin + "/Bio/" });
   await wait("!!document.querySelector('.hero[data-sky]')");
   await check("innerWidth === 390 && scrollY === 0", "home hydrates at mobile viewport before scroll");
+  await check("['resume','services'].every(id=>{const a=document.querySelector('.hero a[href=\"#'+id+'\"]'); return a && document.getElementById(id) && a.getBoundingClientRect().width>0;})", "both audience links have visible controls and existing destinations");
   await send("Emulation.setEmulatedMedia", { media: "print" });
   await wait("[...document.querySelectorAll('[data-reveal-children] > *')].every(e => { if(getComputedStyle(e).transform !== 'none') return false; for(let p=e;p;p=p.parentElement) { const s=getComputedStyle(p); if(s.opacity !== '1' || s.visibility !== 'visible' || s.display === 'none') return false; } return true; })");
   console.log("OK all reveal children and ancestors visible in actual print styles");
@@ -109,6 +124,12 @@ try {
   await js("document.querySelector('#site-nav li:last-child a').focus()");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   await check("!document.activeElement.matches('.nav-toggle')", "desktop keyboard focus escapes menu");
+  await js("window.__smokeFox = true; document.querySelector('a[href*=\"fox-asset-project-management\"]').click()");
+  await wait("location.pathname.endsWith('fox-asset-project-management') && !!document.querySelector('.article h1')");
+  await check("window.__smokeFox === true && document.documentElement.scrollWidth <= innerWidth", "FOX case uses client router and fits desktop viewport");
+  await js("document.querySelector('.fab-contact').click()");
+  await wait("location.pathname === '/Bio/' && location.hash === '#contact' && !!document.querySelector('.hero[data-sky]')");
+  console.log("OK client-routed FOX footer reaches home contact section");
   await js("window.__smokeRoute = true; document.querySelector('a[href*=\"hybrid-retrieval\"]').click()");
   await wait("location.pathname.endsWith('hybrid-retrieval') && !!document.querySelector('.read-progress')");
   await check("window.__smokeRoute === true", "article navigation uses client router");
@@ -137,9 +158,26 @@ try {
   await js("document.querySelector('#site-nav a').focus()");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   await check("document.activeElement === document.querySelectorAll('#site-nav a')[1]", "no-JS links reachable by keyboard Tab");
-  await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+  await send("Input.dispatchKeyEvent", { type: "keyDown", text: "\r", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+  await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
   await wait("location.hash === '#portfolio' && scrollY > 0");
   console.log("OK no-JS native Enter navigates to section anchor");
+  for (const id of ["resume", "services"]) {
+    await js(`document.querySelector('.hero a[href="#${id}"]').focus()`);
+    await send("Input.dispatchKeyEvent", { type: "keyDown", text: "\r", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+    await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+    await wait(`location.hash === '#${id}' && Math.abs(document.getElementById('${id}').getBoundingClientRect().top) < innerHeight`);
+    console.log(`OK no-JS audience link reaches ${id} with native Enter`);
+  }
+  await js("document.querySelector('.contact-prompts summary').focus()");
+  await check("document.activeElement === document.querySelector('.contact-prompts summary')", "no-JS contact brief summary receives focus");
+  await send("Input.dispatchKeyEvent", { type: "keyDown", text: "\r", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+  await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+  await wait("document.querySelector('.contact-prompts details').open");
+  await check("document.querySelector('.contact-prompts details').open", "no-JS contact brief opens with native Enter");
+  await send("Page.navigate", { url: origin + "/Bio/writeups/fox-asset-project-management.html" });
+  await wait("!!document.querySelector('.article h1') && !document.documentElement.classList.contains('js')");
+  await check("document.querySelector('.article h1').getBoundingClientRect().width > 0 && getComputedStyle(document.querySelector('.article-head')).opacity === '1' && document.documentElement.scrollWidth <= innerWidth", "FOX case readable without JavaScript on mobile");
 } finally {
   clearTimeout(deadline); socket?.close(); chrome?.kill(); if (chrome) await chrome.exited;
   server?.stop(true); rmSync(temp, { recursive: true, force: true });

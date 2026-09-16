@@ -2626,6 +2626,21 @@ html:not(.js) .look-switch {
 /*--------------------------------------------------------------
 # Writeup article — long-form prose, narrower measure than the site grid
 --------------------------------------------------------------*/
+.contact-prompts {
+  margin-top: 18px;
+}
+.contact-prompts details {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+.contact-prompts summary {
+  cursor: pointer;
+  color: var(--head);
+}
+.contact-prompts p {
+  margin-top: 10px;
+}
+
 .article {
   padding: clamp(40px, 6vw, 72px) 0 clamp(56px, 7vw, 96px);
   /* At ~320px the page gained 12px of sideways scroll even though every element
