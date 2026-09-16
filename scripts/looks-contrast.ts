@@ -1,6 +1,6 @@
 /**
- * Contrast floor for the three looks. Every text token has to clear WCAG AA (4.5:1)
- * on every surface it can land on — a palette is only shippable if it does.
+ * Contrast floor for the three looks: 4.5:1 for tested pairs, except the accepted
+ * night terminal-title baseline, which must not regress.
  * Run: bun scripts/looks-contrast.ts
  */
 const css = await Bun.file(new URL("../static/assets/css/style.css", import.meta.url)).text();
@@ -45,18 +45,21 @@ for (const fg of ["head", "bright", "text", "muted", "accent", "metric"]) {
 }
 pairs.push(["muted", "ink-3"], ["solid-ink", "solid"], ["solid-ink", "accent"]);
 
-// pre-existing baseline: .term-title on the terminal bar, 4.41 — not one of the looks' doing
+// Accepted .term-title baseline (~4.41): compare at full precision, not the rounded display.
 const ALLOWED = "night muted/ink-3";
+const BASELINE = ratio("#788394", "#161d29");
 let failed = 0;
 
 for (const look of Object.keys(looks)) {
   for (const [fg, bg] of pairs) {
     const r = ratio(hex(looks[look], fg), hex(looks[look], bg));
-    const ok = r >= 4.5 || `${look} ${fg}/${bg}` === ALLOWED;
+    const floor = `${look} ${fg}/${bg}` === ALLOWED ? BASELINE : 4.5;
+    const ok = r >= floor;
     if (!ok) failed++;
     console.log(`${ok ? "ok  " : "FAIL"}  ${look.padEnd(8)} ${`${fg}/${bg}`.padEnd(19)} ${r.toFixed(2)}`);
   }
 }
 
-console.log(failed ? `\n${failed} pair(s) below 4.5:1` : "\nall three looks clear 4.5:1");
+console.log(failed ? `\n${failed} pair(s) below their contrast floor` :
+  `\nall tested pairs meet their floor (4.5:1; ${ALLOWED}: accepted baseline ${BASELINE.toFixed(2)}:1)`);
 process.exit(failed ? 1 : 0);

@@ -612,6 +612,33 @@ html.js [data-reveal-children].is-in > :nth-child(n + 9) { transition-delay: 440
     padding: 12px 14px;
     font-size: 16px;
   }
+  /* Without scripts, keep native section links in normal flow instead of an inert drawer. */
+  html:not(.js) .nav-toggle {
+    display: none;
+  }
+  html:not(.js) .topbar:has(.site-nav) {
+    position: static;
+  }
+  html:not(.js) .topbar-inner:has(.site-nav) {
+    height: auto;
+    min-height: var(--bar);
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 12px;
+  }
+  html:not(.js) .site-nav {
+    position: static;
+    order: 1;
+    width: 100%;
+    padding: 0 0 12px;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+  }
+  html:not(.js) .site-nav ul {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 520px) {
@@ -2659,6 +2686,11 @@ html:not(.js) .look-switch {
   gap: 5px;
 }
 
+.article p a:not(.btn) {
+  text-decoration: underline;
+  text-underline-offset: .18em;
+}
+
 .article h2 {
   font-size: clamp(20px, 2.3vw, 25px);
   font-weight: 600;
@@ -2778,7 +2810,8 @@ html:not(.js) .look-switch {
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
   }
-  html.js [data-reveal] {
+  html.js [data-reveal],
+  html.js [data-reveal-children] > * {
     opacity: 1 !important;
     transform: none !important;
   }

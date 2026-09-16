@@ -58,6 +58,8 @@ bun run dev          # http://localhost:5173/Bio/
 bun run check        # Svelte diagnostics
 bun run cv:selftest  # CV parser checks
 bun run build        # prerendered output in build/
+bun run validate     # core checks + build + sky check; requires Chrome and Python 3
+bun run validate:ci  # all checks, including browser acceptance; requires native Chrome and Python 3
 ```
 
 ## Deployment

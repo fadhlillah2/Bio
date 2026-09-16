@@ -4,6 +4,7 @@
  * Run after the copy in a template changes: bun run og
  */
 import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import { findChrome, chromePath } from "../cv/build-pdf.ts";
 
 const ROOT = resolve(import.meta.dir, "..");
@@ -15,7 +16,7 @@ const W = 1200, H = 630;
 
 const chrome = findChrome();
 const wsl = chrome.endsWith(".exe");
-const fileUrl = (p: string) => (wsl ? "file:///" + chromePath(p, chrome).replaceAll("\\", "/") : "file://" + p);
+const fileUrl = (p: string) => pathToFileURL(wsl ? "/" + chromePath(p, chrome).replaceAll("\\", "/") : p).href;
 
 let failed = 0;
 for (const [stem, png] of Object.entries(CARDS)) {

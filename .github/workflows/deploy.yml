@@ -32,8 +32,12 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Build
-        run: bun run build
+      - name: Validate
+        timeout-minutes: 10
+        run: |
+          python3 --version
+          bun -e 'import { findChrome } from "./cv/build-pdf.ts"; console.log(findChrome())'
+          bun run validate:ci
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v4

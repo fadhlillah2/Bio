@@ -41,6 +41,11 @@ export function enhance() {
     document.body.classList.toggle('nav-open', open);
     if (toggle) toggle.setAttribute('aria-expanded', String(open));
   };
+  var mobileNav = window.matchMedia('(max-width: 920px)');
+  var onNavBreakpoint = function (event) {
+    if (!event.matches) setNav(false);
+  };
+  mobileNav.addEventListener('change', onNavBreakpoint);
   if (toggle) {
     toggle.addEventListener('click', function () {
       setNav(!document.body.classList.contains('nav-open'));
@@ -276,6 +281,8 @@ export function enhance() {
   }
 
   return function cleanup() {
+    setNav(false);
+    mobileNav.removeEventListener('change', onNavBreakpoint);
     if (io) io.disconnect();
     if (fabIo) fabIo.disconnect();
     if (tiltFrame) window.cancelAnimationFrame(tiltFrame);

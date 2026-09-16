@@ -157,7 +157,7 @@ const splitlines = (s: string): string[] => {
 
 const capitalize = (w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
 /** str.title() */
-const pyTitle = (s: string) => s.replace(/\p{L}+/gu, capitalize);
+export const pyTitle = (s: string) => s.replace(/\p{L}+/gu, capitalize);
 const isUpper = (s: string) => s !== s.toLowerCase() && s === s.toUpperCase();
 const isLower = (s: string) => s !== s.toUpperCase() && s === s.toLowerCase();
 const isAlnum = (s: string) => s !== "" && /^[\p{L}\p{N}]+$/u.test(s);
@@ -463,10 +463,10 @@ async function main(): Promise<void> {
   const txtPath = argv[0];
   const stem = basename(txtPath, extname(txtPath));
   if (!(await Bun.file(txtPath).exists())) fail(`FAIL no such file: ${txtPath}`);
-  if (argv.length > 1 && !/^\d+$/.test(argv[1])) {
+  const maxPages = argv.length > 1 ? Number(argv[1]) : 1;
+  if (argv.length > 1 && (!/^\d+$/.test(argv[1]) || !Number.isFinite(maxPages) || maxPages <= 0)) {
     fail(`FAIL max_pages must be a positive integer, got ${pyRepr(argv[1])}`);
   }
-  const maxPages = argv.length > 1 ? parseInt(argv[1], 10) : 1;
   // fail fast: without the pdf libs we'd emit a PDF that is never verified nor metadata-stamped
   let extractText: any, getDocumentProxy: any, PDFDocument: any, PDFName: any, PDFString: any;
   try {
@@ -480,8 +480,9 @@ async function main(): Promise<void> {
   const htmlPath = withSuffix(txtPath, ".print.html");
   const pdfPath = withSuffix(txtPath, ".pdf");
   const tmpPath = withSuffix(txtPath, ".tmp.pdf");  // verify BEFORE touching the real .pdf — a failed run must not leave a broken artifact
-  await Bun.write(htmlPath, toHtml(txt, stem));
+  let pages: number;
   try {
+    await Bun.write(htmlPath, toHtml(txt, stem));
     const proc = Bun.spawn(
       [chrome, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
         `--print-to-pdf=${chromePath(tmpPath, chrome)}`, chromePath(htmlPath, chrome)],
@@ -491,12 +492,6 @@ async function main(): Promise<void> {
     await proc.exited;
     if (proc.exitCode === null) fail("FAIL Chrome timed out after 120s");
     if (proc.exitCode !== 0) fail(`FAIL Chrome exited ${proc.exitCode}: ${stderr.slice(-500)}`);
-  } finally {
-    rmSync(htmlPath, { force: true });
-  }
-
-  let pages: number;
-  try {
     const bytes = new Uint8Array(await Bun.file(tmpPath).arrayBuffer());
     // pdf.js detaches the buffer it is handed, so give it a copy — bytes is reused for the stamp
     const doc = await getDocumentProxy(new Uint8Array(bytes));
@@ -538,6 +533,7 @@ async function main(): Promise<void> {
     writer.catalog.set(PDFName.of("Lang"), PDFString.of(stem.includes("-id-") ? "id" : "en"));
     await Bun.write(pdfPath, await writer.save());
   } finally {
+    rmSync(htmlPath, { force: true });
     rmSync(tmpPath, { force: true });
   }
   console.log(`OK ${basename(pdfPath)}: ${pages} page(s), wording verified identical to ${basename(txtPath)}`);

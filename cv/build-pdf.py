@@ -411,7 +411,7 @@ def main():
     txt_path = Path(sys.argv[1])
     if not txt_path.is_file():
         sys.exit(f"FAIL no such file: {txt_path}")
-    if len(sys.argv) > 2 and not sys.argv[2].isdigit():
+    if len(sys.argv) > 2 and (not sys.argv[2].isdigit() or int(sys.argv[2]) <= 0):
         sys.exit(f"FAIL max_pages must be a positive integer, got {sys.argv[2]!r}")
     max_pages = int(sys.argv[2]) if len(sys.argv) > 2 else 1
     # fail fast: without pypdf we'd emit a PDF that is never verified nor metadata-stamped
@@ -425,20 +425,17 @@ def main():
     html_path = txt_path.with_suffix(".print.html")
     pdf_path = txt_path.with_suffix(".pdf")
     tmp_path = txt_path.with_suffix(".tmp.pdf")  # verify BEFORE touching the real .pdf — a failed run must not leave a broken artifact
-    html_path.write_text(to_html(txt, txt_path.stem), encoding="utf-8")
     try:
-        subprocess.run(
-            [chrome, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
-             f"--print-to-pdf={chrome_path(tmp_path, chrome)}", chrome_path(html_path, chrome)],
-            check=True, capture_output=True, timeout=120)
-    except subprocess.CalledProcessError as e:
-        sys.exit(f"FAIL Chrome exited {e.returncode}: {e.stderr.decode(errors='replace')[-500:]}")
-    except subprocess.TimeoutExpired:
-        sys.exit("FAIL Chrome timed out after 120s")
-    finally:
-        html_path.unlink(missing_ok=True)
-
-    try:
+        html_path.write_text(to_html(txt, txt_path.stem), encoding="utf-8")
+        try:
+            subprocess.run(
+                [chrome, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
+                 f"--print-to-pdf={chrome_path(tmp_path, chrome)}", chrome_path(html_path, chrome)],
+                check=True, capture_output=True, timeout=120)
+        except subprocess.CalledProcessError as e:
+            sys.exit(f"FAIL Chrome exited {e.returncode}: {e.stderr.decode(errors='replace')[-500:]}")
+        except subprocess.TimeoutExpired:
+            sys.exit("FAIL Chrome timed out after 120s")
         reader = PdfReader(str(tmp_path))
         pages = len(reader.pages)
         pdf_text = "".join(p.extract_text() or "" for p in reader.pages)
@@ -468,6 +465,7 @@ def main():
         with open(pdf_path, "wb") as f:
             writer.write(f)
     finally:
+        html_path.unlink(missing_ok=True)
         tmp_path.unlink(missing_ok=True)
     print(f"OK {pdf_path.name}: {pages} page(s), wording verified identical to {txt_path.name}")
 

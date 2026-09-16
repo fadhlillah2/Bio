@@ -7,8 +7,10 @@ import { resolve } from "node:path";
 import { findChrome } from "../cv/build-pdf.ts";
 
 const BUILD = resolve(import.meta.dir, "..", "build");
+const chrome = findChrome();
 
 const server = Bun.serve({
+  hostname: "127.0.0.1",
   port: 0,
   async fetch(req) {
     let path = new URL(req.url).pathname.replace(/^\/Bio(?=\/|$)/, "") || "/";
@@ -18,14 +20,24 @@ const server = Bun.serve({
   },
 });
 
-const proc = Bun.spawn([
-  findChrome(), "--headless=new", "--use-angle=swiftshader", "--enable-unsafe-swiftshader",
-  "--no-first-run", "--hide-scrollbars", "--window-size=1366,768", "--virtual-time-budget=4000",
-  "--dump-dom", `http://127.0.0.1:${server.port}/Bio/`,
-], { stdout: "pipe", stderr: "ignore" });
-const dom = await new Response(proc.stdout).text();
-await proc.exited;
-server.stop(true);
+let proc: ReturnType<typeof Bun.spawn> | undefined;
+let dom: string;
+try {
+  proc = Bun.spawn([
+    chrome, "--headless=new", "--use-angle=swiftshader", "--enable-unsafe-swiftshader",
+    "--no-first-run", "--hide-scrollbars", "--window-size=1366,768", "--virtual-time-budget=4000",
+    "--dump-dom", `http://127.0.0.1:${server.port}/Bio/`,
+  ], { stdout: "pipe", stderr: "ignore", timeout: 30_000 });
+  dom = await new Response(proc.stdout).text();
+  await proc.exited;
+  if (proc.exitCode !== 0) throw new Error(`FAIL sky: Chrome exited ${proc.exitCode} (signal ${proc.signalCode}; timeout 30s)`);
+} finally {
+  server.stop(true);
+  if (proc) {
+    proc.kill();
+    await proc.exited;
+  }
+}
 
 const sky = /data-sky="([^"]*)"/.exec(dom)?.[1];
 const why = /data-sky-error="([^"]*)"/.exec(dom)?.[1];
