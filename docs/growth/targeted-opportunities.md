@@ -1,6 +1,6 @@
 # Targeted opportunities — review before applying
 
-Research date: **16 September 2026 (Asia/Jakarta)**. Balanced hiring/freelance search; Indonesia plus remote roles explicitly including Indonesia. Nothing submitted, sent, purchased, or posted. Public listing availability is an observation, not confirmation from a recruiter that a vacancy remains unfilled. Recheck before applying. User-confirmed freelance capacity: **8–16 hours/week**. Hiring start date, compensation expectations, English proficiency, and willingness to commute remain unconfirmed.
+Initial research: **16 September 2026 (Asia/Jakarta)**; H1/H2 application readiness rechecked **17 September 2026**. Balanced hiring/freelance search; Indonesia plus remote roles explicitly including Indonesia. Nothing submitted, sent, purchased, or posted. Public listing availability is an observation, not confirmation from a recruiter that a vacancy remains unfilled. Recheck before applying. User-confirmed freelance capacity: **8–16 hours/week**. Hiring start date, compensation expectations, English proficiency, and willingness to commute remain unconfirmed.
 
 ## Evidence to use
 
@@ -12,7 +12,9 @@ Research date: **16 September 2026 (Asia/Jakarta)**. Balanced hiring/freelance s
 
 ### H1 — Traveloka: Software Backend Engineer — Central Tech (MJ000346)
 
-[Official vacancy](https://careers.traveloka.com/jobs/mj000346-software-backend-engineer-central), opened 16 September. Published **15 September 2026**; official page displays Apply Now. BSD City, Indonesia; regular employment. Remote/hybrid arrangement not specified. The official Apply target (`https://hire-r1.mokahr.com/social-recruitment/traveloka/100008526`) redirected in a loop in both the research browser and a direct HTTP GET using a browser User-Agent on 16 September. **Application-form access remains blocked/unverified**; use the official vacancy as the entry point and verify the form manually before submitting. The note below is review-ready copy, not a verified submission-ready channel.
+[Official vacancy](https://careers.traveloka.com/jobs/mj000346-software-backend-engineer-central), rechecked 17 September. Published **15 September 2026**; BSD City, Indonesia; regular employment. Remote/hybrid arrangement not specified. On 16 September the provider redirected in a loop. On 17 September, cookie-aware HTTP and a clean native Chrome session reached the official portal and verified MJ000346 as open. The [verified provider job page](https://hire-r1.mokahr.com/social-recruitment/traveloka/100008526#/job/b5061877-d860-4bad-a289-8c4ccaa8e43e) renders the same title and job number (provider location: Banten, Indonesia).
+
+**Current access gate:** clicking Apply now opens email login, with `Enter email`, `Enter verification code`, and privacy-policy/notice consent checkboxes. The portal says the first sign-in automatically creates an account. Inspection stopped there: no email/code entered, consent accepted, account created, CV uploaded, or application submitted. Candidate application fields after authentication remain unknown. The H1 note below is ready for review; completing portal access requires the candidate's account/consent step before inspecting the actual application form.
 
 **Priority: first hiring review.** Three-year minimum and Java/Go/Python requirement match the CV's 6+ years and Java production record. Scalable services/API work maps to Danamon; testing maps to JUnit/Mockito; operational troubleshooting maps to Assist.id. UGM degree is listed in the CV. English fluency and BSD working arrangement need confirmation. No claim of travel-domain experience.
 
@@ -21,6 +23,17 @@ Research date: **16 September 2026 (Asia/Jakarta)**. Balanced hiring/freelance s
 [Official vacancy](https://jobs.lever.co/portcast/1f6381eb-03dd-451a-a8cc-2c862cec3fe3), opened 16 September; application link present, publication date not shown. Full-time remote; **Jakarta explicitly appears among eligible locations**. This is stronger eligibility evidence than a generic APAC label; employment arrangement still needs employer confirmation.
 
 **Priority: conditional second.** Five-year minimum, APIs, production troubleshooting, Python/Flask/AWS and ownership align with CV experience and FOX/RAG examples. However, the posting also asks for early-startup product-to-scale ownership OR system-design ownership at a FAANG-tier organization. Neither specific history is established by the CV. Elasticsearch/Spark depth is also unverified. Prepare a concrete architecture/trade-off example, and clarify that requirement before investing in a lengthy process. Do not relabel Danamon as FAANG-tier or claim to have founded FOX.
+
+
+**Application form rechecked 17 September:** the [official Lever form](https://jobs.lever.co/portcast/1f6381eb-03dd-451a-a8cc-2c862cec3fe3/apply) is accessible. Required identity/material fields: resume, full name, email, current company, LinkedIn URL, and expected fixed/base salary in local currency. It also asks current location/legal right to work, phone, GitHub URL, and years of Python/backend-framework experience. Five required yes/no questions cover:
+
+- At least four years of production-system experience in a product-based B2B SaaS startup.
+- Significant end-to-end backend ownership from design/build through deployment and monitoring.
+- Real-time or high-volume data work, including ingestion, streaming or pipelines.
+- Debugging production APIs, services, databases, queues, infrastructure or pipelines.
+- Working with Product, Data Science, CS, Sales or business teams to understand enterprise-customer problems before implementation.
+
+**Qualification gate:** total career duration and FOX module delivery do not establish four years in B2B SaaS. Confirm relevant role chronology and each experience answer privately; do not infer a “Yes” from adjacent experience. Salary amount/period and current-company wording also need candidate confirmation. No answers were entered and no application was submitted.
 
 ### H3 — Traveloka: Software Backend Engineer (MJ000260)
 

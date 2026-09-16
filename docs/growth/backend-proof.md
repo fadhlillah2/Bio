@@ -1,14 +1,14 @@
 # Go backend proof
 
-Status: local tests, race checks, coverage and a real HTTP demonstration **passed** on 16 September 2026, 23:50:08–23:50:33 WIB (UTC+7). CI is prepared locally, not pushed or executed on GitHub. No benchmark or commercial outcome is claimed.
+Status updated 17 September 2026: local tests, race checks, coverage and a real HTTP demonstration **passed** on 16 September 2026, 23:50:08–23:50:33 WIB (UTC+7). The changes were subsequently committed and pushed as `cb4bced819d2b1ece7c7662a908844586acf6fc1`; [GitHub Actions run 35127882994](https://github.com/fadhlillah2/rate-limiter-project-go/actions/runs/35127882994) passed on that exact commit. No benchmark or commercial outcome is claimed.
 
 ## Source and changes
 
 - Repository: https://github.com/fadhlillah2/rate-limiter-project-go
-- Baseline commit: `543b62b38ebb5413155c5157a5c006a362e17d68`, plus the uncommitted local patch in sibling `rate-limiter-project-go`.
+- Local verification baseline: `543b62b38ebb5413155c5157a5c006a362e17d68`, plus the then-uncommitted patch in sibling `rate-limiter-project-go`, subsequently published as `cb4bced819d2b1ece7c7662a908844586acf6fc1`.
 - Standalone examples now have separate packages: `examples/basic/main.go` and `examples/http/main.go`. The basic example also replaces five redundant-newline `Println` calls with output-equivalent `Print` calls so Go vet passes. README command paths and Docker builder now match Go 1.24.7.
 - Redis `AllowN` now accounts for the entire batch atomically; rejected batches consume no quota. Each batch uses a random nonce plus member index. Redis sliding/fixed windows consistently use milliseconds, round positive fractions up to Redis resolution, and safely convert rounded durations. HTTP `Retry-After` rounds up to avoid advertising an earlier retry.
-- No public API, dependency version, `go.mod` or `go.sum` changed. No commit, push, container pull, deployment or global toolchain installation was performed.
+- No public API, dependency version, `go.mod` or `go.sum` changed. Local verification did not install a global toolchain, pull containers or deploy the service. The later commit/push and remote CI are recorded above.
 
 ## Runtime and reproduction
 
@@ -73,7 +73,7 @@ Raw local evidence: `test.log`, `race.log`, `coverage.log`, `coverage-functions.
 
 ## CI and limits
 
-The Go repository's README contains the commands and coverage interpretation. `.github/workflows/ci.yml` uses `go-version-file: go.mod`, read-only repository permissions, locked dependencies, ordinary/race/coverage checks and the HTTP demonstration. [checkout v6](https://raw.githubusercontent.com/actions/checkout/v6/action.yml) and [setup-go v6](https://raw.githubusercontent.com/actions/setup-go/v6/action.yml) use Node 24 according to their official action manifests. The workflow is a local deliverable, not evidence of a completed remote run.
+The Go repository's README contains the commands and coverage interpretation. `.github/workflows/ci.yml` uses `go-version-file: go.mod`, read-only repository permissions, locked dependencies, ordinary/race/coverage checks and the HTTP demonstration. [checkout v6](https://raw.githubusercontent.com/actions/checkout/v6/action.yml) and [setup-go v6](https://raw.githubusercontent.com/actions/setup-go/v6/action.yml) use Node 24 according to their official action manifests. The completed remote run linked above verified all modules and passed every step with Go 1.24.7 Linux amd64. Its logs independently report the same package/whole-profile coverage and five HTTP 200 responses followed by HTTP 429 with `Retry-After: 1`.
 
 Known limits outside this patch, inspected in `pkg/ratelimiter/redis.go` without additional runtime reproduction:
 

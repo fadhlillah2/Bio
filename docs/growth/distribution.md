@@ -1,15 +1,15 @@
 # Distribution kit
 
-Status: prepared locally; nothing in this kit has been posted, sent, pinned, or deployed.
+Publication history verified 17 September 2026: Bio commit `09b6745a7e7d3db1cc5ba6370a6b1ebe8c8de21a` published the existing distribution kit, website and FOX case. Go proof and the repaired RAG evaluation guide were also published in their respective repositories. LinkedIn posts/Featured, profile pins, applications, introductions and testimonial requests have not been sent or changed in this session. Activity outside this session is unknown.
 Public-facing drafts below are in English. Replace only the recipient, company, and role placeholders where present.
 
-**Publication gate:** the new FOX case link is intended for distribution only after deployment and live verification:
+**Publication check completed:** the FOX case is deployed and was verified live with HTTP 200 after [Bio deployment run 35127871287](https://github.com/fadhlillah2/Bio/actions/runs/35127871287), for commit `09b6745a7e7d3db1cc5ba6370a6b1ebe8c8de21a`:
 https://fadhlillah2.github.io/Bio/writeups/fox-asset-project-management.html
-Its presence in this document does not mean it is live. Until verified, use the existing [experience section](https://fadhlillah2.github.io/Bio/#resume) where a case link would be needed; hold the LinkedIn case announcement and Featured item.
+The [experience section](https://fadhlillah2.github.io/Bio/#resume) remains an alternative evidence link. Distribution/account actions still need explicit authorization; deployment alone does not mean the drafts below were sent or posted.
 
 ## 1. LinkedIn case post and Featured item
 
-Copy-ready post, for use after the publication gate:
+**Ready for user-account publication; not posted in this session.** The single finalized English post below uses the deployed case. The available LinkedIn integration supports search, not publishing or profile editing, so publication must be completed in the user's account. No new installation or account connection is needed to use this copy.
 
 ```text
 Project management software needs more than a list of tasks. The backend also has to support how progress is planned, tracked, and compared.
@@ -27,7 +27,7 @@ I have written up the module's scope and capabilities for hiring teams and proje
 Read the case:
 https://fadhlillah2.github.io/Bio/writeups/fox-asset-project-management.html
 
-If you are hiring a backend engineer or planning a workflow-heavy backend, I am open to discussing the role or project. What does your system need to track, and where does the current process get difficult?
+If you are hiring a backend engineer or planning a workflow-heavy backend, I am open to discussing the role or project.
 
 #BackendEngineering #SoftwareEngineering
 ```
@@ -40,9 +40,17 @@ If you are hiring a backend engineer or planning a workflow-heavy backend, I am 
 
 Use the actual case page as the preview. No fabricated product screenshot, customer quotation, or private source-code attachment is needed.
 
+**Human publication steps:**
+
+1. In your own LinkedIn account, open the post composer and paste the single post above. Confirm the case link and its preview before publishing.
+2. Add the case URL to the profile's Featured section using the title and description above. Review the destination and visible attribution.
+3. Record the actual published post URL/date and Featured state in your private campaign record. Until those actions are confirmed, leave their status as ready, not published.
+
+The recommendation request in section 6 remains separate: choose someone who directly observed the work before sending it, then obtain approval for the exact quotation and attribution before publication. No recipient is selected or contacted by these preparation steps.
+
 ## 2. GitHub pin shortlist
 
-Proposed order for the two public flagship repositories already linked from the site; no pins or repository content have been changed.
+Proposed order for the two public flagship repositories already linked from the site; profile pins have not been changed in this session. Subsequent repository changes and verification are linked below.
 
 | Repository | Why put it near the top | What the public README currently provides |
 | --- | --- | --- |
@@ -59,7 +67,7 @@ Before changing a pin or README, check:
 - Any new performance or coverage claim has a reproducible command and dated result. Do not present the README's reported figures as newly measured results.
 - Keep the FOX commercial case distinct from public source repositories; this kit does not imply FOX source is public.
 
-These are checks to perform, not a claim that README edits or fresh test runs have happened. Two relevant pins are enough for this campaign; there is no need to fill every slot.
+The initial checklist predates the completed [Go fixes, README update and CI verification](backend-proof.md) and [RAG guide repair](ai-proof.md). It does not establish fresh RAG inference or benchmark results. Two relevant pins are enough for this campaign; there is no need to fill every slot.
 
 ## 3. Targeted application messages
 
@@ -168,21 +176,21 @@ Catatan internal; bukan bagian copy yang dikirim.
 
 Pakai [shortlist peluang](targeted-opportunities.md) untuk memilih target dan memeriksa kecocokan, [draft penawaran freelance](freelance-offer.md) untuk membatasi scope, serta [bukti backend](backend-proof.md) dan [status evaluasi AI](ai-proof.md) untuk membedakan hasil terverifikasi dari pekerjaan yang masih menunggu prasyarat.
 
-1. Verifikasi deploy case baru dan link CV/writeup pada desktop serta mobile. Sampai itu selesai, tahan pengumuman LinkedIn/Featured; pesan lain dapat memakai experience section existing sebagai pengganti case baru.
+1. Deploy FOX case dan verifikasi link live sudah selesai. Periksa kembali link sebelum mengirim; pengumuman LinkedIn/Featured tetap belum dilakukan dalam sesi ini.
 2. Pilih dua pin sesuai shortlist dan periksa README dengan checklist di atas. Perubahan akun tetap aksi manual yang belum dilakukan.
 3. Publish satu case post dan tambahkan Featured setelah link siap. Satu bukti jelas lebih berguna daripada mengulang semua skill dalam satu post.
 4. Pilih lowongan yang cocok dengan pengalaman atau pembicaraan bisnis yang relevan; gunakan satu template dan bukti yang paling dekat dengan kebutuhan. Tidak ada pengiriman massal otomatis.
 5. Catat setiap aplikasi/perkenalan, balasan, percakapan yang sesuai, interview, serta permintaan proposal menggunakan [manual measurement](measurement.md) dan [template kosong](lead-log.template.csv). Simpan log berisi kontak nyata di luar repo. Source mengikuti bukti asal (bukan otomatis kanal WhatsApp/email); bila tidak diketahui, gunakan `unknown`. Log hanya hasil yang benar-benar terjadi; link berparameter sendiri tidak mengukur kunjungan.
 6. Tinjau pola kualitas balasan secara berkala. Perbaiki satu hal pada pesan atau bukti berdasarkan pertanyaan nyata penerima; jangan menganggap kenaikan traffic atau satu balasan sebagai bukti kausal keberhasilan desain.
 
-Status aksi: **posting LinkedIn, Featured, GitHub pin/README edits, pengiriman aplikasi/perkenalan, dan publikasi situs belum dilakukan oleh kit ini.**
+Status aksi: **situs sudah dipublikasikan; README Go dan panduan evaluasi RAG sudah diperbarui dan dipush. Posting LinkedIn, Featured, GitHub pin, pengiriman aplikasi/perkenalan, serta permintaan testimonial belum dilakukan dalam sesi ini.**
 
 ## Evidence map
 
 - FOX ownership, endpoint/model/test counts, and capabilities: [current public CV source](../../cv/resume-v8.9.txt) and [site experience source](../../src/lib/components/Resume.svelte). Sole ownership applies to the Project Management module backend; 196 tests belong to that module. No ROI, delivery duration, or ownership of the whole product is claimed.
 - Backend experience, availability, and role wording: [recruiter CV source](../../cv/resume-onepager-v1.12.txt). Past Bank Danamon work stays in past tense.
 - Service offers and working process: [Services source](../../src/lib/components/Services.svelte); contact channels: [Contact source](../../src/lib/components/Contact.svelte).
-- Public repository documentation inspected read-only: [RAG README](https://github.com/fadhlillah2/llama-docs-auditor#readme) and [Go rate-limiter README](https://github.com/fadhlillah2/rate-limiter-project-go#readme). No code from either repository was executed.
+- Initial drafting used read-only [RAG README](https://github.com/fadhlillah2/llama-docs-auditor#readme) and [Go rate-limiter README](https://github.com/fadhlillah2/rate-limiter-project-go#readme) inspection. Subsequent [Go verification and successful CI](backend-proof.md) executed tests; [RAG documentation checks](ai-proof.md) did not establish a new retrieval/OCR result.
 
 ## 6. Recent collaboration recommendation request
 

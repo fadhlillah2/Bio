@@ -53,13 +53,15 @@
         </ul>
 
         <div class="how-we-work" data-reveal>
-          <h3>How I work</h3>
+          <h3>One backend workflow, delivered</h3>
+          <p class="section-deck">Build or improve one defined workflow in your existing product—for example, project status, approvals, or a reporting API.</p>
           <ol>
-            <li>Start with a short WhatsApp chat or introductory call</li>
-            <li>Scope, timeline, and code ownership agreed in writing before any work starts</li>
-            <li>Deliver against agreed milestones with regular check-ins and transparent progress updates</li>
-            <li>Complete the handover with source code, documentation, and deployment details</li>
+            <li>Share the current system, affected users, desired result, and any target date</li>
+            <li>Agree scope and code ownership in writing before implementation</li>
+            <li>Deliver scoped backend changes and tests for the agreed behavior, with regular check-ins</li>
+            <li>Hand over source code, API examples, documentation, and deployment details for the maintaining team</li>
           </ol>
+          <p class="section-deck"><strong>Freelance availability: 8–16 hours/week &middot; Jakarta (UTC+7).</strong> Milestones, price, delivery dates, and support are agreed for each engagement. <a href="#contact">Discuss your workflow</a>.</p>
           <p class="how-we-work-scale">My delivery history includes a 2-week AWS/DevOps security engagement, an SFTP automation platform built in 10 days against a 17-day plan, and an ongoing multi-module backend build (~21,000 lines of Python across two modules).</p>
         </div>
 

@@ -56,21 +56,23 @@
           <div class="flagship-body">
             <p class="flagship-badge">Backend systems &middot; Go</p>
             <h3 class="flagship-title">Distributed Rate Limiter (Go)</h3>
-            <p class="flagship-desc">A Go rate-limiting service implementing fixed window, sliding window, and token bucket, with Redis-backed atomic Lua scripts and HTTP middleware. Includes 80%+ test coverage, Docker Compose setup, and repository benchmarks.</p>
+            <p class="flagship-desc">A Go rate-limiting service implementing fixed window, sliding window, and token bucket, with Redis-backed atomic Lua scripts and HTTP middleware. Tests and race checks passed in CI; Redis tests use miniredis.</p>
+            <p class="flagship-result">Statement coverage: <strong>86.1% limiter &middot; 74.4% middleware</strong>. Whole repository: 51.2%; server and examples: 0%.</p>
             <ul class="tag-row">
-              <li>Go</li><li>Redis &middot; Lua</li><li>HTTP middleware</li><li>Docker</li><li>80%+ test coverage</li>
+              <li>Go</li><li>Redis &middot; Lua</li><li>HTTP middleware</li><li>Docker</li><li>Race checks</li>
             </ul>
             <div class="flagship-cta">
               <a href="https://github.com/fadhlillah2/rate-limiter-project-go" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" aria-label="View the Rate Limiter source on GitHub (opens in new tab)">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
+              <a href="https://github.com/fadhlillah2/rate-limiter-project-go/actions/runs/35127882994" class="plain-link" target="_blank" rel="noopener" aria-label="View verified Go checks for commit cb4bced on GitHub (opens in new tab)">Verified CI &middot; cb4bced</a>
             </div>
           </div>
           <div class="flagship-term" aria-hidden="true">
             <div class="term-bar"><span class="term-dot term-dot-r"></span><span class="term-dot term-dot-y"></span><span class="term-dot term-dot-g"></span><span class="term-title">rate-limiter</span></div>
-            <pre class="flagship-code" tabindex="-1"><code><span class="tmut">$</span> hammer the endpoint&hellip;
-<span class="tmut">algo:</span>  fixed &middot; sliding &middot; token bucket
-<span class="ts">HTTP/1.1</span> <span class="tc">200 OK</span>
-<span class="ts">HTTP/1.1</span> <span class="tm">429 Too Many Requests</span>
-<span class="tc">&#10003;</span> distributed via redis &middot; atomic lua</code></pre>
+            <pre class="flagship-code" tabindex="-1"><code><span class="tmut">test:</span> loopback HTTP &middot; fixed window
+<span class="tmut">requests 1&ndash;5:</span> <span class="tc">200 OK</span>
+<span class="tmut">request 6:</span>    <span class="tm">429 Too Many Requests</span>
+<span class="tmut">Retry-After:</span> 1
+<span class="tc">&#10003;</span> integration test passed</code></pre>
           </div>
         </article>
 
