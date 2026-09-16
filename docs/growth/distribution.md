@@ -166,6 +166,8 @@ No rates, delivery promises, free audit, support SLA, or guaranteed business out
 
 Catatan internal; bukan bagian copy yang dikirim.
 
+Pakai [shortlist peluang](targeted-opportunities.md) untuk memilih target dan memeriksa kecocokan, [draft penawaran freelance](freelance-offer.md) untuk membatasi scope, serta [bukti backend](backend-proof.md) dan [status evaluasi AI](ai-proof.md) untuk membedakan hasil terverifikasi dari pekerjaan yang masih menunggu prasyarat.
+
 1. Verifikasi deploy case baru dan link CV/writeup pada desktop serta mobile. Sampai itu selesai, tahan pengumuman LinkedIn/Featured; pesan lain dapat memakai experience section existing sebagai pengganti case baru.
 2. Pilih dua pin sesuai shortlist dan periksa README dengan checklist di atas. Perubahan akun tetap aksi manual yang belum dilakukan.
 3. Publish satu case post dan tambahkan Featured setelah link siap. Satu bukti jelas lebih berguna daripada mengulang semua skill dalam satu post.
@@ -181,3 +183,24 @@ Status aksi: **posting LinkedIn, Featured, GitHub pin/README edits, pengiriman a
 - Backend experience, availability, and role wording: [recruiter CV source](../../cv/resume-onepager-v1.12.txt). Past Bank Danamon work stays in past tense.
 - Service offers and working process: [Services source](../../src/lib/components/Services.svelte); contact channels: [Contact source](../../src/lib/components/Contact.svelte).
 - Public repository documentation inspected read-only: [RAG README](https://github.com/fadhlillah2/llama-docs-auditor#readme) and [Go rate-limiter README](https://github.com/fadhlillah2/rate-limiter-project-go#readme). No code from either repository was executed.
+
+## 6. Recent collaboration recommendation request
+
+Internal: use only with someone who directly observed the work and may discuss it publicly. Existing site recommendations are from 2023 and 2021; no new delivery quote or permission is recorded here. Do not request confidential client details. This request is prepared, not sent; publication awaits real evidence and explicit approval.
+
+```text
+Hi [Name],
+
+I am updating my portfolio and would appreciate a short, candid note about our work together, if you are comfortable sharing one.
+
+1. What part of the collaboration or delivery did you directly observe?
+2. How would you describe my ownership and communication during that work?
+3. What, if anything, was useful about the documentation or handover?
+
+Please answer only what you can speak to firsthand; there is no need to include confidential details or business figures.
+
+If you are happy for a note to be public, I will send back the exact proposed quote and name/role attribution for your approval before publishing it on my portfolio or LinkedIn. Please also confirm whether each destination is okay; sending a reply alone will not be treated as publication permission.
+
+Thanks,
+Fadhlillah
+```
