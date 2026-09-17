@@ -200,7 +200,8 @@ export function mountSky(hero) {
   var u = {};
   UNIFORMS.forEach(function (n) { u[n] = gl.getUniformLocation(prog, n); });
 
-  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var reduced = motion.matches;
   var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var start = performance.now();
   var from = palette(), to = from, tweenAt = 0;
@@ -275,8 +276,15 @@ export function mountSky(hero) {
     if (reduced) { from = to; render(now); }
   };
 
-  var onMove = function (e) { lastMove = e; };
+  var onMove = function (e) { if (!reduced) lastMove = e; };
   var onLeave = function () { lastMove = null; target = [0, 0]; };
+  var onMotion = function (event) {
+    reduced = event.matches;
+    lastMove = null;
+    target = [0, 0]; cur = [0, 0];
+    update();
+    if (reduced) render(performance.now());
+  };
 
   // first frame off-DOM: only a canvas that actually drew replaces the CSS sky
   resize();
@@ -298,7 +306,8 @@ export function mountSky(hero) {
   var io = new IntersectionObserver(function (entries) { inView = entries[0].isIntersecting; update(); });
   io.observe(hero);
   document.addEventListener('visibilitychange', update);
-  if (fine && !reduced) {
+  motion.addEventListener('change', onMotion);
+  if (fine) {
     hero.addEventListener('pointermove', onMove);
     hero.addEventListener('pointerleave', onLeave);
   }
@@ -310,6 +319,7 @@ export function mountSky(hero) {
     mo.disconnect();
     io.disconnect();
     document.removeEventListener('visibilitychange', update);
+    motion.removeEventListener('change', onMotion);
     hero.removeEventListener('pointermove', onMove);
     hero.removeEventListener('pointerleave', onLeave);
     var lose = gl.getExtension('WEBGL_lose_context');

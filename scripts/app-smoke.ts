@@ -66,14 +66,77 @@ try {
   };
   const wait = async (expression: string) => {
     for (let n = 0; n < 100; n++) { if (await js(expression)) return; await pause(); }
-    throw new Error(`Timed out: ${expression}`);
+    const state = await js(`JSON.stringify({width:innerWidth,height:innerHeight,print:matchMedia('print').matches,
+      ready:document.readyState,fonts:document.fonts.status,body:document.body.className,url:location.href,scrollY,
+      visibility:document.visibilityState,focus:document.hasFocus(),scrollBehavior:getComputedStyle(document.documentElement).scrollBehavior,
+      active:{tag:document.activeElement?.tagName,id:document.activeElement?.id,href:document.activeElement?.getAttribute('href')},
+      sections:['resume','services'].map(id=>({id,top:document.getElementById(id)?.getBoundingClientRect().top})),
+      aria:document.querySelector('.nav-toggle')?.getAttribute('aria-expanded'),
+      nav:(()=>{const e=document.querySelector('#site-nav');if(!e)return null;const s=getComputedStyle(e);
+        return {display:s.display,visibility:s.visibility,opacity:s.opacity,transform:s.transform,
+          animations:e.getAnimations().map(a=>({pending:a.pending,state:a.playState,time:a.currentTime}))};})(),
+      toggleRects:[...(document.querySelector('.nav-toggle')?.getClientRects()||[])].map(r=>({x:r.x,y:r.y,width:r.width,height:r.height}))})`);
+    throw new Error(`Timed out: ${expression}\nState: ${state}`);
   };
   const check = async (expression: string, label: string) => {
     assert(await js(expression), label); console.log(`OK ${label}`);
   };
   const viewport = (width: number) => send("Emulation.setDeviceMetricsOverride", { width, height: 800, deviceScaleFactor: 1, mobile: false });
+  const settleScroll = async () => {
+    let previous = await js("scrollY"), stable = 0;
+    for (let n = 0; n < 100; n++) {
+      await pause();
+      const current = await js("scrollY");
+      stable = current === previous ? stable + 1 : 0;
+      if (stable === 3) return;
+      previous = current;
+    }
+    throw new Error("Scrolling did not settle before the next keyboard action");
+  };
+  const openMenu = async () => {
+    await wait(`!matchMedia('print').matches && matchMedia('screen').matches && document.readyState === 'complete'
+      && document.fonts.status === 'loaded' && (()=>{const e=document.querySelector('.nav-toggle');if(!e)return false;
+        const r=e.getBoundingClientRect(),s=getComputedStyle(e);return s.visibility==='visible' && s.display!=='none'
+          && r.width>0 && r.height>0 && r.top>=0 && r.bottom<=innerHeight;})()`);
+    const point = await js("(()=>{const r=document.querySelector('.nav-toggle').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()");
+    await send("Input.dispatchMouseEvent", { type: "mousePressed", ...point, button: "left", clickCount: 1 });
+    await send("Input.dispatchMouseEvent", { type: "mouseReleased", ...point, button: "left", clickCount: 1 });
+  };
   await send("Fetch.enable", { patterns: [{ urlPattern: "http://*" }, { urlPattern: "https://*" }] });
   await send("Page.enable");
+  await send("Page.addScriptToEvaluateOnNewDocument", { source: `
+    window.__skyDraws = 0;
+    const draw = WebGL2RenderingContext.prototype.drawArrays;
+    WebGL2RenderingContext.prototype.drawArrays = function(...args) {
+      window.__skyDraws++; return draw.apply(this, args);
+    };` });
+  const motion = async (value: string) => {
+    await js(`(()=>{
+      const media = matchMedia('(prefers-reduced-motion: reduce)'), expected = ${value === "reduce"};
+      window.__motionReady = false;
+      const applied = () => {
+        if (media.matches !== expected) return;
+        media.removeEventListener('change', applied);
+        requestAnimationFrame(() => { window.__motionReady = true; });
+      };
+      media.addEventListener('change', applied);
+      applied();
+    })()`);
+    await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value }] });
+    await wait("window.__motionReady === true");
+  };
+  const stillSky = async (label: string) => {
+    await Bun.sleep(300); // Allow initial layout/intersection redraws; media readiness is event-driven above.
+    const before = await js("window.__skyDraws");
+    await Bun.sleep(500);
+    assert.equal(await js("window.__skyDraws"), before, label);
+    console.log(`OK ${label}`);
+  };
+  const movingSky = async (label: string) => {
+    const before = await js("window.__skyDraws");
+    await wait(`window.__skyDraws >= ${before + 3}`);
+    console.log(`OK ${label}`);
+  };
   await viewport(390);
   await send("Page.navigate", { url: origin + "/Bio/writeups/fox-asset-project-management.html" });
   await wait("!!document.querySelector('.article h1')");
@@ -135,29 +198,56 @@ try {
   assert(downloads.length);
   for (const url of downloads) { assert(new URL(url).origin === origin); assert((await fetch(url)).ok, url); }
   console.log(`OK ${downloads.length} CV download URLs available`);
-  await js("document.querySelector('.nav-toggle').click()");
+  await openMenu();
   await check("document.body.classList.contains('nav-open')", "mobile menu opens");
   await wait("getComputedStyle(document.querySelector('#site-nav')).visibility === 'visible' && document.querySelector('.nav-toggle').getClientRects().length > 0");
   await js("document.querySelector('.nav-toggle').focus()");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+  await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   await check("document.activeElement === document.querySelector('#site-nav a')", "real Tab enters mobile menu from toggle");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, modifiers: 8 });
+  await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, modifiers: 8 });
   await check("document.activeElement.matches('.nav-toggle')", "real Shift Tab returns from first link to toggle");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, modifiers: 8 });
+  await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, modifiers: 8 });
   await check("document.activeElement === document.querySelector('#site-nav li:last-child a')", "real Shift Tab wraps to last mobile link");
   await js("document.querySelector('#site-nav li:last-child a').focus()");
   await check("document.activeElement === document.querySelector('#site-nav li:last-child a')", "last mobile link receives focus");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+  await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   await check("document.activeElement.matches('.nav-toggle')", "real keyboard Tab wraps in mobile menu");
   await viewport(1280);
   await wait("!document.body.classList.contains('nav-open')");
   await check("document.querySelector('.nav-toggle').getAttribute('aria-expanded') === 'false'", "actual desktop resize closes menu");
   await js("document.querySelector('#site-nav li:last-child a').focus()");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+  await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   await check("!document.activeElement.matches('.nav-toggle')", "desktop keyboard focus escapes menu");
+  await motion("reduce");
+  await send("Page.navigate", { url: origin + "/Bio/" });
+  await wait("!!document.querySelector('.hero[data-sky]')");
+  await check("document.querySelector('.hero').dataset.sky === 'gl'", "motion regression uses real WebGL");
+  await stillSky("sky initially reduced is static");
+  await motion("no-preference");
+  await movingSky("sky resumes when initial reduce changes to normal");
+  await motion("reduce");
+  await stillSky("sky stops when normal changes to reduce");
+  await motion("no-preference");
+  await movingSky("sky resumes after a second preference change");
+  await js("window.scrollTo({top:document.body.scrollHeight,behavior:'instant'})");
+  await stillSky("offscreen sky stays paused");
+  await motion("reduce"); await motion("no-preference");
+  await stillSky("offscreen preference changes do not restart sky");
+  await js("window.scrollTo({top:0,behavior:'instant'})");
+  await movingSky("visible sky resumes after scrolling back");
   await js("window.__smokeFox = true; document.querySelector('a[href*=\"fox-asset-project-management\"]').click()");
   await wait("location.pathname.endsWith('fox-asset-project-management') && !!document.querySelector('.article h1')");
   await check("window.__smokeFox === true && document.documentElement.scrollWidth <= innerWidth", "FOX case uses client router and fits desktop viewport");
+  const unmountedDraws = await js("window.__skyDraws");
+  await motion("reduce");
+  await motion("no-preference"); await Bun.sleep(500);
+  assert.equal(await js("window.__skyDraws"), unmountedDraws, "unmounted sky never redraws after preference changes");
+  console.log("OK unmounted sky never redraws after preference changes");
   await js("document.querySelector('.fab-contact').click()");
   await wait("location.pathname === '/Bio/' && location.hash === '#contact' && !!document.querySelector('.hero[data-sky]')");
   console.log("OK client-routed FOX footer reaches home contact section");
@@ -167,7 +257,7 @@ try {
   await js("document.querySelector('.brand').click()");
   await wait("location.pathname === '/Bio/' && !!document.querySelector('.hero[data-sky]')");
   await viewport(390);
-  await js("document.querySelector('.nav-toggle').click()");
+  await openMenu();
   await check("document.body.classList.contains('nav-open')", "menu opens before history navigation");
   await js("history.back()");
   await wait("location.pathname.endsWith('hybrid-retrieval') && !!document.querySelector('.read-progress')");
@@ -188,16 +278,21 @@ try {
   await viewport(390);
   await js("document.querySelector('#site-nav a').focus()");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+  await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   await check("document.activeElement === document.querySelectorAll('#site-nav a')[1]", "no-JS links reachable by keyboard Tab");
   await send("Input.dispatchKeyEvent", { type: "keyDown", text: "\r", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
   await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
   await wait("location.hash === '#portfolio' && scrollY > 0");
+  await settleScroll();
   console.log("OK no-JS native Enter navigates to section anchor");
   for (const id of ["resume", "services"]) {
     await js(`document.querySelector('.hero a[href="#${id}"]').focus()`);
+    await settleScroll();
+    await check(`document.activeElement === document.querySelector('.hero a[href="#${id}"]')`, `no-JS ${id} link receives focus before Enter`);
     await send("Input.dispatchKeyEvent", { type: "keyDown", text: "\r", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
     await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
     await wait(`location.hash === '#${id}' && Math.abs(document.getElementById('${id}').getBoundingClientRect().top) < innerHeight`);
+    await settleScroll();
     console.log(`OK no-JS audience link reaches ${id} with native Enter`);
   }
   await js("document.querySelector('.contact-prompts summary').focus()");

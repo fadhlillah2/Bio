@@ -105,7 +105,7 @@ Subject: [Role] at [Company] — document retrieval and backend work
 
 Hi [Name],
 
-I am applying for the [Role] position at [Company]. My backend experience spans Java/Spring Boot and Python, and my public work includes a contract-analysis RAG system with OCR for Indonesian documents and hybrid retrieval over ChromaDB.
+I am applying for the [Role] position at [Company]. My backend experience spans Java/Spring Boot and Python, and my public work includes a contract-analysis RAG system with OCR for Indonesian documents and ChromaDB retrieval with a hybrid fallback.
 
 The project reached the Top 50 at the Meta Llama Hackathon 2025. The writeup explains the retrieval approach, and the repository includes setup and usage documentation:
 
