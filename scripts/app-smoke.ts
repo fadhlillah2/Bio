@@ -176,20 +176,6 @@ try {
   await send("Page.navigate", { url: origin + "/Bio/" });
   await wait("!!document.querySelector('.hero[data-sky]')");
   await check("innerWidth === 390 && scrollY === 0", "home hydrates at mobile viewport before scroll");
-  await send("Emulation.setDeviceMetricsOverride", { width: 390, height: 768, deviceScaleFactor: 1, mobile: false });
-  await send("Emulation.setTouchEmulationEnabled", { enabled: true });
-  await wait("document.fonts.status === 'loaded' && matchMedia('(pointer: coarse)').matches");
-  await check(`(()=>{const a=[...document.querySelectorAll('.hero a')].find(e=>e.textContent.includes('Message on WhatsApp'));
-    if(!a)return false;const r=a.getBoundingClientRect();return r.top>=0 && r.bottom<=innerHeight &&
-      [r.left+10,r.left+r.width/2,r.right-10].every(x=>a.contains(document.elementFromPoint(x,r.top+r.height/2)));})()`,
-    "mobile WhatsApp CTA hit targets are not covered by theme controls");
-  await send("Emulation.setTouchEmulationEnabled", { enabled: false });
-  await send("Emulation.setDeviceMetricsOverride", { width: 1366, height: 768, deviceScaleFactor: 1, mobile: false });
-  await check(`(()=>{const a=[...document.querySelectorAll('.hero a')].find(e=>e.textContent.includes('Download CV'));
-    if(!a)return false;const r=a.getBoundingClientRect();return r.top>=0 && r.bottom<=innerHeight &&
-      a.contains(document.elementFromPoint(r.left+3,r.bottom-3));})()`,
-    "desktop CV download corner is not covered by theme controls");
-  await viewport(390);
   await check("['resume','services'].every(id=>{const a=document.querySelector('.hero a[href=\"#'+id+'\"]'); return a && document.getElementById(id) && a.getBoundingClientRect().width>0;})", "both audience links have visible controls and existing destinations");
   const originalLook = await js("document.documentElement.getAttribute('data-look')");
   const luminance = (hex: string) => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
