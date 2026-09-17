@@ -203,25 +203,15 @@ try {
   console.log(`OK ${downloads.length} CV download URLs available`);
   await openMenu();
   await check("document.body.classList.contains('nav-open')", "mobile menu opens");
+  // CSS visibility needs rendered frames; keep host polling for the deadline.
+  await js(`(()=>{window.__menuVisible=false;const poll=()=>{
+    window.__menuVisible=getComputedStyle(document.querySelector('#site-nav')).visibility === 'visible' && document.querySelector('.nav-toggle').getClientRects().length > 0;
+    if(!window.__menuVisible) window.__menuFrame=requestAnimationFrame(poll);
+  };poll();})()`);
   try {
-    await wait("getComputedStyle(document.querySelector('#site-nav')).visibility === 'visible' && document.querySelector('.nav-toggle').getClientRects().length > 0");
-  } catch (error) {
-    // Failure-only experiment: observe RAF separately before requesting a screenshot.
-    try {
-      const frameState = () => js(`(()=>{const nav=document.querySelector('#site-nav');return {
-        timeline:document.timeline.currentTime,now:performance.now(),draws:window.__skyDraws,raf:window.__failureRAF,
-        visibility:getComputedStyle(nav).visibility,
-        predicate:getComputedStyle(nav).visibility==='visible' && document.querySelector('.nav-toggle').getClientRects().length>0,
-        animations:nav.getAnimations().map(a=>({pending:a.pending,state:a.playState,time:a.currentTime,start:a.startTime}))};})()`);
-      console.log('FRAME failure baseline', await frameState());
-      await js('requestAnimationFrame(t=>{window.__failureRAF=t}); void 0');
-      await Bun.sleep(500);
-      console.log('FRAME after one-shot RAF', await frameState());
-      await send('Page.captureScreenshot', { format: 'png' });
-      await Bun.sleep(500);
-      console.log('FRAME after screenshot', await frameState());
-    } catch (diagnosticError) { console.error('FRAME diagnostic failed', diagnosticError); }
-    throw error;
+    await wait("window.__menuVisible === true");
+  } finally {
+    await js("cancelAnimationFrame(window.__menuFrame)").catch(error=>console.error('Menu frame cleanup failed', error));
   }
   await js("document.querySelector('.nav-toggle').focus()");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
