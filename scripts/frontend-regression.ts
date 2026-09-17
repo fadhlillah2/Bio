@@ -65,6 +65,16 @@ try {
     document.querySelector('#site-nav').remove(); toggle.remove();
     const articleCleanup = enhance();
     check(!open(), 'article mounts without inherited scroll lock'); articleCleanup();
+    const sent = document.createElement('div'); sent.id = 'contact-sent'; document.body.append(sent);
+    for (const [query, expected] of [['', false], ['?unsent=10', false], ['?sent=10', false],
+      ['?note=sent=1', false], ['?sent=0', false], ['?sent=1', true]]) {
+      history.replaceState(null, '', location.pathname + query);
+      sent.textContent = '';
+      const cleanupQuery = enhance();
+      check((sent.textContent === 'Your message has been sent. Thank you!') === expected,
+        'contact redirect status ' + (query || '(no query)'));
+      cleanupQuery();
+    }
     const report = document.createElement('pre'); report.id = 'report';
     report.textContent = JSON.stringify(results); document.body.append(report);
   `);

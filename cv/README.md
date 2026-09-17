@@ -321,10 +321,11 @@ artifact.
 - **The current resume must always have a matching current PDF.** Regenerate via `build-pdf.ts`
   whenever the .txt changes.
 - On version bump, also update ALL version-pinned links:
-  (a) in-repo — 14 references in total across the home components and writeup route:
+  (a) in-repo — 15 references in total across the home components and writeup routes:
   `rg -o 'cv/(resume|consulting)[^"} ]+' src/lib/components src/routes | wc -l`.
   Each artifact is linked in more than one spot; update every one or the live site 404s:
-  - `cv/resume-vX.Y.pdf` ×3 (hero **secondary** "Full CV" + both Experience-section CTA rows) and
+  - `cv/resume-vX.Y.pdf` ×4 (hero **secondary** "Full CV" + both Experience-section CTA rows
+    + the **FOX delivery writeup**) and
     `cv/resume-vX.Y.txt` ×2 ("Plain-text version" in both CTA rows);
   - `cv/resume-onepager-vX.Y.pdf` ×5 (**top-bar** "Download CV" + hero **primary** "Download CV"
     + both Experience-section CTA rows + the **writeup top bar**) — bumps on its OWN `v1.x`

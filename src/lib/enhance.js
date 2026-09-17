@@ -231,7 +231,7 @@ export function enhance() {
   var SENT_MSG = 'Your message has been sent. Thank you!';
   var ERR_MSG = 'Sending failed — the form service is unreachable right now. Please email <a href="mailto:fadhlillah949699@gmail.com">fadhlillah949699@gmail.com</a> or use the WhatsApp link instead.';
 
-  if (window.location.search.indexOf('sent=1') !== -1 && sent) {
+  if (new URLSearchParams(window.location.search).get('sent') === '1' && sent) {
     sent.textContent = SENT_MSG;
   }
 
