@@ -201,6 +201,7 @@ export function mountSky(hero) {
   UNIFORMS.forEach(function (n) { u[n] = gl.getUniformLocation(prog, n); });
 
   var motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var printing = window.matchMedia('print');
   var reduced = motion.matches;
   var fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
   var start = performance.now();
@@ -210,6 +211,8 @@ export function mountSky(hero) {
   var frame = 0, running = false, inView = false;
 
   var render = function (now) {
+    // The sky is hidden in print; direct resize/theme redraws must also stay idle.
+    if (printing.matches) return;
     var e = reduced ? 1 : Math.min(1, (now - tweenAt) / TWEEN_MS);
     e = e * e * (3 - 2 * e);
     if (lastMove) {
@@ -240,7 +243,7 @@ export function mountSky(hero) {
     if (running) frame = window.requestAnimationFrame(tick);
   };
   var update = function () {
-    var want = inView && document.visibilityState === 'visible' && !reduced;
+    var want = inView && document.visibilityState === 'visible' && !reduced && !printing.matches;
     if (want && !running) { running = true; frame = window.requestAnimationFrame(tick); }
     if (!want && running) { running = false; if (frame) { window.cancelAnimationFrame(frame); frame = 0; } }
   };
@@ -286,7 +289,13 @@ export function mountSky(hero) {
     if (reduced) render(performance.now());
   };
 
-  // first frame off-DOM: only a canvas that actually drew replaces the CSS sky
+  var onPrint = function () {
+    update();
+    // Reduced motion has no RAF loop to repaint a buffer resized while printing.
+    if (!printing.matches && reduced) render(performance.now());
+  };
+
+  // Prepare off-DOM; the first draw is deferred when mounted in print media.
   resize();
   var err = gl.getError();
   if (err) {
@@ -307,6 +316,7 @@ export function mountSky(hero) {
   io.observe(hero);
   document.addEventListener('visibilitychange', update);
   motion.addEventListener('change', onMotion);
+  printing.addEventListener('change', onPrint);
   if (fine) {
     hero.addEventListener('pointermove', onMove);
     hero.addEventListener('pointerleave', onLeave);
@@ -320,6 +330,7 @@ export function mountSky(hero) {
     io.disconnect();
     document.removeEventListener('visibilitychange', update);
     motion.removeEventListener('change', onMotion);
+    printing.removeEventListener('change', onPrint);
     hero.removeEventListener('pointermove', onMove);
     hero.removeEventListener('pointerleave', onLeave);
     var lose = gl.getExtension('WEBGL_lose_context');

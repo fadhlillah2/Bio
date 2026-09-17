@@ -57,7 +57,8 @@ try {
   };
   socket.onclose = () => { for (const p of pending.values()) p.fail(new Error("Chrome disconnected")); pending.clear(); };
   const send = (method: string, params = {}): Promise<any> => new Promise((ok, fail) => {
-    pending.set(++id, { ok, fail }); socket!.send(JSON.stringify({ id, method, params }));
+    if (socket?.readyState !== WebSocket.OPEN) { fail(new Error("Chrome disconnected")); return; }
+    pending.set(++id, { ok, fail }); socket.send(JSON.stringify({ id, method, params }));
   });
   const js = async (expression: string) => {
     const result = await send("Runtime.evaluate", { expression, returnByValue: true, awaitPromise: true });
@@ -123,8 +124,24 @@ try {
       media.addEventListener('change', applied);
       applied();
     })()`);
-    await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value }] });
+    const media = await js("matchMedia('print').matches ? 'print' : 'screen'");
+    await send("Emulation.setEmulatedMedia", { media, features: [{ name: "prefers-reduced-motion", value }] });
     await wait("window.__motionReady === true");
+  };
+  const printMedia = async (media: "print" | "screen") => {
+    await js(`(()=>{
+      const query=matchMedia('print'), expected=${media === "print"};
+      window.__printReady=false;
+      const applied=()=>{
+        if(query.matches!==expected) return;
+        query.removeEventListener('change',applied);
+        requestAnimationFrame(()=>{window.__printReady=true});
+      };
+      query.addEventListener('change',applied); applied();
+    })()`);
+    const value = await js("matchMedia('(prefers-reduced-motion: reduce)').matches ? 'reduce' : 'no-preference'");
+    await send("Emulation.setEmulatedMedia", { media, features: [{ name: "prefers-reduced-motion", value }] });
+    await wait("window.__printReady === true");
   };
   const stillSky = async (label: string) => {
     await Bun.sleep(300); // Allow initial layout/intersection redraws; media readiness is event-driven above.
@@ -184,9 +201,10 @@ try {
   }
   await js(`document.documentElement.setAttribute('data-look', ${JSON.stringify(originalLook)})`);
   await send('Emulation.setEmulatedMedia', { features: [] });
-  await send("Emulation.setEmulatedMedia", { media: "print" });
+  await printMedia("print");
   await wait("[...document.querySelectorAll('[data-reveal-children] > *')].every(e => { if(getComputedStyle(e).transform !== 'none') return false; for(let p=e;p;p=p.parentElement) { const s=getComputedStyle(p); if(s.opacity !== '1' || s.visibility !== 'visible' || s.display === 'none') return false; } return true; })");
   console.log("OK all reveal children and ancestors visible in actual print styles");
+  const printDraws = await js("window.__skyDraws");
   const pdf = await send("Page.printToPDF", { printBackground: true });
   const { text } = await extractText(new Uint8Array(Buffer.from(pdf.data, "base64")), { mergePages: true });
   // Individual labels avoid PDF column-order interleaving and CSS text-transform differences.
@@ -194,7 +212,10 @@ try {
   const normalize = (s: string) => s.toLowerCase().replace(/\s/g, "");
   assert(labels.length && labels.every(label => normalize(text).includes(normalize(label))), "facts and skills labels printed before scroll");
   console.log(`OK real home print contains ${labels.length} facts/skills labels`);
-  await send("Emulation.setEmulatedMedia", { media: "screen" });
+  assert.equal(await js("window.__skyDraws"), printDraws, "print-hidden sky does not submit WebGL draws");
+  console.log("OK print-hidden sky does not submit WebGL draws");
+  await printMedia("screen");
+  await movingSky("normal sky resumes after printing");
   await js("window.__screenReady=false; requestAnimationFrame(()=>requestAnimationFrame(()=>{window.__screenReady=true})); void 0");
   await wait("window.__screenReady === true");
   const downloads: string[] = await js("[...new Set([...document.querySelectorAll('a[href]')].map(a=>a.href).filter(h=>h.includes('/cv/')))]");
@@ -236,9 +257,17 @@ try {
   await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   await check("!document.activeElement.matches('.nav-toggle')", "desktop keyboard focus escapes menu");
   await motion("reduce");
+  await printMedia("print");
   await send("Page.navigate", { url: origin + "/Bio/" });
   await wait("!!document.querySelector('.hero[data-sky]')");
   await check("document.querySelector('.hero').dataset.sky === 'gl'", "motion regression uses real WebGL");
+  await check("window.__skyDraws === 0", "sky mounted in print does not draw");
+  await viewport(390);
+  await js("document.documentElement.setAttribute('data-look','morning')");
+  await motion("no-preference"); await motion("reduce");
+  await check("window.__skyDraws === 0", "print resize, look and motion changes do not draw");
+  await printMedia("screen");
+  await check("window.__skyDraws > 0", "reduced sky repaints after leaving initial print");
   await stillSky("sky initially reduced is static");
   await motion("no-preference");
   await movingSky("sky resumes when initial reduce changes to normal");
@@ -265,6 +294,8 @@ try {
   console.log("OK offscreen sky stays paused");
   await motion("reduce"); await motion("no-preference");
   await stillSky("offscreen preference changes do not restart sky");
+  await printMedia("print"); await printMedia("screen");
+  await stillSky("offscreen print changes do not restart sky");
   await js("window.scrollTo({top:0,behavior:'instant'})");
   await movingSky("visible sky resumes after scrolling back");
   await js("window.__smokeFox = true; document.querySelector('a[href*=\"fox-asset-project-management\"]').click()");
@@ -273,6 +304,7 @@ try {
   const unmountedDraws = await js("window.__skyDraws");
   await motion("reduce");
   await motion("no-preference"); await Bun.sleep(500);
+  await printMedia("print"); await printMedia("screen");
   assert.equal(await js("window.__skyDraws"), unmountedDraws, "unmounted sky never redraws after preference changes");
   console.log("OK unmounted sky never redraws after preference changes");
   await js("document.querySelector('.fab-contact').click()");
@@ -331,6 +363,14 @@ try {
   await send("Page.navigate", { url: origin + "/Bio/writeups/fox-asset-project-management.html" });
   await wait("!!document.querySelector('.article h1') && !document.documentElement.classList.contains('js')");
   await check("document.querySelector('.article h1').getBoundingClientRect().width > 0 && getComputedStyle(document.querySelector('.article-head')).opacity === '1' && document.documentElement.scrollWidth <= innerWidth", "FOX case readable without JavaScript on mobile");
+  const closed = new Promise<void>(ok => socket!.addEventListener("close", () => ok(), { once: true }));
+  socket.close(); await closed;
+  const closedResult = await Promise.race([
+    send("Runtime.evaluate", { expression: "1" }).then(() => "resolved", () => "rejected"),
+    Bun.sleep(250).then(() => "still pending")
+  ]);
+  assert.equal(closedResult, "rejected", "RPC after socket closure must reject without hanging cleanup");
+  console.log("OK closed browser RPC rejects without hanging cleanup");
 } finally {
   clearTimeout(deadline); socket?.close(); chrome?.kill(); if (chrome) await chrome.exited;
   server?.stop(true); rmSync(temp, { recursive: true, force: true });

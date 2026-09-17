@@ -22,7 +22,7 @@
 
           <p class="hero-role">Backend Software Engineer <span class="sep">&middot;</span> 6+ years <span class="sep">&middot;</span> AI Native Engineer</p>
 
-          <p class="hero-value">Spring Boot microservices in production banking served 2M+ requests/day with sub-200ms response times &middot; LLM/RAG products end to end, including Indonesian contract AI with 88%+ OCR accuracy &middot; Top 50, Meta Llama Hackathon 2025</p>
+          <p class="hero-value">Spring Boot microservices in production banking served 2M+ requests/day with sub-200ms response times &middot; LLM/RAG products end to end, including OCR-based Indonesian contract analysis &middot; Top 50, Meta Llama Hackathon 2025</p>
 
           <nav class="cta-row" aria-label="Find what you need">
             <a href="#resume" class="plain-link">Hiring an engineer? Review experience &amp; CV</a>
@@ -35,7 +35,7 @@
             <a href={base + "/cv/resume-v8.9.pdf"} class="plain-link" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
           </div>
 
-          <p class="hero-buyer">Scaling a business and need software built? <a href="#services">See services &amp; proven outcomes <span aria-hidden="true">&rarr;</span></a> &middot; <a href={base + "/cv/consulting-onepager-en-v1.8.pdf"} download="Fadhlillah - Software Engineering Services.pdf">Consulting one-pager (PDF)</a></p>
+          <p class="hero-buyer">Scaling a business and need software built? <a href="#services">See services &amp; proven outcomes <span aria-hidden="true">&rarr;</span></a> &middot; <a href={base + "/cv/consulting-onepager-en-v1.9.pdf"} download="Fadhlillah - Software Engineering Services.pdf">Consulting one-pager (PDF)</a></p>
         </div>
 
         <div class="term" id="hero-term" role="img" aria-label="Terminal: curl api.fadhlillah.dev/whoami returns a JSON profile — backend software engineer, AI native, Java/Spring Boot, Python, Node.js, 2M+ requests per day at sub-200ms, RAG and LLM products, Top 50 Meta Llama Hackathon, Jakarta (UTC+7), open to opportunities.">

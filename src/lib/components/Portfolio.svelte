@@ -31,7 +31,7 @@
             <p class="flagship-badge">Top 50 &middot; Meta Llama Hackathon 2025 &middot; Hacktiv8 Indonesia</p>
             <h3 class="flagship-title">High-Precision Contract Advisor RAG</h3>
             <p class="flagship-desc">A retrieval-augmented contract analysis project using EasyOCR, ChromaDB, and Groq Llama&nbsp;3.3&nbsp;70B, with hybrid retrieval and exact-reference matching in its fallback path.</p>
-            <p class="flagship-result">Reported <strong>88%+ OCR accuracy</strong> on scanned Indonesian contracts. Read the writeup for the implementation and known limitations.</p>
+            <p class="flagship-result"><a class="plain-link" href="https://github.com/fadhlillah2/llama-docs-auditor/blob/609c0a07f0828c2dbf691fa15d898ff7ab2a8691/README.md#L72" target="_blank" rel="noopener">Project README</a> reports <strong>88%+ OCR accuracy</strong>; the measurement method is not documented in the linked source. Read the writeup for the implementation and known limitations.</p>
             <ul class="tag-row">
               <li>RAG</li><li>LangChain</li><li>ChromaDB</li><li>Groq · Llama 3.3 70B</li><li>EasyOCR</li><li>Flask</li><li>Next.js / TypeScript</li>
             </ul>
@@ -44,7 +44,7 @@
           <div class="flagship-term" aria-hidden="true">
             <div class="term-bar"><span class="term-dot term-dot-r"></span><span class="term-dot term-dot-y"></span><span class="term-dot term-dot-g"></span><span class="term-title">contract-advisor</span></div>
             <pre class="flagship-code" tabindex="-1"><code><span class="tmut">&gt;</span> <span class="ts">"Apa kewajiban para pihak dalam kontrak?"</span>
-<span class="tmut">ocr:</span>   easyocr(id) &middot; <span class="tm">88%+</span> accuracy
+<span class="tmut">ocr:</span>   easyocr(en, id)
 <span class="tmut">chunks:</span> chromadb &middot; hybrid fallback
 <span class="tmut">model:</span> groq &middot; llama-3.3-70b-versatile
 <span class="tc">&#10003;</span> answer from retrieved contract clauses</code></pre>

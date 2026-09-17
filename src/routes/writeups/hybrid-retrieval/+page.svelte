@@ -114,6 +114,10 @@
 
         <p>As each detection comes out of EasyOCR it is cleaned in place: whitespace collapsed, a fixed list of stray punctuation stripped, and a small substitution table applied for recurring OCR confusions. It does not attempt to parse the document into a clause tree.</p>
 
+        <h2>OCR evidence</h2>
+
+        <p>The <a href="https://github.com/fadhlillah2/llama-docs-auditor/blob/609c0a07f0828c2dbf691fa15d898ff7ab2a8691/README.md#L72" target="_blank" rel="noopener">project README</a> reports 88%+ accuracy for Indonesian text recognition. At the linked source revision (<code>609c0a0</code>), the README does not define the accuracy measure or document the sample, reference transcriptions, measurement date, or run results behind that figure. The <a href="https://github.com/fadhlillah2/llama-docs-auditor/blob/609c0a07f0828c2dbf691fa15d898ff7ab2a8691/rag/easyocr_implementation.py#L165" target="_blank" rel="noopener">OCR code</a> records model confidence and uses it to select a preprocessing variant; that confidence is not a comparison against reference text. The <a href="https://github.com/fadhlillah2/llama-docs-auditor/tree/609c0a07f0828c2dbf691fa15d898ff7ab2a8691/evaluation_results" target="_blank" rel="noopener">committed evaluation reports</a> use a text document and do not establish OCR accuracy.</p>
+
         <h2>Retrieval: two lists, weighted, plus a bonus</h2>
 
         <p>The in-memory retriever runs both strategies and merges them rather than choosing between them. Semantic search returns 15 candidates; a TF-IDF keyword search returns 10. The merge in <a href="https://github.com/fadhlillah2/llama-docs-auditor/blob/main/rag/retriever.py" target="_blank" rel="noopener">retriever.py</a> weights them 0.7 to 0.3 in favor of semantics — but the detail that does the real work is the third term:</p>
