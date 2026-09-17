@@ -3,7 +3,8 @@
  * (1200×630) with Chrome headless — the same Chrome lookup cv/build-pdf.ts uses.
  * Run after the copy in a template changes: bun run og
  */
-import { resolve } from "node:path";
+import { mkdtempSync, renameSync, rmSync } from "node:fs";
+import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { findChrome, chromePath } from "../cv/build-pdf.ts";
 
@@ -22,19 +23,33 @@ let failed = 0;
 for (const [stem, png] of Object.entries(CARDS)) {
   const html = resolve(ROOT, "scripts/og", `${stem}.html`);
   const out = resolve(ROOT, "static/assets/img", png);
-  const run = Bun.spawnSync([
-    chrome, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--no-first-run",
-    "--allow-file-access-from-files", // the templates load the self-hosted fonts over file://
-    "--force-device-scale-factor=1", `--window-size=${W},${H}`, "--virtual-time-budget=3000",
-    `--screenshot=${chromePath(out, chrome)}`, fileUrl(html),
-  ], { stdout: "ignore", stderr: "ignore" });
+  let temp: string | undefined;
+  try {
+    temp = mkdtempSync(join(dirname(out), ".og-render-"));
+    const fresh = join(temp, png);
+    const run = Bun.spawnSync([
+      chrome, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--no-first-run",
+      "--allow-file-access-from-files", // the templates load the self-hosted fonts over file://
+      "--force-device-scale-factor=1", `--window-size=${W},${H}`, "--virtual-time-budget=3000",
+      `--screenshot=${chromePath(fresh, chrome)}`, fileUrl(html),
+    ], { stdout: "ignore", stderr: "ignore" });
 
-  const bytes = run.exitCode === 0 ? await Bun.file(out).bytes() : new Uint8Array();
-  // PNG IHDR: width at byte 16, height at byte 20 (big-endian)
-  const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
-  const size = bytes.length > 24 ? [view.getUint32(16), view.getUint32(20)] : [0, 0];
-  const ok = size[0] === W && size[1] === H;
-  if (!ok) failed++;
-  console.log(`${ok ? "OK  " : "FAIL"} ${png}: ${size[0]}×${size[1]}, ${bytes.length} bytes (chrome exit ${run.exitCode})`);
+    if (run.exitCode !== 0) throw new Error(`Chrome exited ${run.exitCode}`);
+    const bytes = await Bun.file(fresh).bytes();
+    // PNG IHDR: width at byte 16, height at byte 20 (big-endian)
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    const size = bytes.length > 24 ? [view.getUint32(16), view.getUint32(20)] : [0, 0];
+    const signature = [137, 80, 78, 71, 13, 10, 26, 10];
+    if (!signature.every((byte, i) => bytes[i] === byte) || size[0] !== W || size[1] !== H) {
+      throw new Error(`invalid PNG or dimensions: ${size[0]}×${size[1]}`);
+    }
+    renameSync(fresh, out);
+    console.log(`OK   ${png}: ${size[0]}×${size[1]}, ${bytes.length} bytes (chrome exit ${run.exitCode})`);
+  } catch (error) {
+    failed++;
+    console.error(`FAIL ${png}: ${error instanceof Error ? error.message : error}`);
+  } finally {
+    if (temp) rmSync(temp, { recursive: true, force: true });
+  }
 }
 process.exit(failed ? 1 : 0);

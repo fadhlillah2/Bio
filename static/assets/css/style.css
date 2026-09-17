@@ -202,6 +202,12 @@
 
 /* the dark looks lighten body text for extra contrast; morning has to darken it instead */
 @media (prefers-contrast: more) {
+  :root[data-look="dusk"] {
+    --text: #e8dbd3;
+    --muted: #c6b6b1;
+    --line: #574260;
+    --line-2: #8a7699;
+  }
   :root[data-look="morning"] {
     --text: #2b2620;
     --muted: #4a4338;

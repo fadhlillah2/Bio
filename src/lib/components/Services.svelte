@@ -11,11 +11,11 @@
           <p class="section-index">06 &mdash; Services</p>
           <h2>Backend, cloud, and LLM integration for production systems</h2>
           <p class="section-deck cta-row">
-            <a href={base + "/cv/consulting-onepager-en-v1.7.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Software Engineering Services.pdf">Download one-pager (PDF)</a>
-            <a href={base + "/cv/consulting-onepager-id-v1.7.pdf"} class="btn btn-ghost btn-sm" lang="id" download="Fadhlillah - Layanan Software Engineering.pdf">Versi Bahasa Indonesia</a>
+            <a href={base + "/cv/consulting-onepager-en-v1.8.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Software Engineering Services.pdf">Download one-pager (PDF)</a>
+            <a href={base + "/cv/consulting-onepager-id-v1.8.pdf"} class="btn btn-ghost btn-sm" lang="id" download="Fadhlillah - Layanan Software Engineering.pdf">Versi Bahasa Indonesia</a>
             <a href="https://wa.me/6285157043131?text=Hi%20Fadhlillah%2C%20I%20need%20software%20built%20for%20my%20business" target="_blank" rel="noopener" class="btn btn-quiet btn-sm"><svg class="ico" aria-hidden="true"><use href="#i-chat"/></svg> Chat on WhatsApp</a>
           </p>
-          <p class="section-deck">Need to build or improve backend and AI systems? Download the <a href={base + "/cv/consulting-onepager-id-v1.7.pdf"} download="Fadhlillah - Layanan Software Engineering.pdf">service overview in Indonesian (PDF)</a>, or contact me on WhatsApp.</p>
+          <p class="section-deck">Need to build or improve backend and AI systems? Download the <a href={base + "/cv/consulting-onepager-id-v1.8.pdf"} download="Fadhlillah - Layanan Software Engineering.pdf">service overview in Indonesian (PDF)</a>, or contact me on WhatsApp.</p>
           <p class="section-deck">Need project workflows and progress reporting? See my <a href={base + "/writeups/fox-asset-project-management"}>FOX Asset Project Management delivery</a>. For slow reports, review the <a href="#resume">healthcare query-tuning work</a>; for document AI, read the <a href={base + "/writeups/hybrid-retrieval"}>retrieval approach and its limits</a>. Then <a href="#contact">share the problem you need to solve</a>.</p>
         </header>
 

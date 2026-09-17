@@ -32,6 +32,7 @@ try {
     window.matchMedia = q => q === '(max-width: 920px)' ? mobile : nativeMatchMedia(q);
     const toggle = document.querySelector('.nav-toggle');
     const link = document.querySelector('#site-nav a');
+    const lastLink = document.querySelector('#site-nav a:last-child');
     const open = () => document.body.classList.contains('nav-open');
     const key = (key, shiftKey = false) => {
       const e = new KeyboardEvent('keydown', {key, shiftKey, bubbles: true, cancelable: true});
@@ -40,7 +41,12 @@ try {
     const cleanup = enhance();
     toggle.click();
     check(open() && toggle.getAttribute('aria-expanded') === 'true', 'menu opens');
-    link.focus(); check(key('Tab') && document.activeElement === toggle, 'mobile focus trap');
+    toggle.focus(); check(key('Tab') && document.activeElement === link, 'Tab enters menu from toggle');
+    check(key('Tab') && document.activeElement === lastLink, 'Tab advances through menu');
+    check(key('Tab') && document.activeElement === toggle, 'Tab wraps to toggle');
+    check(key('Tab', true) && document.activeElement === lastLink, 'Shift Tab wraps to last link');
+    check(key('Tab', true) && document.activeElement === link, 'Shift Tab reverses through menu');
+    check(key('Tab', true) && document.activeElement === toggle, 'Shift Tab returns to toggle');
     key('Escape'); check(!open() && document.activeElement === toggle, 'Escape closes menu');
     toggle.click(); link.click(); check(!open(), 'section link closes menu');
     toggle.click(); mobile.matches = false;
@@ -65,8 +71,8 @@ try {
   const bundled = await Bun.build({ entrypoints: [entry], target: "browser", format: "iife" });
   if (!bundled.success) throw new Error(String(bundled.logs));
   const menu = join(temp, "menu.html");
-  await Bun.write(menu, `<body><button class="nav-toggle" aria-expanded="false">Menu</button>
-    <nav id="site-nav"><a href="#target">Section</a></nav><section id="target"></section>
+  await Bun.write(menu, `<body><nav id="site-nav"><a href="#target">First</a><a href="#target">Last</a></nav>
+    <button class="nav-toggle" aria-expanded="false">Menu</button><section id="target"></section>
     <script>${await bundled.outputs[0].text()}</script></body>`);
   const dom = run(["--dump-dom", `file://${menu}`]);
   const report = /<pre id="report">(.*?)<\/pre>/.exec(dom)?.[1];

@@ -65,18 +65,13 @@ export function enhance() {
       return;
     }
 
-    // the open drawer covers the page — keep Tab inside it instead of letting
-    // focus wander onto content the user cannot see
+    // Cycle in menu order: the toggle follows the links in the document.
     if (e.key === 'Tab' && nav) {
       var stops = [toggle].concat(Array.prototype.slice.call(nav.querySelectorAll('a')));
-      var first = stops[0];
-      var last = stops[stops.length - 1];
-      if (e.shiftKey && document.activeElement === first) {
+      var index = stops.indexOf(document.activeElement);
+      if (index !== -1) {
         e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault();
-        first.focus();
+        stops[(index + (e.shiftKey ? -1 : 1) + stops.length) % stops.length].focus();
       }
     }
   };

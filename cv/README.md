@@ -42,8 +42,8 @@ in two languages; every `.pdf` sits next to the same-named `.txt` it is generate
 |----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 | [`resume-v8.9.pdf`](resume-v8.9.pdf)                                 | Official full CV — LinkedIn **full mirror**, 2 pages                                                              |
 | [`resume-onepager-v1.12.pdf`](resume-onepager-v1.12.pdf)             | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
-| [`consulting-onepager-en-v1.7.pdf`](consulting-onepager-en-v1.7.pdf) | Business buyer / consulting lead (EN) — outcomes, services, proof links, process; linked from the site's Services |
-| [`consulting-onepager-id-v1.7.pdf`](consulting-onepager-id-v1.7.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
+| [`consulting-onepager-en-v1.8.pdf`](consulting-onepager-en-v1.8.pdf) | Business buyer / consulting lead (EN) — outcomes, services, proof links, process; linked from the site's Services |
+| [`consulting-onepager-id-v1.8.pdf`](consulting-onepager-id-v1.8.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
 
 Each `.pdf` is generated from its same-named `.txt` (the `.txt` is the editable source of truth
 for that artifact); `build-pdf.ts` is the current generator and `build-pdf.py` is its reference
@@ -246,6 +246,10 @@ longer in the tree (see [Archive](#archive)).
 - **v1.0** — initial version.
 
 ### consulting-onepager — EN ⇄ ID in lock-step
+
+- **v1.8** (2026-09-17, proof wording correction; EN/ID lock-step) — replaces the
+  PASAL/AYAT/BAB preservation claim with OCR processing of scanned Indonesian contracts,
+  consistent with the public writeup's normalization limitation. Other claims unchanged; 1 page each.
 
 - **v1.7** (2026-09-05, LinkedIn sync — snapshot v5; EN/ID lock-step) — the Bank Danamon role ended
   Aug 2026, so the first-person banking claims move to past tense ("built and operated", "the 12

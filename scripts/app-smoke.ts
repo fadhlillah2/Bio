@@ -96,6 +96,30 @@ try {
   await wait("!!document.querySelector('.hero[data-sky]')");
   await check("innerWidth === 390 && scrollY === 0", "home hydrates at mobile viewport before scroll");
   await check("['resume','services'].every(id=>{const a=document.querySelector('.hero a[href=\"#'+id+'\"]'); return a && document.getElementById(id) && a.getBoundingClientRect().width>0;})", "both audience links have visible controls and existing destinations");
+  const originalLook = await js("document.documentElement.getAttribute('data-look')");
+  const luminance = (hex: string) => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
+    .map(c => c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4)
+    .reduce((sum, c, i) => sum + c * [.2126, .7152, .0722][i], 0);
+  const contrast = (a: string, b: string) => {
+    const values = [luminance(a), luminance(b)].sort((a, b) => b - a);
+    return (values[0] + .05) / (values[1] + .05);
+  };
+  for (const look of ['night', 'morning', 'dusk']) {
+    await js(`document.documentElement.setAttribute('data-look', '${look}')`);
+    const tokens = [];
+    for (const value of ['no-preference', 'more']) {
+      await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-contrast', value }] });
+      tokens.push(await js("Object.fromEntries(['text','muted','line','line-2','ink-0','ink-1','ink-2'].map(k=>[k,getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()]))"));
+    }
+    for (const fg of ['text', 'muted']) for (const bg of ['ink-0', 'ink-1', 'ink-2']) {
+      const before = contrast(tokens[0][fg], tokens[0][bg]), after = contrast(tokens[1][fg], tokens[1][bg]);
+      assert(after > before && after >= 4.5, `${look} increased contrast: ${fg}/${bg}`);
+    }
+    for (const border of ['line', 'line-2']) assert(contrast(tokens[1][border], tokens[1]['ink-0']) > contrast(tokens[0][border], tokens[0]['ink-0']), `${look} increased border contrast`);
+    console.log(`OK ${look} increased-contrast text and borders improve`);
+  }
+  await js(`document.documentElement.setAttribute('data-look', ${JSON.stringify(originalLook)})`);
+  await send('Emulation.setEmulatedMedia', { features: [] });
   await send("Emulation.setEmulatedMedia", { media: "print" });
   await wait("[...document.querySelectorAll('[data-reveal-children] > *')].every(e => { if(getComputedStyle(e).transform !== 'none') return false; for(let p=e;p;p=p.parentElement) { const s=getComputedStyle(p); if(s.opacity !== '1' || s.visibility !== 'visible' || s.display === 'none') return false; } return true; })");
   console.log("OK all reveal children and ancestors visible in actual print styles");
@@ -114,6 +138,13 @@ try {
   await js("document.querySelector('.nav-toggle').click()");
   await check("document.body.classList.contains('nav-open')", "mobile menu opens");
   await wait("getComputedStyle(document.querySelector('#site-nav')).visibility === 'visible' && document.querySelector('.nav-toggle').getClientRects().length > 0");
+  await js("document.querySelector('.nav-toggle').focus()");
+  await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+  await check("document.activeElement === document.querySelector('#site-nav a')", "real Tab enters mobile menu from toggle");
+  await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, modifiers: 8 });
+  await check("document.activeElement.matches('.nav-toggle')", "real Shift Tab returns from first link to toggle");
+  await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, modifiers: 8 });
+  await check("document.activeElement === document.querySelector('#site-nav li:last-child a')", "real Shift Tab wraps to last mobile link");
   await js("document.querySelector('#site-nav li:last-child a').focus()");
   await check("document.activeElement === document.querySelector('#site-nav li:last-child a')", "last mobile link receives focus");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
