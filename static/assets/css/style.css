@@ -1795,20 +1795,30 @@ section {
 }
 
 .tl-role {
-  display: grid;
-  grid-template-columns: minmax(0, 230px) minmax(0, 1fr);
-  gap: clamp(20px, 3vw, 48px);
   padding: 28px 0;
   border-top: 1px solid var(--line);
 }
+
+.experience-card > summary {
+  display: grid;
+  grid-template-columns: minmax(0, 230px) minmax(0, 1fr) auto;
+  gap: clamp(20px, 3vw, 48px);
+  align-items: start;
+  cursor: pointer;
+  list-style: none;
+}
+
+.experience-card > summary::-webkit-details-marker { display: none; }
+.experience-card > summary::after { content: "+"; color: var(--accent); }
+.experience-card[open] > summary::after { content: "−"; }
+.experience-card > .tl-body { margin: 18px 0 0 calc(230px + clamp(20px, 3vw, 48px)); }
+.tl-meta > span { display: block; }
 
 .tl-role:last-child {
   border-bottom: 1px solid var(--line);
 }
 
 .tl-meta {
-  position: sticky;
-  top: calc(var(--bar) + 24px);
   align-self: start;
 }
 
@@ -1834,7 +1844,7 @@ section {
   margin-top: 2px;
 }
 
-.tl-body h3 {
+.experience-card > summary h3 {
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.015em;
@@ -1866,13 +1876,14 @@ section {
 }
 
 @media (max-width: 860px) {
-  .tl-role {
-    grid-template-columns: minmax(0, 1fr);
+  .experience-card > summary {
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 14px;
   }
-  .tl-meta {
-    position: static;
-  }
+  .experience-card > summary .tl-meta { grid-column: 1; }
+  .experience-card > summary h3 { grid-column: 1; }
+  .experience-card > summary::after { grid-column: 2; grid-row: 1; }
+  .experience-card > .tl-body { margin-left: 0; }
 }
 
 /*--------------------------------------------------------------
@@ -2856,10 +2867,12 @@ html:not(.js) .look-switch {
   /* the archive is a <details> collapsed by default — force its 9 cards into
      the printout. Two mechanisms: older engines hide the slot with display,
      Chrome 131+ hides it with content-visibility on ::details-content. */
-  .early-practice > *:not(summary) {
+  .early-practice > *:not(summary),
+  .experience-card > *:not(summary) {
     display: block !important;
   }
-  .early-practice::details-content {
+  .early-practice::details-content,
+  .experience-card::details-content {
     content-visibility: visible;
   }
   .tl-role,

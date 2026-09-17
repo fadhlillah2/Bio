@@ -176,6 +176,7 @@ try {
   await send("Page.navigate", { url: origin + "/Bio/" });
   await wait("!!document.querySelector('.hero[data-sky]')");
   await check("innerWidth === 390 && scrollY === 0", "home hydrates at mobile viewport before scroll");
+  await check("document.querySelectorAll('#resume .tl-role details').length === 5 && document.querySelectorAll('#resume details[open]').length === 0 && !document.querySelector('.cred-card details')", "five experience cards start closed; credentials stay expanded");
   await check("['resume','services'].every(id=>{const a=document.querySelector('.hero a[href=\"#'+id+'\"]'); return a && document.getElementById(id) && a.getBoundingClientRect().width>0;})", "both audience links have visible controls and existing destinations");
   const originalLook = await js("document.documentElement.getAttribute('data-look')");
   const luminance = (hex: string) => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
@@ -212,9 +213,14 @@ try {
   const normalize = (s: string) => s.toLowerCase().replace(/\s/g, "");
   assert(labels.length && labels.every(label => normalize(text).includes(normalize(label))), "facts and skills labels printed before scroll");
   console.log(`OK real home print contains ${labels.length} facts/skills labels`);
+  for (const proof of ['Primary backend engineer of the Safety Hub', 'Built and maintained iRecon', 'Developed and optimized 40+ RESTful APIs', 'Set up Apache Kafka for real-time event processing', 'Built 100+ RESTful APIs for the IBBR healthcare system']) {
+    assert(normalize(text).includes(normalize(proof)), `closed experience printed: ${proof}`);
+  }
+  console.log("OK all five closed experience bodies print");
   assert.equal(await js("window.__skyDraws"), printDraws, "print-hidden sky does not submit WebGL draws");
   console.log("OK print-hidden sky does not submit WebGL draws");
   await printMedia("screen");
+  await check("document.querySelectorAll('#resume details[open]').length === 0", "printing preserves closed experience state");
   await movingSky("normal sky resumes after printing");
   await js("window.__screenReady=false; requestAnimationFrame(()=>requestAnimationFrame(()=>{window.__screenReady=true})); void 0");
   await wait("window.__screenReady === true");
@@ -354,6 +360,18 @@ try {
     await settleScroll();
     console.log(`OK no-JS audience link reaches ${id} with native Enter`);
   }
+  await check("document.querySelectorAll('#resume .experience-card').length === 5 && !document.querySelector('#resume details[open]')", "experience summaries start closed without JavaScript");
+  for (const [index, key, code, keyCode, text] of [[0, 'Enter', 'Enter', 13, '\r'], [1, ' ', 'Space', 32, ' ']] as const) {
+    await js(`document.querySelectorAll('.experience-card > summary')[${index}].focus()`);
+    await send("Input.dispatchKeyEvent", { type: "keyDown", key, code, windowsVirtualKeyCode: keyCode, text });
+    await send("Input.dispatchKeyEvent", { type: "keyUp", key, code, windowsVirtualKeyCode: keyCode });
+    await wait(`document.querySelectorAll('.experience-card')[${index}].open`);
+  }
+  await check("document.querySelectorAll('.experience-card[open]').length === 2 && document.documentElement.scrollWidth <= innerWidth", "native Enter and Space open independent experience cards without JavaScript");
+  await js("document.querySelectorAll('.experience-card > summary')[0].focus()");
+  await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13, text: "\r" });
+  await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });
+  await check("!document.querySelector('.experience-card').open && document.querySelectorAll('.experience-card')[1].open", "closing one experience preserves the other open card");
   await js("document.querySelector('.contact-prompts summary').focus()");
   await check("document.activeElement === document.querySelector('.contact-prompts summary')", "no-JS contact brief summary receives focus");
   await send("Input.dispatchKeyEvent", { type: "keyDown", text: "\r", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });

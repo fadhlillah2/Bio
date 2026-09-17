@@ -18,112 +18,132 @@
         <ol class="timeline">
 
           <li class="tl-role" data-reveal>
-            <div class="tl-meta">
-              <p class="tl-dates">Dec 2025 — Present</p>
-              <p class="tl-org">FOX Asset — Infinity Wave Sdn Bhd</p>
-              <p class="tl-place">Malaysia (Remote)</p>
-            </div>
-            <div class="tl-body">
-              <h3>Backend Software Engineer (Freelance)</h3>
-              <ul>
-                <li>Primary backend engineer of the Safety Hub (Permit-to-Work/HIRARC forms + safety induction) on FOX Asset, a multi-tenant asset management &amp; maintenance (CMMS) SaaS built on Django REST Framework — 23 data models, 50+ REST endpoints, ~21,000 lines of Python across the two modules</li>
-                <li>Built a multi-tier digital approval workflow (PIC acceptance + up to 3 sequential approvers) with digital signatures, rejection/resubmission cycles, and 12 email notification flows</li>
-                <li>Engineered async document pipelines: Celery + wkhtmltopdf permit PDFs with embedded QR codes, and a WeasyPrint + Pillow certificate engine with QR verification, watermarks, and expiry</li>
-                <li>Solely built the Project Management module backend: 21 REST endpoints, 10 models, Kanban and timeline views, weightage distribution, and S-Curve planned-vs-actual analytics with adaptive daily/weekly/monthly bucketing</li>
-                <li>Enforced role-based access control with field-level write restrictions and cross-company data isolation; wrote 196 unit tests for Project Management and 105 for the Safety Hub apps</li>
-                <li>Delivered a 2-week AWS/DevOps security engagement: purged leaked credentials from tracked env templates, added gitleaks secret-scanning CI and a database migration-drift gate, and built a staging environment with a GitHub Actions CI/CD pipeline to AWS ECR</li>
-                <li>Authored a 1,260-line bilingual (EN/ID) API reference, Postman collections (38 + 23 requests), and 987 lines of deployment runbooks</li>
-              </ul>
-            </div>
+            <details class="experience-card">
+              <summary>
+                <span class="tl-meta">
+                  <span class="tl-dates">Dec 2025 — Present</span>
+                  <span class="tl-org">FOX Asset — Infinity Wave Sdn Bhd</span>
+                  <span class="tl-place">Malaysia (Remote)</span>
+                </span>
+                <h3>Backend Software Engineer (Freelance)</h3>
+              </summary>
+              <div class="tl-body">
+                <ul>
+                  <li>Primary backend engineer of the Safety Hub (Permit-to-Work/HIRARC forms + safety induction) on FOX Asset, a multi-tenant asset management &amp; maintenance (CMMS) SaaS built on Django REST Framework — 23 data models, 50+ REST endpoints, ~21,000 lines of Python across the two modules</li>
+                  <li>Built a multi-tier digital approval workflow (PIC acceptance + up to 3 sequential approvers) with digital signatures, rejection/resubmission cycles, and 12 email notification flows</li>
+                  <li>Engineered async document pipelines: Celery + wkhtmltopdf permit PDFs with embedded QR codes, and a WeasyPrint + Pillow certificate engine with QR verification, watermarks, and expiry</li>
+                  <li>Solely built the Project Management module backend: 21 REST endpoints, 10 models, Kanban and timeline views, weightage distribution, and S-Curve planned-vs-actual analytics with adaptive daily/weekly/monthly bucketing</li>
+                  <li>Enforced role-based access control with field-level write restrictions and cross-company data isolation; wrote 196 unit tests for Project Management and 105 for the Safety Hub apps</li>
+                  <li>Delivered a 2-week AWS/DevOps security engagement: purged leaked credentials from tracked env templates, added gitleaks secret-scanning CI and a database migration-drift gate, and built a staging environment with a GitHub Actions CI/CD pipeline to AWS ECR</li>
+                  <li>Authored a 1,260-line bilingual (EN/ID) API reference, Postman collections (38 + 23 requests), and 987 lines of deployment runbooks</li>
+                </ul>
+              </div>
+            </details>
           </li>
 
           <li class="tl-role" data-reveal>
-            <div class="tl-meta">
-              <p class="tl-dates">Aug 2023 — Aug 2026</p>
-              <p class="tl-org">Bank Danamon</p>
-              <p class="tl-place">Jakarta, Indonesia</p>
-            </div>
-            <div class="tl-body">
-              <h3>Software Engineer</h3>
-              <ul>
-                <li>Built and maintained iRecon, a Java/GWT reconciliation platform spanning 660+ classes that serves as the bank's central engine for settling corporate transaction data end to end</li>
-                <li>Automated the daily reconciliation and reporting cycle with scheduled batch jobs producing 10 report formats, including SWIFT MT940/942/950 statements, securely delivered to corporate clients via Email, SFTP, and MFT with PGP/AES encryption</li>
-                <li>Shipped the FSC (Financial Supply Chain) modules, integrating with core-banking middleware over encrypted REST APIs and enforcing banking-grade controls: maker-checker approval, LDAP-based access management, and full audit trail</li>
-                <li>Tuned queries and caching on the corporate reporting pipeline to consistently meet 48-hour reporting SLAs</li>
-                <li>Delivered an SFTP automation platform in 10 days against a 17-day plan by leaning on AI-assisted development to compress the build cycle</li>
-                <li>Applied LLM-assisted workflows across the delivery cycle, cutting technical documentation turnaround from 40 hours to 4 and lifting core-module test coverage to 95%</li>
-                <li>Built and operated 12 Spring Boot microservices on a hexagonal architecture, serving 2M+ requests/day at sub-200ms response times across 500k+ daily transactions</li>
-                <li>Implemented OAuth 2.0, JWT, and AES-256 encryption across the services, passing internal security audits</li>
-              </ul>
-            </div>
+            <details class="experience-card">
+              <summary>
+                <span class="tl-meta">
+                  <span class="tl-dates">Aug 2023 — Aug 2026</span>
+                  <span class="tl-org">Danamon</span>
+                  <span class="tl-place">Jakarta, Indonesia</span>
+                </span>
+                <h3>Software Engineer</h3>
+              </summary>
+              <div class="tl-body">
+                <ul>
+                  <li>Built and maintained iRecon, a Java/GWT reconciliation platform spanning 660+ classes that serves as the bank's central engine for settling corporate transaction data end to end</li>
+                  <li>Automated the daily reconciliation and reporting cycle with scheduled batch jobs producing 10 report formats, including SWIFT MT940/942/950 statements, securely delivered to corporate clients via Email, SFTP, and MFT with PGP/AES encryption</li>
+                  <li>Shipped the FSC (Financial Supply Chain) modules, integrating with core-banking middleware over encrypted REST APIs and enforcing banking-grade controls: maker-checker approval, LDAP-based access management, and full audit trail</li>
+                  <li>Tuned queries and caching on the corporate reporting pipeline to consistently meet 48-hour reporting SLAs</li>
+                  <li>Delivered an SFTP automation platform in 10 days against a 17-day plan by leaning on AI-assisted development to compress the build cycle</li>
+                  <li>Applied LLM-assisted workflows across the delivery cycle, cutting technical documentation turnaround from 40 hours to 4 and lifting core-module test coverage to 95%</li>
+                  <li>Built and operated 12 Spring Boot microservices on a hexagonal architecture, serving 2M+ requests/day at sub-200ms response times across 500k+ daily transactions</li>
+                  <li>Implemented OAuth 2.0, JWT, and AES-256 encryption across the services, passing internal security audits</li>
+                </ul>
+              </div>
+            </details>
           </li>
 
           <li class="tl-role" data-reveal>
-            <div class="tl-meta">
-              <p class="tl-dates">Mar 2023 — Jul 2023</p>
-              <p class="tl-org">IDstar</p>
-              <p class="tl-place">South Jakarta, Indonesia (Remote)</p>
-            </div>
-            <div class="tl-body">
-              <h3>Backend Software Engineer</h3>
-              <ul>
-                <li>Developed and optimized 40+ RESTful APIs for the OML Innovoice platform</li>
-                <li>Implemented enterprise SSO (OAuth 2.0/JWT) and session tracking to enforce authenticated access</li>
-                <li>Secured the app against OWASP Top 10 (input validation, SQLi)</li>
-                <li>Cut unauthorized access by 95% by adding multi-layer auth</li>
-                <li>Managed sessions with Redis; secured the app against OWASP Top 10</li>
-                <li>Built an MSSQL email logging system to meet compliance audits</li>
-                <li>Dockerized services and hosted on Azure (Apache Tomcat)</li>
-                <li>Kept code quality score at 90+ using SonarLint and peer reviews</li>
-              </ul>
-            </div>
+            <details class="experience-card">
+              <summary>
+                <span class="tl-meta">
+                  <span class="tl-dates">Mar 2023 — Jul 2023</span>
+                  <span class="tl-org">IDstar</span>
+                  <span class="tl-place">South Jakarta, Indonesia (Remote)</span>
+                </span>
+                <h3>Backend Software Engineer</h3>
+              </summary>
+              <div class="tl-body">
+                <ul>
+                  <li>Developed and optimized 40+ RESTful APIs for the OML Innovoice platform</li>
+                  <li>Implemented enterprise SSO (OAuth 2.0/JWT) and session tracking to enforce authenticated access</li>
+                  <li>Secured the app against OWASP Top 10 (input validation, SQLi)</li>
+                  <li>Cut unauthorized access by 95% by adding multi-layer auth</li>
+                  <li>Managed sessions with Redis; secured the app against OWASP Top 10</li>
+                  <li>Built an MSSQL email logging system to meet compliance audits</li>
+                  <li>Dockerized services and hosted on Azure (Apache Tomcat)</li>
+                  <li>Kept code quality score at 90+ using SonarLint and peer reviews</li>
+                </ul>
+              </div>
+            </details>
           </li>
 
           <li class="tl-role" data-reveal>
-            <div class="tl-meta">
-              <p class="tl-dates">Apr 2022 — Feb 2023</p>
-              <p class="tl-org">Freelance &amp; personal projects</p>
-              <p class="tl-place">Remote</p>
-            </div>
-            <div class="tl-body">
-              <h3>Full Stack Developer</h3>
-              <ul>
-                <li>Set up Apache Kafka for real-time event processing</li>
-                <li>Hooked up 3+ external systems via REST APIs to automate our data flow</li>
-                <li>Built the restaurant booking alerts system using Kafka</li>
-                <li>Added Redis caching to reduce database load</li>
-                <li>Handled Postgres migration using Flyway with a staged rollout</li>
-                <li>Built a notification service delivering email and SMS</li>
-                <li>Synced orders with Kitchen Displays and POS terminals using REST APIs</li>
-                <li>Built a simulation app using Quarkus microservices. It's event-driven</li>
-                <li>Shipped a home-stay booking site (Next.js/Postgres). Integrated Stripe</li>
-                <li>Coded an Instagram clone. Used WebSockets for live feeds and MongoDB</li>
-                <li>Developed a context-aware AI chatbot on the MERN stack using OpenAI</li>
-                <li>Wrote REST and GraphQL APIs using Spring Boot and FastAPI</li>
-                <li>Deployed Docker containers to AWS ECS</li>
-              </ul>
-            </div>
+            <details class="experience-card">
+              <summary>
+                <span class="tl-meta">
+                  <span class="tl-dates">Apr 2022 — Feb 2023</span>
+                  <span class="tl-org">Freelance &amp; Personal Projects</span>
+                  <span class="tl-place">Remote</span>
+                </span>
+                <h3>Full Stack Developer</h3>
+              </summary>
+              <div class="tl-body">
+                <ul>
+                  <li>Set up Apache Kafka for real-time event processing</li>
+                  <li>Hooked up 3+ external systems via REST APIs to automate our data flow</li>
+                  <li>Built the restaurant booking alerts system using Kafka</li>
+                  <li>Added Redis caching to reduce database load</li>
+                  <li>Handled Postgres migration using Flyway with a staged rollout</li>
+                  <li>Built a notification service delivering email and SMS</li>
+                  <li>Synced orders with Kitchen Displays and POS terminals using REST APIs</li>
+                  <li>Built a simulation app using Quarkus microservices. It's event-driven</li>
+                  <li>Shipped a home-stay booking site (Next.js/Postgres). Integrated Stripe</li>
+                  <li>Coded an Instagram clone. Used WebSockets for live feeds and MongoDB</li>
+                  <li>Developed a context-aware AI chatbot on the MERN stack using OpenAI</li>
+                  <li>Wrote REST and GraphQL APIs using Spring Boot and FastAPI</li>
+                  <li>Deployed Docker containers to AWS ECS</li>
+                </ul>
+              </div>
+            </details>
           </li>
 
           <li class="tl-role" data-reveal>
-            <div class="tl-meta">
-              <p class="tl-dates">Jul 2020 — Feb 2023</p>
-              <p class="tl-org">Assist.id</p>
-              <p class="tl-place">Pekanbaru City, Riau, Indonesia</p>
-            </div>
-            <div class="tl-body">
-              <h3>Backend Software Engineer</h3>
-              <ul>
-                <li>Built 100+ RESTful APIs for the IBBR healthcare system</li>
-                <li>Integrated 40+ external APIs (payments, logistics, SMS)</li>
-                <li>Synced ERP data in real time via REST and webhooks</li>
-                <li>Designed a request engine handling multi-level approvals</li>
-                <li>Accelerated reports 700% via query tuning and MongoDB materialized views</li>
-                <li>Wrote an auto-cleanup job for 10,000+ daily bookings</li>
-                <li>Built the auto check-in/out feature using MongoDB time triggers</li>
-                <li>Resolved ~100 bugs/month while maintaining 99.5% uptime</li>
-              </ul>
-            </div>
+            <details class="experience-card">
+              <summary>
+                <span class="tl-meta">
+                  <span class="tl-dates">Jul 2020 — Feb 2023</span>
+                  <span class="tl-org">Assist.id</span>
+                  <span class="tl-place">Pekanbaru City, Riau, Indonesia</span>
+                </span>
+                <h3>Backend Software Engineer</h3>
+              </summary>
+              <div class="tl-body">
+                <ul>
+                  <li>Built 100+ RESTful APIs for the IBBR healthcare system</li>
+                  <li>Integrated 40+ external APIs (payments, logistics, SMS)</li>
+                  <li>Synced ERP data in real time via REST and webhooks</li>
+                  <li>Designed a request engine handling multi-level approvals</li>
+                  <li>Accelerated reports 700% via query tuning and MongoDB materialized views</li>
+                  <li>Wrote an auto-cleanup job for 10,000+ daily bookings</li>
+                  <li>Built the auto check-in/out feature using MongoDB time triggers</li>
+                  <li>Resolved ~100 bugs/month while maintaining 99.5% uptime</li>
+                </ul>
+              </div>
+            </details>
           </li>
 
         </ol>
