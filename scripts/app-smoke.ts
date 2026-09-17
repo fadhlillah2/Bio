@@ -64,6 +64,11 @@ try {
     if (result.exceptionDetails) throw new Error(JSON.stringify(result.exceptionDetails));
     return result.result.value;
   };
+  const frameState = () => js(`({timeline:document.timeline.currentTime,now:performance.now(),draws:window.__skyDraws,
+    raf:window.__diagnosticRaf,print:matchMedia('print').matches,visibility:document.visibilityState,fonts:document.fonts.status,
+    navVisibility:document.querySelector('#site-nav') && getComputedStyle(document.querySelector('#site-nav')).visibility,
+    menuReady:!!document.querySelector('#site-nav') && getComputedStyle(document.querySelector('#site-nav')).visibility==='visible' && !!document.querySelector('.nav-toggle')?.getClientRects().length,
+    nav:document.querySelector('#site-nav')?.getAnimations().map(a=>({start:a.startTime,time:a.currentTime,pending:a.pending,state:a.playState}))})`);
   const wait = async (expression: string) => {
     for (let n = 0; n < 100; n++) { if (await js(expression)) return; await pause(); }
     const state = await js(`JSON.stringify({width:innerWidth,height:innerHeight,print:matchMedia('print').matches,
@@ -76,6 +81,17 @@ try {
         return {display:s.display,visibility:s.visibility,opacity:s.opacity,transform:s.transform,
           animations:e.getAnimations().map(a=>({pending:a.pending,state:a.playState,time:a.currentTime}))};})(),
       toggleRects:[...(document.querySelector('.nav-toggle')?.getClientRects()||[])].map(r=>({x:r.x,y:r.y,width:r.width,height:r.height}))})`);
+    if (expression.includes("getClientRects")) {
+      try {
+        console.log("FRAME timeout", await frameState());
+        await js("requestAnimationFrame(t=>{window.__diagnosticRaf=t}); void 0");
+        await Bun.sleep(500);
+        console.log("FRAME after one-shot RAF", await frameState());
+        await send("Page.captureScreenshot", { format: "png" });
+        await Bun.sleep(500);
+        console.log("FRAME after screenshot", await frameState());
+      } catch (error) { console.error("Frame diagnostic failed:", error); }
+    }
     throw new Error(`Timed out: ${expression}\nState: ${state}`);
   };
   const check = async (expression: string, label: string) => {
@@ -104,6 +120,7 @@ try {
   };
   await send("Fetch.enable", { patterns: [{ urlPattern: "http://*" }, { urlPattern: "https://*" }] });
   await send("Page.enable");
+  console.log("BROWSER", await send("Browser.getVersion"));
   await send("Page.addScriptToEvaluateOnNewDocument", { source: `
     window.__skyDraws = 0;
     const draw = WebGL2RenderingContext.prototype.drawArrays;
@@ -186,7 +203,9 @@ try {
   await send("Emulation.setEmulatedMedia", { media: "print" });
   await wait("[...document.querySelectorAll('[data-reveal-children] > *')].every(e => { if(getComputedStyle(e).transform !== 'none') return false; for(let p=e;p;p=p.parentElement) { const s=getComputedStyle(p); if(s.opacity !== '1' || s.visibility !== 'visible' || s.display === 'none') return false; } return true; })");
   console.log("OK all reveal children and ancestors visible in actual print styles");
+  console.log("FRAME before PDF", await frameState());
   const pdf = await send("Page.printToPDF", { printBackground: true });
+  console.log("FRAME after PDF", await frameState());
   const { text } = await extractText(new Uint8Array(Buffer.from(pdf.data, "base64")), { mergePages: true });
   // Individual labels avoid PDF column-order interleaving and CSS text-transform differences.
   const labels: string[] = await js("[...document.querySelectorAll('.metric-label, .stack-grid .tag-row li')].map(e=>e.textContent.trim()).filter(Boolean)");
@@ -194,6 +213,7 @@ try {
   assert(labels.length && labels.every(label => normalize(text).includes(normalize(label))), "facts and skills labels printed before scroll");
   console.log(`OK real home print contains ${labels.length} facts/skills labels`);
   await send("Emulation.setEmulatedMedia", { media: "screen" });
+  console.log("FRAME restored screen", await frameState());
   const downloads: string[] = await js("[...new Set([...document.querySelectorAll('a[href]')].map(a=>a.href).filter(h=>h.includes('/cv/')))]");
   assert(downloads.length);
   for (const url of downloads) { assert(new URL(url).origin === origin); assert((await fetch(url)).ok, url); }
