@@ -7,15 +7,15 @@
       <div class="wrap">
 
         <header class="section-head">
-          <p class="section-index">03 &mdash; Selected work</p>
-          <h2>Commercial delivery and public engineering work</h2>
+          <p class="section-index">03 &mdash; Selected Work</p>
+          <h2>Commercial Delivery and Public Engineering Work</h2>
           <p class="section-deck">A commercial backend delivery account, followed by projects with public source. Nine early JavaScript practice projects from 2021 remain available below.</p>
         </header>
 
         <article class="flagship" data-reveal>
           <div class="flagship-body">
             <p class="flagship-badge">Commercial delivery &middot; Freelance backend engineering</p>
-            <h3 class="flagship-title">FOX Asset: Project Management backend</h3>
+            <h3 class="flagship-title">FOX Asset: Project Management Backend</h3>
             <p class="flagship-desc">I solely built the Project Management module backend within FOX Asset, a multi-tenant asset management and maintenance SaaS: Kanban and timeline support, weightage distribution, and S-Curve planned-vs-actual analytics.</p>
             <p class="flagship-result">Project Management backend: <strong>21 REST endpoints &middot; 10 models &middot; 196 unit tests</strong>.</p>
             <div class="flagship-cta">

@@ -2548,13 +2548,11 @@ html:not(.js) .fab {
 }
 
 /*--------------------------------------------------------------
-# Look switch — bottom-left, opposite the floating actions
+# Look switch — in document flow after the footer
 --------------------------------------------------------------*/
 .look-switch {
-  position: fixed;
-  left: 18px;
-  bottom: 18px;
-  z-index: 90;
+  width: max-content;
+  margin: 18px auto;
   display: flex;
   gap: 4px;
   padding: 4px;

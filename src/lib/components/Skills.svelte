@@ -3,7 +3,7 @@
 
     <header class="section-head">
       <p class="section-index">05 &mdash; Stack</p>
-      <h2>Technologies used across production and project work</h2>
+      <h2>Technologies Used across Production and Project Work</h2>
       <p class="section-deck">Grouped by engineering purpose.</p>
     </header>
 

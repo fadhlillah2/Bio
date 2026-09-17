@@ -93,7 +93,7 @@
 
         <p>The project is a retrieval-augmented contract advisor: you upload a contract — PDF, DOCX, or a photo of a printed page — and ask questions about it. It placed Top 50 at the Meta Llama Hackathon 2025. The generation step is not the bottleneck explored here: even a capable language model cannot answer from context it never receives. The difficulty is getting the right text there at all, and scanned Indonesian contracts expose two different failure modes.</p>
 
-        <h2>Two failure modes that look like one bug</h2>
+        <h2>Two Failure Modes That Look like One Bug</h2>
 
         <p>The first failure is optical. A phone photo of a printed contract gives EasyOCR a page with uneven lighting, compression noise, and a slight skew. Get the preprocessing wrong and <code>PASAL</code> comes back as <code>PASAI</code> or <code>PASAL  5</code> with a doubled space — the clause is in the extracted text, but no longer matches anything a user would type.</p>
 
@@ -101,7 +101,7 @@
 
         <p>Both failures produce the same symptom: a confident answer about the wrong clause. That is why they are worth separating.</p>
 
-        <h2>OCR: six variants, then pick a winner</h2>
+        <h2>OCR: Six Variants, Then Pick a Winner</h2>
 
         <p>Rather than tuning one preprocessing chain, the pipeline runs six and lets the results compete. From <a href="https://github.com/fadhlillah2/llama-docs-auditor/blob/main/rag/easyocr_implementation.py" target="_blank" rel="noopener">easyocr_implementation.py</a>: the original image, grayscale, denoised (<code>fastNlMeansDenoising</code>), CLAHE contrast enhancement at <code>clipLimit=2.0</code>, a 3×3 sharpening kernel, and finally Otsu binarization. Each variant is written to disk, run through EasyOCR with Indonesian and English enabled, and scored.</p>
 
@@ -114,11 +114,11 @@
 
         <p>As each detection comes out of EasyOCR it is cleaned in place: whitespace collapsed, a fixed list of stray punctuation stripped, and a small substitution table applied for recurring OCR confusions. It does not attempt to parse the document into a clause tree.</p>
 
-        <h2>OCR evidence</h2>
+        <h2>OCR Evidence</h2>
 
         <p>The <a href="https://github.com/fadhlillah2/llama-docs-auditor/blob/609c0a07f0828c2dbf691fa15d898ff7ab2a8691/README.md#L72" target="_blank" rel="noopener">project README</a> reports 88%+ accuracy for Indonesian text recognition. At the linked source revision (<code>609c0a0</code>), the README does not define the accuracy measure or document the sample, reference transcriptions, measurement date, or run results behind that figure. The <a href="https://github.com/fadhlillah2/llama-docs-auditor/blob/609c0a07f0828c2dbf691fa15d898ff7ab2a8691/rag/easyocr_implementation.py#L165" target="_blank" rel="noopener">OCR code</a> records model confidence and uses it to select a preprocessing variant; that confidence is not a comparison against reference text. The <a href="https://github.com/fadhlillah2/llama-docs-auditor/tree/609c0a07f0828c2dbf691fa15d898ff7ab2a8691/evaluation_results" target="_blank" rel="noopener">committed evaluation reports</a> use a text document and do not establish OCR accuracy.</p>
 
-        <h2>Retrieval: two lists, weighted, plus a bonus</h2>
+        <h2>Retrieval: Two Lists, Weighted, plus a Bonus</h2>
 
         <p>The in-memory retriever runs both strategies and merges them rather than choosing between them. Semantic search returns 15 candidates; a TF-IDF keyword search returns 10. The merge in <a href="https://github.com/fadhlillah2/llama-docs-auditor/blob/main/rag/retriever.py" target="_blank" rel="noopener">retriever.py</a> weights them 0.7 to 0.3 in favor of semantics — but the detail that does the real work is the third term:</p>
 
@@ -131,7 +131,7 @@
 
         <p>That fallback is the practical answer to “why not just use vector search.” Semantic retrieval fits <em>“what happens if we terminate early?”</em> but is a poor fit for exact identifier lookup such as <em>“what does clause 5 say?”</em>. The literal path handles that narrower job directly — but only for queries that need it.</p>
 
-        <h2>What changed — and what remains</h2>
+        <h2>What Changed — and What Remains</h2>
 
         <p>Five findings matter here. The first is now fixed, but it remains useful because the regression it exposed is more instructive than the patch itself.</p>
 
@@ -182,7 +182,6 @@ r'\s+'.join(re.escape(p) for p in "Section II.3".split())  <span class="tmut">�
       </nav>
       <p class="footer-colophon">
         <span>Prerendered with SvelteKit &middot; handwritten CSS and JavaScript &middot; self-hosted fonts.</span>
-        <span>Updated <time datetime="2026-09-14">September 2026</time></span>
       </p>
     </div>
   </footer>

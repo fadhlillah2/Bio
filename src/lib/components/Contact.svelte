@@ -3,15 +3,15 @@
 
         <header class="section-head">
           <p class="section-index">08 &mdash; Contact</p>
-          <h2>Let's discuss your project or role</h2>
+          <h2>Let's Discuss Your Project or Role</h2>
           <p class="section-deck">Reach me directly via <a href="https://wa.me/6285157043131?text=Hi%20Fadhlillah%2C%20I%20saw%20your%20portfolio" target="_blank" rel="noopener">WhatsApp</a> or <a href="mailto:fadhlillah949699@gmail.com">email</a>, or use the form below.</p>
           <div class="contact-prompts">
             <details>
-              <summary>Hiring for a role</summary>
+              <summary>Hiring for a Role</summary>
               <p>Share the role or job description, your main stack, and the location or remote working arrangement. You can review my <a href="#resume">experience and CV</a> before reaching out.</p>
             </details>
             <details>
-              <summary>Discussing a project</summary>
+              <summary>Discussing a Project</summary>
               <p>Share the problem, your current system, the result you need, and any target delivery date. If you have a scope or budget range, include it. The next step is a short chat to clarify the work before agreeing scope and milestones.</p>
             </details>
           </div>

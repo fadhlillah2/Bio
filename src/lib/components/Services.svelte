@@ -9,7 +9,7 @@
 
         <header class="section-head">
           <p class="section-index">06 &mdash; Services</p>
-          <h2>Backend, cloud, and LLM integration for production systems</h2>
+          <h2>Backend, Cloud, and LLM Integration for Production Systems</h2>
           <p class="section-deck cta-row">
             <a href={base + "/cv/consulting-onepager-en-v1.9.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Software Engineering Services.pdf">Download one-pager (PDF)</a>
             <a href={base + "/cv/consulting-onepager-id-v1.9.pdf"} class="btn btn-ghost btn-sm" lang="id" download="Fadhlillah - Layanan Software Engineering.pdf">Versi Bahasa Indonesia</a>
@@ -53,7 +53,7 @@
         </ul>
 
         <div class="how-we-work" data-reveal>
-          <h3>One backend workflow, delivered</h3>
+          <h3>One Backend Workflow, Delivered</h3>
           <p class="section-deck">Build or improve one defined workflow in your existing product—for example, project status, approvals, or a reporting API.</p>
           <ol>
             <li>Share the current system, affected users, desired result, and any target date</li>

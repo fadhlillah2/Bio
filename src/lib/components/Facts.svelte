@@ -3,7 +3,7 @@
 
         <header class="section-head">
           <p class="section-index">01 &mdash; Facts</p>
-          <h2>Selected outcomes from production and project work</h2>
+          <h2>Selected Outcomes from Production and Project Work</h2>
         </header>
 
         <ul class="metrics" data-reveal data-reveal-children>

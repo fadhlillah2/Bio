@@ -16,7 +16,6 @@
     </nav>
     <p class="footer-colophon">
       <span>Prerendered with SvelteKit &middot; handwritten CSS and JavaScript &middot; self-hosted fonts.</span>
-      <span>Updated <time datetime="2026-09-17">17 September 2026</time></span>
     </p>
   </div>
 </footer>

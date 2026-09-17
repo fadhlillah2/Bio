@@ -7,7 +7,7 @@
 
         <header class="section-head">
           <p class="section-index">04 &mdash; Experience</p>
-          <h2>Experience, education, projects, and certifications</h2>
+          <h2>Experience, Education, Projects, and Certifications</h2>
           <p class="section-deck cta-row">
             <a href={base + "/cv/resume-onepager-v1.12.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
             <a href={base + "/cv/resume-v8.9.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
