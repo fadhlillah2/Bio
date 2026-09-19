@@ -21,6 +21,26 @@
             <details class="experience-card">
               <summary>
                 <span class="tl-meta">
+                  <span class="tl-org">Fineksi</span>
+                </span>
+                <h3>Software Engineer</h3>
+              </summary>
+              <div class="tl-body">
+                <ul>
+                  <li>Worked on document upload and structured extraction workflows for corporate onboarding.</li>
+                  <li>Worked on resumable uploads, cross-document consistency checks, and analyst review flows for correcting extracted data.</li>
+                  <li>Worked on financial-statement collection, processing, and company and industry ratio calculations.</li>
+                  <li>Contributed to document summaries, Excel exports, generative insights, and audit trails.</li>
+                  <li>Worked on React interfaces for document review, analytics, account opening, and back-office financial-report workflows.</li>
+                </ul>
+              </div>
+            </details>
+          </li>
+
+          <li class="tl-role" data-reveal>
+            <details class="experience-card">
+              <summary>
+                <span class="tl-meta">
                   <span class="tl-dates">Dec 2025 — Present</span>
                   <span class="tl-org">FOX Asset — Infinity Wave Sdn Bhd</span>
                   <span class="tl-place">Malaysia (Remote)</span>

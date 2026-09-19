@@ -25,6 +25,19 @@
           </div>
         </article>
 
+        <article class="flagship" data-reveal>
+          <div class="flagship-body">
+            <p class="flagship-badge">Project Overview</p>
+            <h3 class="flagship-title">Fineksi — Financial Document Processing</h3>
+            <p class="flagship-desc">Tools for corporate document review and financial-statement analysis.</p>
+            <p class="flagship-result">Structured extraction, cross-document checks, and analyst review for corporate onboarding.</p>
+            <p class="flagship-result">Financial-statement pipelines for company and industry ratio analysis.</p>
+            <ul class="tag-row">
+              <li>Node.js</li><li>Express</li><li>MySQL</li><li>React</li>
+            </ul>
+          </div>
+        </article>
+
         <!-- Public project: source and implementation limits are linked below. -->
         <article class="flagship" data-reveal>
           <div class="flagship-body">

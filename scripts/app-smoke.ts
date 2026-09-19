@@ -176,7 +176,7 @@ try {
   await send("Page.navigate", { url: origin + "/Bio/" });
   await wait("!!document.querySelector('.hero[data-sky]')");
   await check("innerWidth === 390 && scrollY === 0", "home hydrates at mobile viewport before scroll");
-  await check("document.querySelectorAll('#resume .tl-role details').length === 5 && document.querySelectorAll('#resume details[open]').length === 0 && !document.querySelector('.cred-card details')", "five experience cards start closed; credentials stay expanded");
+  await check("document.querySelectorAll('#resume .tl-role details').length === 6 && document.querySelectorAll('#resume details[open]').length === 0 && !document.querySelector('.cred-card details')", "six experience cards start closed; credentials stay expanded");
   await check("['resume','services'].every(id=>{const a=document.querySelector('.hero a[href=\"#'+id+'\"]'); return a && document.getElementById(id) && a.getBoundingClientRect().width>0;})", "both audience links have visible controls and existing destinations");
   const originalLook = await js("document.documentElement.getAttribute('data-look')");
   const luminance = (hex: string) => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
@@ -213,10 +213,10 @@ try {
   const normalize = (s: string) => s.toLowerCase().replace(/\s/g, "");
   assert(labels.length && labels.every(label => normalize(text).includes(normalize(label))), "facts and skills labels printed before scroll");
   console.log(`OK real home print contains ${labels.length} facts/skills labels`);
-  for (const proof of ['Primary backend engineer of the Safety Hub', 'Built and maintained iRecon', 'Developed and optimized 40+ RESTful APIs', 'Set up Apache Kafka for real-time event processing', 'Built 100+ RESTful APIs for the IBBR healthcare system']) {
+  for (const proof of ['Worked on document upload and structured extraction workflows for corporate onboarding.', 'Primary backend engineer of the Safety Hub', 'Built and maintained iRecon', 'Developed and optimized 40+ RESTful APIs', 'Set up Apache Kafka for real-time event processing', 'Built 100+ RESTful APIs for the IBBR healthcare system']) {
     assert(normalize(text).includes(normalize(proof)), `closed experience printed: ${proof}`);
   }
-  console.log("OK all five closed experience bodies print");
+  console.log("OK all six closed experience bodies print");
   assert.equal(await js("window.__skyDraws"), printDraws, "print-hidden sky does not submit WebGL draws");
   console.log("OK print-hidden sky does not submit WebGL draws");
   await printMedia("screen");
@@ -360,7 +360,7 @@ try {
     await settleScroll();
     console.log(`OK no-JS audience link reaches ${id} with native Enter`);
   }
-  await check("document.querySelectorAll('#resume .experience-card').length === 5 && !document.querySelector('#resume details[open]')", "experience summaries start closed without JavaScript");
+  await check("document.querySelectorAll('#resume .experience-card').length === 6 && !document.querySelector('#resume details[open]')", "experience summaries start closed without JavaScript");
   for (const [index, key, code, keyCode, text] of [[0, 'Enter', 'Enter', 13, '\r'], [1, ' ', 'Space', 32, ' ']] as const) {
     await js(`document.querySelectorAll('.experience-card > summary')[${index}].focus()`);
     await send("Input.dispatchKeyEvent", { type: "keyDown", key, code, windowsVirtualKeyCode: keyCode, text });
