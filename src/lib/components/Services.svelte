@@ -61,7 +61,7 @@
             <li>Deliver scoped backend changes and tests for the agreed behavior, with regular check-ins</li>
             <li>Hand over source code, API examples, documentation, and deployment details for the maintaining team</li>
           </ol>
-          <p class="section-deck"><strong>Freelance availability: 8–16 hours/week &middot; Jakarta (UTC+7).</strong> Milestones, price, delivery dates, and support are agreed for each engagement. <a href="https://wa.me/6285157043131?text=Hi%20Fadhlillah%2C%20I%20would%20like%20to%20discuss%20one%20backend%20workflow%20for%20my%20business.%20My%20current%20system%20is%3A%20...%20The%20result%20I%20need%20is%3A%20..." target="_blank" rel="noopener">Discuss your workflow on WhatsApp</a>.</p>
+          <p class="section-deck"><strong>Freelance Availability: 40–60 hours/week &middot; Jakarta (UTC+7).</strong> Milestones, price, delivery dates, and support are agreed for each engagement. <a href="https://wa.me/6285157043131?text=Hi%20Fadhlillah%2C%20I%20would%20like%20to%20discuss%20one%20backend%20workflow%20for%20my%20business.%20My%20current%20system%20is%3A%20...%20The%20result%20I%20need%20is%3A%20..." target="_blank" rel="noopener">Discuss your workflow on WhatsApp</a>.</p>
           <p class="how-we-work-scale">My delivery history includes a 2-week AWS/DevOps security engagement, an SFTP automation platform built in 10 days against a 17-day plan, and an ongoing multi-module backend build (~21,000 lines of Python across two modules).</p>
         </div>
 
