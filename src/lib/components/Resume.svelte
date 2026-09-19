@@ -21,6 +21,7 @@
             <details class="experience-card">
               <summary>
                 <span class="tl-meta">
+                  <span class="tl-dates">Present</span>
                   <span class="tl-org">Fineksi</span>
                 </span>
                 <h3>Software Engineer</h3>
