@@ -28,9 +28,9 @@
               <div class="tl-body">
                 <ul>
                   <li>Worked on document upload and structured extraction workflows for corporate onboarding.</li>
-                  <li>Worked on resumable uploads, cross-document consistency checks, and analyst review flows for correcting extracted data.</li>
+                  <li>Worked on resumable uploads, cross-document consistency checks, and corrections to extracted data. Added support for analyst review of company ownership and control.</li>
                   <li>Worked on financial-statement collection, processing, and company and industry ratio calculations.</li>
-                  <li>Contributed to document summaries, Excel exports, generative insights, and audit trails.</li>
+                  <li>Contributed to document summaries, Excel exports, generative insights, audit trails, and service logging.</li>
                   <li>Worked on React interfaces for document review, analytics, account opening, and back-office financial-report workflows.</li>
                 </ul>
               </div>
@@ -49,13 +49,13 @@
               </summary>
               <div class="tl-body">
                 <ul>
-                  <li>Primary backend engineer of the Safety Hub (Permit-to-Work/HIRARC forms + safety induction) on FOX Asset, a multi-tenant asset management &amp; maintenance (CMMS) SaaS built on Django REST Framework — 23 data models, 50+ REST endpoints, ~21,000 lines of Python across the two modules</li>
-                  <li>Built a multi-tier digital approval workflow (PIC acceptance + up to 3 sequential approvers) with digital signatures, rejection/resubmission cycles, and 12 email notification flows</li>
-                  <li>Engineered async document pipelines: Celery + wkhtmltopdf permit PDFs with embedded QR codes, and a WeasyPrint + Pillow certificate engine with QR verification, watermarks, and expiry</li>
-                  <li>Solely built the Project Management module backend: 21 REST endpoints, 10 models, Kanban and timeline views, weightage distribution, and S-Curve planned-vs-actual analytics with adaptive daily/weekly/monthly bucketing</li>
-                  <li>Enforced role-based access control with field-level write restrictions and cross-company data isolation; wrote 196 unit tests for Project Management and 105 for the Safety Hub apps</li>
-                  <li>Delivered a 2-week AWS/DevOps security engagement: purged leaked credentials from tracked env templates, added gitleaks secret-scanning CI and a database migration-drift gate, and built a staging environment with a GitHub Actions CI/CD pipeline to AWS ECR</li>
-                  <li>Authored a 1,260-line bilingual (EN/ID) API reference, Postman collections (38 + 23 requests), and 987 lines of deployment runbooks</li>
+                  <li>Primary backend engineer for Safety Hub on FOX Asset, a multi-tenant asset management and maintenance platform built on Django REST Framework, covering Permit-to-Work/HIRARC forms and safety induction.</li>
+                  <li>Built approval workflows with PIC acceptance, sequential approvers, signature capture, and rejection/resubmission handling, alongside permit validity checks, expiry reminders, and automatic cancellation.</li>
+                  <li>Developed permit PDFs with QR links and induction certificates with QR codes, expiry checks, and watermarks. Built Document Hub upload, rename, trash, restore, and retention handling.</li>
+                  <li>Built the Project Management backend, including task assignment, Kanban and timeline views, weightage distribution, and planned-versus-actual S-Curve analytics.</li>
+                  <li>Implemented role-based permissions and company data isolation, added backend regression tests, and fixed a Safety Hub null-user rendering failure with a visible error fallback.</li>
+                  <li>Implemented secret scanning and tenant release pipelines with GitHub Actions, Amazon ECR, and AWS Systems Manager, including migration and disk-space guards, HTTP health checks, and automatic image rollback on startup or HTTP health-check failure; prepared staging configuration.</li>
+                  <li>Remediated exposed credentials, added schema-drift checks, and authored API documentation, deployment runbooks, and operational handover notes.</li>
                 </ul>
               </div>
             </details>

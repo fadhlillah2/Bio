@@ -213,7 +213,7 @@ try {
   const normalize = (s: string) => s.toLowerCase().replace(/\s/g, "");
   assert(labels.length && labels.every(label => normalize(text).includes(normalize(label))), "facts and skills labels printed before scroll");
   console.log(`OK real home print contains ${labels.length} facts/skills labels`);
-  for (const proof of ['Worked on document upload and structured extraction workflows for corporate onboarding.', 'Primary backend engineer of the Safety Hub', 'Built and maintained iRecon', 'Developed and optimized 40+ RESTful APIs', 'Set up Apache Kafka for real-time event processing', 'Built 100+ RESTful APIs for the IBBR healthcare system']) {
+  for (const proof of ['Worked on document upload and structured extraction workflows for corporate onboarding.', 'Primary backend engineer for Safety Hub on FOX Asset', 'Built and maintained iRecon', 'Developed and optimized 40+ RESTful APIs', 'Set up Apache Kafka for real-time event processing', 'Built 100+ RESTful APIs for the IBBR healthcare system']) {
     assert(normalize(text).includes(normalize(proof)), `closed experience printed: ${proof}`);
   }
   console.log("OK all six closed experience bodies print");
