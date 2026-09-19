@@ -8,8 +8,8 @@
 
         <header class="section-head">
           <p class="section-index">03 &mdash; Selected Work</p>
-          <h2>Commercial Delivery and Public Engineering Work</h2>
-          <p class="section-deck">A commercial backend delivery account, followed by projects with public source. Nine early JavaScript practice projects from 2021 remain available below.</p>
+          <h2>Project Showcase</h2>
+          <p class="section-deck">Commercial work and personal projects, with details on my contributions and links to available source code.</p>
         </header>
 
         <article class="flagship" data-reveal>
