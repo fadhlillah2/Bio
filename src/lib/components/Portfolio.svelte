@@ -89,6 +89,26 @@
           </div>
         </article>
 
+        <!-- Interactive experiment: real WebGL2 demo; live build and source are linked -->
+        <article class="flagship" data-reveal>
+          <div class="flagship-body">
+            <p class="flagship-badge">Interactive experiment &middot; WebGL2</p>
+            <h3 class="flagship-title">Tower Stack — a hand-written WebGL2 game</h3>
+            <p class="flagship-desc">A block-stacking game rendered by a small hand-written WebGL2 pipeline: one shader program, one cube mesh, fog and a floor grid in the fragment shader. No engine, no runtime dependencies.</p>
+            <p class="flagship-result">Vanilla JS + GLSL; the repo ships unit tests, a Chrome-headless smoke test, and a real screenshot of the live build.</p>
+            <ul class="tag-row">
+              <li>WebGL2</li><li>GLSL</li><li>Vanilla JS</li><li>Canvas</li>
+            </ul>
+            <div class="flagship-cta">
+              <a href="https://fadhlillah2.github.io/tower-stack-webgl/" class="btn btn-solid btn-sm" target="_blank" rel="noopener" aria-label="Play the Tower Stack demo (opens in new tab)">Play the demo</a>
+              <a href="https://github.com/fadhlillah2/tower-stack-webgl" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" aria-label="View the Tower Stack source on GitHub (opens in new tab)">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
+            </div>
+          </div>
+          <div class="flagship-shot" aria-hidden="true">
+            <img src={base + "/assets/img/tower-stack.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
+          </div>
+        </article>
+
         <!-- Early-practice archive: native <details>, collapsed by default so the
              2021 JS practice apps don't visually compete with the flagship work above -->
         <details class="early-practice" data-reveal>

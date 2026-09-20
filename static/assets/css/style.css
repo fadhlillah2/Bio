@@ -1632,11 +1632,29 @@ section {
   line-height: 2;
 }
 
+/* Screenshot panel for the interactive-experiment card (mirrors .flagship-term) */
+.flagship-shot {
+  border-left: 1px solid var(--line);
+  background: var(--ink-0);
+  overflow: hidden;
+}
+
+.flagship-shot img {
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  object-fit: cover;
+}
+
 @media (max-width: 900px) {
   .flagship {
     grid-template-columns: minmax(0, 1fr);
   }
   .flagship-term {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .flagship-shot {
     border-left: 0;
     border-top: 1px solid var(--line);
   }
