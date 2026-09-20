@@ -8,7 +8,7 @@ that is not on LinkedIn). Files at this level are **current**; `archive/` is the
 
 > **Open (known SoT/publication gaps — reviewed 2026-09-20):**
 > (1) the FOX Asset role and the rewritten expert-advisor-mt-5 project block are not on LinkedIn
-> yet, so `resume-v8.9` runs ahead of the SoT; (2) the **Fineksi** role is user-confirmed and shown
+> yet, so `resume-v8.10` runs ahead of the SoT; (2) the **Fineksi** role is user-confirmed and shown
 > on the site (Experience card, About "Current", JSON-LD `worksFor`) but is not on LinkedIn or in
 > any `cv/` artifact yet; (3) the site's FOX bullets (rewritten 2026-09-19 at the user's request,
 > commit `fbcc741`) are a repo-grounded variant that drops the resume metrics — the resume remains
@@ -44,8 +44,8 @@ in two languages; every `.pdf` sits next to the same-named `.txt` it is generate
 
 | File                                                                 | Use it for                                                                                                        |
 |----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
-| [`resume-v8.9.pdf`](resume-v8.9.pdf)                                 | Official full CV — LinkedIn **full mirror**, 2 pages                                                              |
-| [`resume-onepager-v1.12.pdf`](resume-onepager-v1.12.pdf)             | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
+| [`resume-v8.10.pdf`](resume-v8.10.pdf)                               | Official full CV — LinkedIn **full mirror**, 2 pages                                                              |
+| [`resume-onepager-v1.13.pdf`](resume-onepager-v1.13.pdf)             | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
 | [`consulting-onepager-en-v1.9.pdf`](consulting-onepager-en-v1.9.pdf) | Business buyer / consulting lead (EN) — outcomes, services, proof links, process; linked from the site's Services |
 | [`consulting-onepager-id-v1.9.pdf`](consulting-onepager-id-v1.9.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
 
@@ -116,6 +116,15 @@ longer in the tree (see [Archive](#archive)).
 
 ### resume — full LinkedIn mirror
 
+- **v8.10** (2026-09-20, FOX metrics refresh after the FOX/Fineksi claims audit) — the FOX block's
+  dated 2026-07-18 numbers were recounted against FOX `development-server-5.0` @ `6709928a9`
+  (2026-09-18) with `git blame` scoped to the user's authors, teammates excluded: data models
+  **23 → 24** (17 safety_form + 7 safety_induction), email notification flows **12 → 17**
+  (14 + 3, all user-authored), Safety Hub unit tests **105 → 313** (279 + 34, user-authored).
+  The staging clause no longer implies a running box — "built the staging environment definition
+  and GitHub Actions CI/CD pipeline to AWS ECR" (the redundant "database" in "migration-drift
+  gate" was dropped to keep the same rendered line count). Nothing else changed; 2 pages verified
+  by both generators. v8.9 archived, v8.7 pruned.
 - **v8.9** (2026-09-05, LinkedIn sync — snapshot v6) — one word: the Danamon microservices bullet now
   reads "Built and operat**ed** 12 Spring Boot microservices…" after the user corrected the tense on
   the live profile (the role ended Aug 2026). Nothing else changed; 2 pages verified by both generators.
@@ -163,6 +172,9 @@ longer in the tree (see [Archive](#archive)).
 
 ### resume-onepager — recruiter/ATS edition
 
+- **v1.13** (2026-09-20, FOX metrics refresh, lock-step with `resume-v8.10`) — "23 Django models" →
+  "24 Django models" (same author-scoped recount). No other claim changed; 1 page verified by both
+  generators. v1.12 archived, v1.10 pruned.
 - **v1.12** (2026-09-14, layout switch to the user's Google Docs resume format — user decision) — the
   recruiter edition now has the layout of the resume the user was sending out: Times 11 pt on A4, five
   sections (OBJECTIVE / EXPERIENCE / SKILLS / EDUCATION / PROJECTS & CERTIFICATIONS), one centred
@@ -326,10 +338,12 @@ artifact.
   `build-pdf.py` remains the independent reference oracle.
 - Anti-fabrication: every metric stands alone exactly as sourced; never merge separate metrics
   into one composite claim, never use a stronger verb than the source.
-- **FOX metrics are a dated 2026-07-18 snapshot.** Later code state moved on (data models 23→24;
-  Safety Hub tests 105→368 including teammates' commits; "12 email flows" counted only
-  `safety_form`), so the numbers currently shipped are under-claims, not errors. Refresh with a
-  dated, author-scoped recount on the next bump — do not simply swap in the latest HEAD totals.
+- **FOX metrics carry the date of their recount.** `resume-v8.10` / `resume-onepager-v1.13`
+  refreshed them on 2026-09-20 against FOX HEAD `6709928a9` (2026-09-18): data models 24, email
+  notification flows 17, Safety Hub tests 313 — every count scoped to the user's authors via
+  `git blame` (teammates' tests and flows excluded). Recheck on each bump and keep the recount
+  author-scoped: raw totals (e.g. 368 Safety Hub tests) include teammates' work and would
+  over-attribute.
 - **The current resume must always have a matching current PDF.** Regenerate via `build-pdf.ts`
   whenever the .txt changes.
 - On version bump, also update ALL version-pinned links:

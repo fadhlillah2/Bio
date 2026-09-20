@@ -87,7 +87,7 @@
       <p>I wrote <strong>196 unit tests for Project Management</strong>. My broader FOX Asset work also includes role-based access control, field-level write restrictions, and cross-company data isolation.</p>
 
       <h2>Published Experience</h2>
-      <p>This module-level account draws on my published <a href="{base}/#resume">FOX Asset experience</a> and <a href="{base}/cv/resume-v8.9.pdf" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">full CV</a>; client source code and internal materials are not reproduced here.</p>
+      <p>This module-level account draws on my published <a href="{base}/#resume">FOX Asset experience</a> and <a href="{base}/cv/resume-v8.10.pdf" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">full CV</a>; client source code and internal materials are not reproduced here.</p>
       <p>More engineering work: the <a href="{base}/writeups/hybrid-retrieval">contract retrieval writeup</a> and <a href="https://github.com/fadhlillah2/rate-limiter-project-go" target="_blank" rel="noopener">Go rate limiter source</a>.</p>
 
       <h2>Work with Me</h2>

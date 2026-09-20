@@ -9,9 +9,9 @@
           <p class="section-index">04 &mdash; Experience</p>
           <h2>Experience, Education, Projects, and Certifications</h2>
           <p class="section-deck cta-row">
-            <a href={base + "/cv/resume-onepager-v1.12.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
-            <a href={base + "/cv/resume-v8.9.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
-            <a href={base + "/cv/resume-v8.9.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
+            <a href={base + "/cv/resume-onepager-v1.13.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
+            <a href={base + "/cv/resume-v8.10.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
+            <a href={base + "/cv/resume-v8.10.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
           </p>
         </header>
 
@@ -213,10 +213,10 @@
         </div>
 
         <p class="cta-row cta-row-center">
-          <a href={base + "/cv/resume-onepager-v1.12.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
-          <a href={base + "/cv/resume-v8.9.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
+          <a href={base + "/cv/resume-onepager-v1.13.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
+          <a href={base + "/cv/resume-v8.10.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
           <a href="#contact" class="btn btn-quiet btn-sm">Get in touch</a>
-          <a href={base + "/cv/resume-v8.9.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
+          <a href={base + "/cv/resume-v8.10.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
         </p>
 
       </div>
