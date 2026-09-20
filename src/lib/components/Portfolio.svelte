@@ -89,6 +89,26 @@
           </div>
         </article>
 
+        <!-- Interactive experiment: real WebGL2 brick breaker; live build and source are linked -->
+        <article class="flagship" data-reveal>
+          <div class="flagship-body">
+            <p class="flagship-badge">Interactive experiment &middot; WebGL2</p>
+            <h3 class="flagship-title">Breakout 3D — a hand-written WebGL2 brick breaker</h3>
+            <p class="flagship-desc">A 3D brick breaker rendered by a small hand-written WebGL2 pipeline: pointer-controlled paddle, sub-stepped ball physics with swept brick collisions, fog and a floor grid. No engine, no runtime dependencies.</p>
+            <p class="flagship-result">Vanilla JS + GLSL; the repo ships unit tests, a Chrome-headless smoke test that cross-checks the browser against Node, and a real screenshot of the live build.</p>
+            <ul class="tag-row">
+              <li>WebGL2</li><li>GLSL</li><li>Vanilla JS</li><li>Canvas</li>
+            </ul>
+            <div class="flagship-cta">
+              <a href="https://fadhlillah2.github.io/breakout-3d-webgl/" class="btn btn-solid btn-sm" target="_blank" rel="noopener" aria-label="Play the Breakout 3D demo (opens in new tab)">Play the demo</a>
+              <a href="https://github.com/fadhlillah2/breakout-3d-webgl" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" aria-label="View the Breakout 3D source on GitHub (opens in new tab)">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
+            </div>
+          </div>
+          <div class="flagship-shot" aria-hidden="true">
+            <img src={base + "/assets/img/breakout-3d.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
+          </div>
+        </article>
+
         <!-- Interactive experiment: real WebGL2 demo; live build and source are linked -->
         <article class="flagship" data-reveal>
           <div class="flagship-body">
