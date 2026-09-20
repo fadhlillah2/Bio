@@ -241,6 +241,11 @@ html.is-switching .nav-link,
 html.is-switching .brand-mark,
 html.is-switching .fab,
 html.is-switching .look-switch,
+html.is-switching .chat-fab,
+html.is-switching .chat-panel,
+html.is-switching .chat-bar,
+html.is-switching .chat-form input,
+html.is-switching .chat-send,
 html.is-switching .site-footer,
 html.is-switching .code-block {
   transition: background-color 0.45s ease, border-color 0.45s ease, color 0.45s ease;
@@ -2851,6 +2856,189 @@ html:not(.js) .look-switch {
 }
 
 /*--------------------------------------------------------------
+# CV assistant — a console panel above the floating actions.
+# Only rendered when a chat backend answered the probe, so these
+# rules never apply on the published build.
+--------------------------------------------------------------*/
+.chat-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 122px;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  padding: 0;
+  border-radius: 50%;
+  border: 1px solid var(--line-2);
+  background: var(--ink-2);
+  color: var(--head);
+  cursor: pointer;
+  box-shadow: 0 10px 30px -12px var(--shadow-ink);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.chat-fab:hover,
+.chat-fab.is-open {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.chat-fab .ico {
+  width: 19px;
+  height: 19px;
+}
+
+.chat-panel {
+  position: fixed;
+  right: 18px;
+  bottom: 174px;
+  z-index: 91;
+  display: flex;
+  flex-direction: column;
+  width: min(380px, calc(100vw - 36px));
+  max-height: min(64vh, 520px);
+  overflow: hidden;
+  border: 1px solid var(--term-line);
+  border-radius: var(--r-md);
+  background: var(--term-bg);
+  box-shadow: 0 24px 60px -20px var(--shadow-ink);
+}
+
+.chat-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--term-line);
+  background: var(--term-bar);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--term-muted);
+}
+
+.chat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--term-accent);
+}
+
+.chat-title {
+  color: var(--term-fg);
+}
+
+.chat-model {
+  margin-left: auto;
+  font-size: 11px;
+}
+
+.chat-log {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  padding: 12px;
+  list-style: none;
+  font-size: 14px;
+  color: var(--term-fg);
+}
+
+.chat-msg + .chat-msg {
+  margin-top: 12px;
+}
+
+.chat-msg p {
+  margin: 2px 0 0;
+  white-space: pre-wrap;
+}
+
+.chat-who {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--term-muted);
+}
+
+.chat-msg-user .chat-who {
+  color: var(--term-metric);
+}
+
+.chat-msg-assistant .chat-who {
+  color: var(--term-accent);
+}
+
+.chat-msg-note,
+.chat-msg-wait p {
+  color: var(--term-muted);
+}
+
+.chat-msg-error {
+  color: var(--term-metric);
+}
+
+.chat-form {
+  display: flex;
+  gap: 8px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--term-line);
+}
+
+.chat-form input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--term-line);
+  border-radius: var(--r-sm);
+  background: var(--term-deep);
+  color: var(--term-fg);
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.chat-form input:focus-visible {
+  border-color: var(--term-accent);
+  outline: none;
+}
+
+.chat-send {
+  padding: 8px 14px;
+  border: 1px solid var(--term-accent);
+  border-radius: var(--r-sm);
+  background: var(--term-accent);
+  color: var(--solid-ink);
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.chat-send[disabled],
+.chat-form input[disabled] {
+  opacity: 0.55;
+  cursor: default;
+}
+
+/* the panel is taller than the phone gap between the fab stack and the keyboard */
+@media (max-width: 620px) {
+  .chat-panel {
+    right: 12px;
+    left: 12px;
+    bottom: 122px;
+    width: auto;
+    max-height: min(70vh, 460px);
+  }
+
+  .chat-fab {
+    right: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chat-fab {
+    transition: none;
+  }
+}
+
+/*--------------------------------------------------------------
 # Print: reveal-hidden content must be forced visible (it never
 # scrolls into view when printing); drop interactive chrome and
 # keep the dark theme so the light text stays legible
@@ -2868,6 +3056,8 @@ html:not(.js) .look-switch {
   .topbar,
   .fab,
   .look-switch,
+  .chat-fab,
+  .chat-panel,
   .sky,
   .skip-link,
   .contact-form,

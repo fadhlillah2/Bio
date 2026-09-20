@@ -60,6 +60,7 @@ bun run cv:selftest  # CV parser checks
 bun run build        # prerendered output in build/
 bun run validate     # core checks + build + sky check; requires Chrome and Python 3
 bun run validate:ci  # all checks, including browser acceptance; requires native Chrome and Python 3
+bun run chat         # local CV assistant backend for the dev-only chat widget (needs the opencode CLI; CHAT_MODEL overrides the model)
 ```
 
 ## Deployment

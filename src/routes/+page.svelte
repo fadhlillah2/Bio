@@ -15,6 +15,7 @@
   import Contact from "$lib/components/Contact.svelte";
   import SiteFooter from "$lib/components/SiteFooter.svelte";
   import LookSwitch from "$lib/components/LookSwitch.svelte";
+  import ChatBot from "$lib/components/ChatBot.svelte";
 
   // enhance() returns its own cleanup; Svelte runs it on teardown.
   onMount(() => enhance());
@@ -44,3 +45,4 @@
 <SiteFooter />
 
 <LookSwitch />
+<ChatBot />
