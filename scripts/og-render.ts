@@ -12,6 +12,7 @@ const ROOT = resolve(import.meta.dir, "..");
 const CARDS: Record<string, string> = {
   cover: "og-cover.png",
   "writeup-hybrid-retrieval": "og-writeup-retrieval.png",
+  "writeup-fox-asset-project-management": "og-writeup-fox-asset-project-management.png",
 };
 const W = 1200, H = 630;
 

@@ -30,19 +30,20 @@ try {
     const rootLine = 'const ROOT = resolve(import.meta.dir, "..");';
     assert(renderer.includes(rootLine));
     await Bun.write(join(temp, "scripts/og-render.ts"), renderer.replace(rootLine, `const ROOT = ${JSON.stringify(root)};`));
-    for (const name of ["cover", "writeup-hybrid-retrieval"]) {
+    for (const name of ["cover", "writeup-hybrid-retrieval", "writeup-fox-asset-project-management"]) {
       await Bun.write(join(root, `scripts/og/${name}.html`), "<!doctype html><p>OG_SENTINEL_LOADED</p>");
     }
     const result = Bun.spawnSync([process.execPath, "--preload", preload, join(temp, "scripts/og-render.ts")], { timeout: 40_000 });
     assert.equal(result.exitCode, 0, `${directory}:\n${result.stdout}\n${result.stderr}`);
     assert.match(result.stdout.toString(), /OK\s+og-cover\.png: 1200×630/);
     assert.match(result.stdout.toString(), /OK\s+og-writeup-retrieval\.png: 1200×630/);
+    assert.match(result.stdout.toString(), /OK\s+og-writeup-fox-asset-project-management\.png: 1200×630/);
     console.log(`OK   OG templates load from ${directory}`);
 
-    const outputs = ["og-cover.png", "og-writeup-retrieval.png"].map(name => join(root, "static/assets/img", name));
+    const outputs = ["og-cover.png", "og-writeup-retrieval.png", "og-writeup-fox-asset-project-management.png"].map(name => join(root, "static/assets/img", name));
     const original = await Promise.all(outputs.map(path => Bun.file(path).bytes()));
     for (const path of outputs) chmodSync(path, 0o444);
-    for (const name of ["cover", "writeup-hybrid-retrieval"]) {
+    for (const name of ["cover", "writeup-hybrid-retrieval", "writeup-fox-asset-project-management"]) {
       await Bun.write(join(root, `scripts/og/${name}.html`), '<!doctype html><body style="background:red">OG_SENTINEL_LOADED NEW CONTENT</body>');
     }
     const fresh = Bun.spawnSync([process.execPath, "--preload", preload, join(temp, "scripts/og-render.ts")], { timeout: 40_000 });
@@ -72,7 +73,7 @@ try {
       assert.notEqual(failed.exitCode, 0, `${fault} must fail`);
       if (fault === "rename") assert.match(failed.stderr.toString(), /injected rename failure/);
       for (let i = 0; i < outputs.length; i++) assert(Buffer.from(await Bun.file(outputs[i]).bytes()).equals(before[i]), `${fault} preserves final PNG`);
-      assert.deepEqual(readdirSync(join(root, "static/assets/img")).sort(), ["og-cover.png", "og-writeup-retrieval.png"], "temporary outputs cleaned");
+      assert.deepEqual(readdirSync(join(root, "static/assets/img")).sort(), ["og-cover.png", "og-writeup-fox-asset-project-management.png", "og-writeup-retrieval.png"], "temporary outputs cleaned");
       console.log(`OK   ${fault}: failure preserves final PNGs and cleans temporary files`);
     }
   }

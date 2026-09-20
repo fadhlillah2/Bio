@@ -56,6 +56,7 @@
             <li>FOX Asset — Infinity Wave Sdn Bhd</li>
             <li>IDstar</li>
             <li>Assist.id</li>
+            <li>Fineksi</li>
           </ul>
         </div>
       </div>

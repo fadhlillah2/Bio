@@ -32,7 +32,7 @@
                   <li>Worked on resumable uploads, cross-document consistency checks, and corrections to extracted data. Added support for analyst review of company ownership and control.</li>
                   <li>Worked on financial-statement collection, processing, and company and industry ratio calculations.</li>
                   <li>Contributed to document summaries, Excel exports, generative insights, audit trails, and service logging.</li>
-                  <li>Worked on React interfaces for document review, analytics, account opening, and back-office financial-report workflows.</li>
+                  <li>Worked on React interfaces for document review, analytics, and account-opening workflows.</li>
                 </ul>
               </div>
             </details>
@@ -56,7 +56,7 @@
                   <li>Built the Project Management backend, including task assignment, Kanban and timeline views, weightage distribution, and planned-versus-actual S-Curve analytics.</li>
                   <li>Implemented role-based permissions and company data isolation, added backend regression tests, and fixed a Safety Hub null-user rendering failure with a visible error fallback.</li>
                   <li>Implemented secret scanning and tenant release pipelines with GitHub Actions, Amazon ECR, and AWS Systems Manager, including migration and disk-space guards, HTTP health checks, and automatic image rollback on startup or HTTP health-check failure; prepared staging configuration.</li>
-                  <li>Remediated exposed credentials, added schema-drift checks, and authored API documentation, deployment runbooks, and operational handover notes.</li>
+                  <li>Removed exposed credentials from tracked env templates, added schema-drift checks, and authored API documentation, deployment runbooks, and operational handover notes.</li>
                 </ul>
               </div>
             </details>

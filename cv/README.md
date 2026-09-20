@@ -6,9 +6,13 @@ repo** since 2026-07-10 — see "Removed from the tree" below) → **resume mirr
 (user decision 2026-07-06: "mirror penuh" — the resume contains all LinkedIn content and nothing
 that is not on LinkedIn). Files at this level are **current**; `archive/` is the audit trail.
 
-> **Open (tracked here and nowhere else):** the FOX Asset role and the rewritten
-> expert-advisor-mt-5 project block are not on LinkedIn yet. Until they are pasted, the resume runs
-> ahead of the SoT instead of mirroring it. Clear this note once the profile is updated.
+> **Open (known SoT/publication gaps — reviewed 2026-09-20):**
+> (1) the FOX Asset role and the rewritten expert-advisor-mt-5 project block are not on LinkedIn
+> yet, so `resume-v8.9` runs ahead of the SoT; (2) the **Fineksi** role is user-confirmed and shown
+> on the site (Experience card, About "Current", JSON-LD `worksFor`) but is not on LinkedIn or in
+> any `cv/` artifact yet; (3) the site's FOX bullets (rewritten 2026-09-19 at the user's request,
+> commit `fbcc741`) are a repo-grounded variant that drops the resume metrics — the resume remains
+> the canonical full text. Clear each item as its source is updated.
 
 ## Layout & naming
 
@@ -322,6 +326,10 @@ artifact.
   `build-pdf.py` remains the independent reference oracle.
 - Anti-fabrication: every metric stands alone exactly as sourced; never merge separate metrics
   into one composite claim, never use a stronger verb than the source.
+- **FOX metrics are a dated 2026-07-18 snapshot.** Later code state moved on (data models 23→24;
+  Safety Hub tests 105→368 including teammates' commits; "12 email flows" counted only
+  `safety_form`), so the numbers currently shipped are under-claims, not errors. Refresh with a
+  dated, author-scoped recount on the next bump — do not simply swap in the latest HEAD totals.
 - **The current resume must always have a matching current PDF.** Regenerate via `build-pdf.ts`
   whenever the .txt changes.
 - On version bump, also update ALL version-pinned links:
@@ -352,7 +360,10 @@ artifact.
   stays regardless). **Current** and the **Changelog** are the only two places a version number
   appears in this README — keep it that way.
 - The site (`src/lib/components/About.svelte` and `Resume.svelte`): About and the Experience
-  section (`#resume`) stay synced verbatim to the mirror resume.
+  section (`#resume`) follow the mirror resume — same facts, wording may be compressed. Known,
+  deliberate exceptions (2026-09-20): the FOX block is a repo-grounded rewrite that drops the
+  resume metrics (see the Open note), and the Fineksi entry is site-only until it lands on
+  LinkedIn. Matched on facts, not verbatim strings.
   The hero/meta headline was re-led for the recruiter scan (2026-07-11: "Backend Software Engineer
   · 6+ yrs · AI Native Engineer") — a re-emphasis of the same facts, not a contradiction of the
   LinkedIn headline. Site-only sections (Facts, Services, Portfolio, Skills grid) may add

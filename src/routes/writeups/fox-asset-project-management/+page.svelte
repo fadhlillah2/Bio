@@ -6,6 +6,30 @@
   import SiteFooter from "$lib/components/SiteFooter.svelte";
   import LookSwitch from "$lib/components/LookSwitch.svelte";
 
+  // Svelte reads { } in markup as expressions and ends a <script> at the first
+  // literal closing tag, so the JSON-LD ships verbatim as one {@html} string with \/ escaped.
+  const jsonLd = `  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "Building the Project Management backend for FOX Asset",
+    "description": "Building the FOX Asset Project Management backend: 21 REST endpoints, 10 models, Kanban and timeline support, and S-Curve planned-vs-actual analytics.",
+    "datePublished": "2026-09-16",
+    "dateModified": "2026-09-16",
+    "inLanguage": "en",
+    "author": {
+      "@type": "Person",
+      "name": "Fadhlillah",
+      "url": "https://fadhlillah2.github.io/Bio/",
+      "jobTitle": "Backend Software Engineer"
+    },
+    "image": "https://fadhlillah2.github.io/Bio/assets/img/og-writeup-fox-asset-project-management.png",
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://fadhlillah2.github.io/Bio/writeups/fox-asset-project-management.html" },
+    "about": ["Backend engineering", "Project management software", "Django REST Framework"],
+    "keywords": "Django REST Framework, Kanban, timeline, S-Curve, project management, multi-tenant SaaS"
+  }
+  <\/script>`;
+
   onMount(() => enhance());
 </script>
 
@@ -14,15 +38,18 @@
   <meta name="description" content="Building the FOX Asset Project Management backend: 21 REST endpoints, 10 models, Kanban and timeline support, and S-Curve planned-vs-actual analytics.">
   <link rel="canonical" href="https://fadhlillah2.github.io/Bio/writeups/fox-asset-project-management.html">
   <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Fadhlillah — Bio">
   <meta property="og:title" content="Building the Project Management backend for FOX Asset">
-  <meta property="og:description" content="Module-level backend ownership: project workflows, planned-vs-actual analytics, access controls, and 196 reported unit tests.">
+  <meta property="og:description" content="Module-level backend ownership: project workflows, planned-vs-actual analytics, access controls, and 196 unit tests.">
   <meta property="og:url" content="https://fadhlillah2.github.io/Bio/writeups/fox-asset-project-management.html">
-  <meta property="og:image" content="https://fadhlillah2.github.io/Bio/assets/img/og-cover.png">
-  <meta property="og:image:alt" content="Fadhlillah — Backend Software Engineer">
+  <meta property="og:image" content="https://fadhlillah2.github.io/Bio/assets/img/og-writeup-fox-asset-project-management.png">
+  <meta property="og:image:alt" content="Building the Project Management backend for FOX Asset — Fadhlillah">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Building the Project Management backend for FOX Asset">
   <meta name="twitter:description" content="A commercial backend delivery supporting project workflows, Kanban and timeline views, and planned-vs-actual reporting.">
-  <meta name="twitter:image" content="https://fadhlillah2.github.io/Bio/assets/img/og-cover.png">
+  <meta name="twitter:image" content="https://fadhlillah2.github.io/Bio/assets/img/og-writeup-fox-asset-project-management.png">
+
+  {@html jsonLd}
 </svelte:head>
 
 <a href="#main" class="skip-link">Skip to content</a>
