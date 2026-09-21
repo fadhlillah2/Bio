@@ -8,7 +8,23 @@ import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { AGENT, agentFile, collect, currentResume, fellBackToDefaultAgent, parseRun } from "./chat-proxy.ts";
+import {
+  AGENT,
+  agentFile,
+  collect,
+  createDailyCap,
+  createRateLimiter,
+  currentResume,
+  fellBackToDefaultAgent,
+  isDevConfig,
+  isLoopback,
+  needsToken,
+  numberEnv,
+  originAllowed,
+  resolveOrigins,
+  parseRun,
+  tokenMatches
+} from "./chat-proxy.ts";
 
 const ROOT = resolve(import.meta.dir, "..");
 
@@ -78,5 +94,60 @@ assert.throws(() => parseRun(`${TEXT}\n`, "provider exploded\n", 1), /provider e
 assert.throws(() => parseRun(`${TEXT}\n`, "", 143), /partial answer discarded/, "a SIGTERMed run must not be served as an answer");
 assert.throws(() => parseRun("", "boom\n", 0), /boom/, "an empty answer surfaces stderr");
 assert.deepEqual(parseRun(`not json\n${TEXT}\n`, "", 0).reply, "Half an ans", "non-JSON chatter is ignored");
+
+// Access control. The bug being pinned: `if (origin && ...)` let a caller that sent no Origin
+// header through the only caller check, which is exactly what curl and every bot do by default.
+const allowed = new Set(["http://localhost:5173"]);
+assert(originAllowed("http://localhost:5173", allowed), "an allowed origin passes");
+assert(!originAllowed(null, allowed), "a missing Origin header must be rejected, not waved through");
+assert(!originAllowed("https://evil.example", allowed), "an unknown origin is rejected");
+assert(!originAllowed("", allowed), "an empty origin is rejected");
+
+assert(tokenMatches("Bearer s3cret", "s3cret"), "the right token passes");
+assert(tokenMatches("bearer s3cret", "s3cret"), "the auth scheme is case-insensitive per RFC 7235");
+assert(!tokenMatches("Bearer wrong", "s3cret"), "a wrong token fails");
+assert(!tokenMatches("Bearer s3cret!", "s3cret"), "a longer near-miss fails");
+assert(!tokenMatches("s3cret", "s3cret"), "a bare token without the scheme fails");
+assert(!tokenMatches(null, "s3cret"), "a missing header fails");
+
+// A reachable deployment without a token is the accident the startup guard exists to prevent.
+assert(isLoopback("127.0.0.1") && isLoopback("::1") && isLoopback("localhost"), "loopback forms recognised");
+assert(!isLoopback("0.0.0.0") && !isLoopback("192.168.1.10"), "a reachable bind is not loopback");
+
+// The usual public shape keeps the bind on loopback behind a TLS proxy, so the bind address alone
+// cannot decide whether a token is required — configured origins are what mark a deployment.
+assert(!needsToken("127.0.0.1", ""), "a laptop dev config needs no token");
+assert(needsToken("0.0.0.0", ""), "a reachable bind needs a token");
+assert(needsToken("127.0.0.1", "https://fadhlillah2.github.io"), "loopback behind a reverse proxy still needs a token");
+
+assert.deepEqual(
+  [...resolveOrigins("https://fadhlillah2.github.io", false)],
+  ["https://fadhlillah2.github.io"],
+  "a deployment allowlist must not carry the dev origins, or any client could pass by sending Origin: http://localhost:5173"
+);
+assert(resolveOrigins("", true).has("http://localhost:5173"), "a dev config keeps the dev origins");
+
+// NaN compares false against everything, so an unvalidated typo would switch the limits off.
+assert.equal(numberEnv("X", undefined, 5), 5, "an unset variable falls back");
+assert.equal(numberEnv("X", "", 5), 5, "an empty variable falls back");
+assert.equal(numberEnv("X", "0", 5), 0, "zero is a legitimate value");
+for (const bad of ["abc", "5.5", "-1", "1e3x", " "]) {
+  assert.throws(() => numberEnv("X", bad, 5), /non-negative whole number/, `${JSON.stringify(bad)} must be refused, not silently NaN`);
+}
+
+const limiter = createRateLimiter(2, 1000);
+assert(limiter.take("a", 0) && limiter.take("a", 10), "a caller may use its allowance");
+assert(!limiter.take("a", 20), "a caller over the allowance is refused");
+assert(limiter.take("b", 20), "one caller's limit does not affect another");
+assert(limiter.take("a", 1100), "the window reopens");
+// both windows had aged out by 1100, so only the freshly opened one may remain
+assert.equal(limiter.size(), 1, "stale windows are dropped instead of growing forever");
+
+const DAY = 24 * 60 * 60 * 1000;
+const cap = createDailyCap(2);
+assert(cap.take(0) && cap.take(1), "the daily budget is spendable");
+assert(!cap.take(2), "past the daily budget the service refuses");
+assert(cap.take(DAY), "the budget resets on the next UTC day");
+assert.equal(cap.used(), 1, "the reset starts the count over");
 
 console.log("chat proxy selftest: all checks passed");

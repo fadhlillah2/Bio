@@ -49,6 +49,12 @@ export async function probe(endpoint) {
   }
 }
 
+/**
+ * No Authorization header on purpose. The proxy accepts CHAT_TOKEN for a private deployment, but
+ * this file ships to every visitor: a token pasted here would be readable in devtools and would
+ * protect nothing. A public deployment is guarded by the origin allowlist, the per-IP rate limit
+ * and the daily cap instead — and a token, if one is used, belongs in the proxy in front, not here.
+ */
 export async function ask(endpoint, messages, signal) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), ASK_TIMEOUT_MS);

@@ -18,6 +18,7 @@
  * `opencode-go/deepseek-v4.1-flash` additionally needs an account opt-in (China-hosted).
  */
 
+import { createHash, timingSafeEqual } from 'node:crypto';
 import { existsSync, readdirSync } from 'node:fs';
 
 /** The entire safety story: this agent has every tool disabled, so visitor text reaches no shell. */
@@ -79,6 +80,52 @@ export function parseRun(out: string, err: string, code: number): { reply: strin
   return { reply: reply.trim(), cost };
 }
 
+/**
+ * Fixed window per caller. Not a token bucket on purpose: the boundary burst it allows is
+ * irrelevant here, and one Map with one timestamp is far easier to reason about than a refill
+ * rate. Stale entries are dropped on every call, so the Map cannot grow without bound.
+ */
+export function createRateLimiter(perWindow: number, windowMs: number) {
+  const seen = new Map<string, { start: number; count: number }>();
+  return {
+    take(key: string, now: number): boolean {
+      for (const [other, window] of seen) if (now - window.start >= windowMs) seen.delete(other);
+      const window = seen.get(key);
+      if (!window || now - window.start >= windowMs) {
+        seen.set(key, { start: now, count: 1 });
+        return true;
+      }
+      if (window.count >= perWindow) return false;
+      window.count += 1;
+      return true;
+    },
+    size: () => seen.size
+  };
+}
+
+/**
+ * Whole-service kill switch. Rate limiting is per caller, so a botnet still adds up; this bounds
+ * the day no matter how the requests are spread. Spent per run the handler is about to start —
+ * never for a request rejected earlier — and counted in UTC days.
+ */
+export function createDailyCap(max: number) {
+  let day = '';
+  let used = 0;
+  return {
+    take(now: number): boolean {
+      const today = new Date(now).toISOString().slice(0, 10);
+      if (today !== day) {
+        day = today;
+        used = 0;
+      }
+      if (used >= max) return false;
+      used += 1;
+      return true;
+    },
+    used: () => used
+  };
+}
+
 const MAX_TURNS = 20;
 const MAX_CHARS = 2000;
 // Answers land in 5-16s; the ceiling only bounds how long one question may hold the single slot.
@@ -119,23 +166,108 @@ export async function collect(
   }
 }
 
-// dev and preview origins only — this server is bound to loopback and has no auth
-const ORIGINS = new Set([
+// Always allowed; a deployment adds its own through CHAT_ORIGINS.
+const DEV_ORIGINS = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:4173',
   'http://127.0.0.1:4173'
-]);
+];
+
+export const isLoopback = (host: string) => host === '127.0.0.1' || host === '::1' || host === 'localhost';
+
+/**
+ * `Number('abc')` is NaN, and every comparison against NaN is false — so a typo in
+ * CHAT_RATE_PER_MIN or CHAT_DAILY_MAX would silently switch off the rate limit and the daily cap,
+ * which are exactly the two controls standing in for authentication. Refuse to start instead.
+ */
+export function numberEnv(name: string, raw: string | undefined, fallback: number): number {
+  if (raw === undefined || raw === '') return fallback;
+  // Matched as digits rather than run through Number(): `Number(' ')` is 0, so a stray space
+  // would quietly become a limit of zero instead of announcing the typo.
+  const text = raw.trim();
+  if (!/^\d+$/.test(text)) {
+    throw new Error(`${name} must be a non-negative whole number, got ${JSON.stringify(raw)}`);
+  }
+  return Number(text);
+}
+
+/** A laptop running `bun run dev`: loopback bind and no deployment origins configured. */
+export const isDevConfig = (host: string, chatOrigins: string) => isLoopback(host) && !chatOrigins.trim();
+
+/**
+ * The dev origins are unioned in only for a dev config. Kept in a deployment's allowlist they
+ * would let any client pass the gate by sending `Origin: http://localhost:5173`, which turns the
+ * allowlist into decoration.
+ */
+export function resolveOrigins(chatOrigins: string, devConfig: boolean): Set<string> {
+  const configured = chatOrigins.split(',').map((o) => o.trim()).filter(Boolean);
+  return new Set(devConfig ? DEV_ORIGINS : configured);
+}
+
+/**
+ * A token is demanded by reachability, not by the bind address. The usual public shape is a TLS
+ * reverse proxy forwarding to 127.0.0.1: the bind still looks like loopback, so guarding only on
+ * the host would wave that deployment through with no authentication at all. Configured origins
+ * are the signal that this is not a laptop.
+ */
+export const needsToken = (host: string, chatOrigins: string) => !isDevConfig(host, chatOrigins);
+
+/**
+ * A missing Origin header used to pass the gate, because the check was `if (origin && ...)`.
+ * Every non-browser client — curl, a script, a bot — simply omits it, so the one caller check
+ * was bypassed by doing nothing. Absent is now rejected like any other disallowed value.
+ *
+ * This is not authentication: a non-browser client can send any Origin it likes. It only keeps
+ * the endpoint from answering anything that did not come from a page we serve.
+ */
+export const originAllowed = (origin: string | null, allowed: Set<string>) =>
+  origin !== null && allowed.has(origin);
+
+/**
+ * Compared as digests: equal-length buffers mean timingSafeEqual never has to branch on length,
+ * so neither the token nor its length can be recovered by timing the endpoint.
+ *
+ * A token only protects a deployment whose callers can keep it — a private instance, or a proxy
+ * that injects it. Baked into the public page's JavaScript it would be readable by every visitor.
+ */
+export function tokenMatches(header: string | null, expected: string): boolean {
+  const scheme = /^bearer\s+/i;
+  if (!header || !scheme.test(header)) return false;
+  const digest = (value: string) => createHash('sha256').update(value).digest();
+  return timingSafeEqual(digest(header.replace(scheme, '')), digest(expected));
+}
 
 if (import.meta.main) {
-  const PORT = Number(process.env.CHAT_PORT || 4317);
+  const PORT = numberEnv('CHAT_PORT', process.env.CHAT_PORT, 4317);
+  const HOST = process.env.CHAT_HOST || '127.0.0.1';
   const MODEL = process.env.CHAT_MODEL || 'zhipuai-coding-plan/glm-5.3-flash';
+  const TOKEN = (process.env.CHAT_TOKEN || '').trim();
+  const RATE_PER_MIN = numberEnv('CHAT_RATE_PER_MIN', process.env.CHAT_RATE_PER_MIN, 5);
+  const DAILY_MAX = numberEnv('CHAT_DAILY_MAX', process.env.CHAT_DAILY_MAX, 200);
+  // Off by default: a forwarded-for header is caller-controlled, and trusting it without a proxy
+  // in front lets one client spoof a fresh IP per request and walk straight past the rate limit.
+  const TRUST_PROXY = process.env.CHAT_TRUST_PROXY === '1';
+  const CHAT_ORIGINS = process.env.CHAT_ORIGINS || '';
+  const DEV_CONFIG = isDevConfig(HOST, CHAT_ORIGINS);
+  const ORIGINS = resolveOrigins(CHAT_ORIGINS, DEV_CONFIG);
   const REPO = new URL('..', import.meta.url).pathname.replace(/\/$/, '');
   const CV = currentResume(REPO);
 
   // Refuse to serve at all rather than let opencode fall back to a tool-capable agent.
   if (!existsSync(agentFile(REPO))) {
     throw new Error(`missing ${agentFile(REPO)} — refusing to start: without it opencode answers from the default agent, which has bash and edit`);
+  }
+
+  // You cannot expose this by accident. Anywhere but a laptop dev config, every request reaches
+  // `opencode run` with personal provider credentials, and an Origin header proves nothing about
+  // a non-browser caller — so a reachable deployment demands a token it cannot guess.
+  if (needsToken(HOST, CHAT_ORIGINS) && !TOKEN) {
+    throw new Error(`refusing to serve a non-dev configuration (host ${HOST}, origins ${CHAT_ORIGINS || 'none'}) without CHAT_TOKEN: the Origin check is not authentication, and anyone reaching this port would spend your model quota`);
+  }
+  // A short token is worse than none: it reads as protection while staying guessable.
+  if (TOKEN && TOKEN.length < 32) {
+    throw new Error('CHAT_TOKEN must be at least 32 characters — generate one with: openssl rand -hex 32');
   }
 
   const grounding = await Bun.file(CV).text();
@@ -147,7 +279,9 @@ if (import.meta.main) {
     const headers: Record<string, string> = { 'content-type': 'application/json' };
     if (origin && ORIGINS.has(origin)) {
       headers['access-control-allow-origin'] = origin;
-      headers['access-control-allow-headers'] = 'content-type';
+      // authorization is listed so a token-protected instance is usable from a browser at all:
+      // without it the preflight refuses the header and every request fails as 401.
+      headers['access-control-allow-headers'] = 'authorization, content-type';
       headers['vary'] = 'Origin';
     }
     return headers;
@@ -192,20 +326,45 @@ if (import.meta.main) {
     return parseRun(out, err, code);
   };
 
+  const limiter = createRateLimiter(RATE_PER_MIN, 60_000);
+  const daily = createDailyCap(DAILY_MAX);
+
   const server = Bun.serve({
-    hostname: '127.0.0.1',
+    hostname: HOST,
     port: PORT,
     // The slot is claimed before the body is read (see the handler), so a request whose body
     // stalls holds it until the socket times out. Pinned here rather than left to Bun's default.
     idleTimeout: 10,
-    async fetch(req) {
+    // 20 turns × 2000 chars is the most a valid request can carry; Bun's default would buffer
+    // 128 MB per request before the handler ever gets to reject it.
+    maxRequestBodySize: 128 * 1024,
+    async fetch(req, server) {
       const origin = req.headers.get('origin');
       const { pathname } = new URL(req.url);
 
       if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors(origin) });
+      if (pathname !== '/health' && (pathname !== '/chat' || req.method !== 'POST')) {
+        return json({ error: 'not found' }, 404, origin);
+      }
+
+      // Ahead of /health too: the probe runs from a page we serve and carries an Origin, while an
+      // ungated /health would name the model to anyone who asks. The token gate stays below it —
+      // the widget must be able to probe without one.
+      if (!originAllowed(origin, ORIGINS)) return json({ error: 'origin not allowed' }, 403, origin);
       if (pathname === '/health') return json({ ok: true, model: MODEL }, 200, origin);
-      if (pathname !== '/chat' || req.method !== 'POST') return json({ error: 'not found' }, 404, origin);
-      if (origin && !ORIGINS.has(origin)) return json({ error: 'origin not allowed' }, 403, origin);
+
+      // Metered before the token is checked, so guesses cost the guesser their own allowance;
+      // the other way round, 401s were free and unlimited and left no trace in the log.
+      const forwarded = TRUST_PROXY ? (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() : '';
+      const caller = forwarded || server.requestIP(req)?.address || 'unknown';
+      if (!limiter.take(caller, Date.now())) {
+        return json({ error: `Too many questions — up to ${RATE_PER_MIN} per minute.` }, 429, origin);
+      }
+
+      if (TOKEN && !tokenMatches(req.headers.get('authorization'), TOKEN)) {
+        console.warn(`rejected an unauthorized request from ${caller}`);
+        return json({ error: 'unauthorized' }, 401, origin);
+      }
       // Claimed synchronously, before the first await: a slow request body between the check and
       // the set let two callers through, so both spawned a run and whichever finished first
       // released the slot out from under the other.
@@ -225,6 +384,12 @@ if (import.meta.main) {
           if (!messages.length) throw new Error('no messages');
         } catch (e) {
           return json({ error: `bad request: ${(e as Error).message}` }, 400, origin);
+        }
+
+        // Spent here, not at the gate: charged earlier, a flood of malformed bodies could burn
+        // the whole day's budget without a single answer ever being produced.
+        if (!daily.take(Date.now())) {
+          return json({ error: 'The assistant has reached its daily limit. Please use the contact section.' }, 503, origin);
         }
 
         const started = Date.now();
