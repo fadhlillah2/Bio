@@ -10,6 +10,7 @@ Thumbs.db
 CLAUDE.md
 *.tmp.pdf
 cv/drafts/
+.og-render-*/
 
 # SvelteKit / Bun
 node_modules/

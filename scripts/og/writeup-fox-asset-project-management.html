@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-og-card="writeup-fox-asset-project-management">
 <head>
 <meta charset="utf-8">
 <title>OG cover — writeup: FOX Asset project management</title>
@@ -55,7 +55,7 @@
   <p class="eyebrow">Writeup · Delivery</p>
 
   <h1>Building the Project Management backend for FOX Asset</h1>
-  <p class="deck">Project workflows and planned-vs-actual reporting inside a multi-tenant CMMS SaaS.</p>
+  <p class="deck">Project workflows and planned-vs-actual reporting inside a multi-tenant asset management and maintenance SaaS.</p>
   <p class="pill"><span class="tm">21</span> REST endpoints · <span class="tm">10</span> models → <span class="tm">196</span> unit tests · S-Curve analytics</p>
 
   <div class="foot">
@@ -63,5 +63,24 @@
     <span><b>Fadhlillah</b><small>Backend · AI Native Engineer</small></span>
     <span class="url">fadhlillah2.github.io/Bio</span>
   </div>
+  <script>
+    /* Counters scripts/og-render.ts asserts on before it publishes the PNG; nothing here paints. */
+    addEventListener("load", () => document.fonts.ready.then(() => {
+      const root = document.documentElement;
+      let visible = 0, text = 0;
+      for (const el of document.body.querySelectorAll("*")) {
+        const box = el.getBoundingClientRect();
+        if (box.width < 1 || box.height < 1 || box.top > 630 || box.left > 1200) continue;
+        if (getComputedStyle(el).visibility === "hidden") continue;
+        visible++;
+        for (const node of el.childNodes) if (node.nodeType === 3) text += node.data.trim().length;
+      }
+      const images = [...document.images];
+      root.dataset.ogVisible = visible;
+      root.dataset.ogText = text;
+      root.dataset.ogImages = images.filter(i => i.complete && i.naturalWidth > 0).length + "/" + images.length;
+      root.dataset.ogFonts = [...document.fonts].filter(f => f.status === "loaded").length + "/" + document.fonts.size;
+    }));
+  </script>
 </body>
 </html>

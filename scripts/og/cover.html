@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-og-card="cover">
 <head>
 <meta charset="utf-8">
 <title>OG cover — home</title>
@@ -86,5 +86,24 @@
     <span class="proof-label">Production systems built at</span>
     <b>Danamon</b><b>FOX Asset — Infinity Wave Sdn Bhd</b><b>IDstar</b><b>Assist.id</b><b>Fineksi</b>
   </div>
+  <script>
+    /* Counters scripts/og-render.ts asserts on before it publishes the PNG; nothing here paints. */
+    addEventListener("load", () => document.fonts.ready.then(() => {
+      const root = document.documentElement;
+      let visible = 0, text = 0;
+      for (const el of document.body.querySelectorAll("*")) {
+        const box = el.getBoundingClientRect();
+        if (box.width < 1 || box.height < 1 || box.top > 630 || box.left > 1200) continue;
+        if (getComputedStyle(el).visibility === "hidden") continue;
+        visible++;
+        for (const node of el.childNodes) if (node.nodeType === 3) text += node.data.trim().length;
+      }
+      const images = [...document.images];
+      root.dataset.ogVisible = visible;
+      root.dataset.ogText = text;
+      root.dataset.ogImages = images.filter(i => i.complete && i.naturalWidth > 0).length + "/" + images.length;
+      root.dataset.ogFonts = [...document.fonts].filter(f => f.status === "loaded").length + "/" + document.fonts.size;
+    }));
+  </script>
 </body>
 </html>
