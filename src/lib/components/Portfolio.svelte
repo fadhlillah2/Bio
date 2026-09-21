@@ -94,8 +94,8 @@
           <div class="flagship-body">
             <p class="flagship-badge">Interactive experiment &middot; WebGL2</p>
             <h3 class="flagship-title">Breakout 3D — a hand-written WebGL2 brick breaker</h3>
-            <p class="flagship-desc">A 3D brick breaker rendered by a small hand-written WebGL2 pipeline: pointer-controlled paddle, sub-stepped ball physics with swept brick collisions, fog and a floor grid. No engine, no runtime dependencies.</p>
-            <p class="flagship-result">Vanilla JS + GLSL; the repo ships unit tests, a Chrome-headless smoke test that cross-checks the browser against Node, and a real screenshot of the live build.</p>
+            <p class="flagship-desc">A 3D brick breaker rendered by a small hand-written WebGL2 pipeline: adaptive sub-stepped physics with exact circle-vs-rect brick contact, ASCII-patterned levels whose multi-hit bricks and capsule drops are seeded so a replay never diverges, and a lit arena where the ball itself is the moving point light. No engine, no runtime dependencies.</p>
+            <p class="flagship-result">Vanilla JS + GLSL; the repo ships unit tests, a Chrome-headless smoke test that cross-checks the browser against Node, and a screenshot gate that fails unless two captures of the same frame agree byte for byte.</p>
             <ul class="tag-row">
               <li>WebGL2</li><li>GLSL</li><li>Vanilla JS</li><li>Canvas</li>
             </ul>
