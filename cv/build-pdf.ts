@@ -14,7 +14,7 @@
  * equivalent, so the read side (page count + text extraction) is unpdf and the
  * write side (/Title, /Author, /Lang stamp) is pdf-lib.
  */
-import { existsSync, rmSync } from "node:fs";
+import { existsSync, renameSync, rmSync } from "node:fs";
 import { basename, dirname, extname, join, resolve } from "node:path";
 
 const DOC = `Typeset a cv PDF from the canonical .txt — wording is preserved verbatim.
@@ -450,6 +450,8 @@ export function selftest(): void {
   assert(CSS.includes("letter-spacing: 0"), "h1 name extracts as one token FADHLILLAH, not FA D H L...");
   assert(CONSULTING_CSS.includes("white-space: nowrap"), "proof URLs never wrap→de-hyphenate into 404s");
   assert(ONEPAGER_CSS.includes("white-space: nowrap"), "same URL guard for the recruiter 1-pager");
+  assert(RESUME_CSS.includes("a, .nowrap { white-space: nowrap; }"),  // full selector: .crow .loc/.trow .d also say nowrap
+    "same URL guard for the full resume, which has no profile CSS of its own");
   assert(RESUME_CSS.includes("align-items: baseline"), "job header columns share one baseline → linear extraction");
   assert(FULL_RESUME_CSS.includes("font-size") && !ONEPAGER_CSS.includes("font-size"),
     "the mirror owns its one body size; the one-pager stays at the reference 11pt — content is cut, not type");
@@ -482,7 +484,8 @@ async function main(): Promise<void> {
   const tmpPath = withSuffix(txtPath, ".tmp.pdf");  // verify BEFORE touching the real .pdf — a failed run must not leave a broken artifact
   let pages: number;
   try {
-    await Bun.write(htmlPath, toHtml(txt, stem));
+    const html = toHtml(txt, stem);
+    await Bun.write(htmlPath, html);
     const proc = Bun.spawn(
       [chrome, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
         `--print-to-pdf=${chromePath(tmpPath, chrome)}`, chromePath(htmlPath, chrome)],
@@ -492,21 +495,27 @@ async function main(): Promise<void> {
     await proc.exited;
     if (proc.exitCode === null) fail("FAIL Chrome timed out after 120s");
     if (proc.exitCode !== 0) fail(`FAIL Chrome exited ${proc.exitCode}: ${stderr.slice(-500)}`);
+    if (!existsSync(tmpPath)) fail("FAIL Chrome produced no PDF (exit 0, nothing written)");
     const bytes = new Uint8Array(await Bun.file(tmpPath).arrayBuffer());
     // pdf.js detaches the buffer it is handed, so give it a copy — bytes is reused for the stamp
     const doc = await getDocumentProxy(new Uint8Array(bytes));
     const { totalPages, text } = await extractText(doc, { mergePages: true });
     pages = totalPages;
 
+    // one URI annotation per link: a URL wrapped across a line or page gets one per fragment,
+    // poppler/ATS then de-hyphenate it into a 404 — and canon() cannot see the break
+    const uris = new Set<string>();
+    let links = 0;
+    for (let p = 1; p <= totalPages; p++) {
+      for (const a of await (await doc.getPage(p)).getAnnotations()) {
+        if (a.url ?? a.unsafeUrl) { links++; uris.add(a.url ?? a.unsafeUrl); }
+      }
+    }
+    const hrefs = html.split('href="').length - 1;
+    if (links !== hrefs) fail(`FAIL ${links} link annotations for ${hrefs} links: a URL wrapped across a line or page`);
     // every "label <target>" in the header must survive as a clickable URI action
     const targets = headerTargets(txt);
     if (targets.length) {
-      const uris = new Set<string>();
-      for (let p = 1; p <= totalPages; p++) {
-        for (const a of await (await doc.getPage(p)).getAnnotations()) {
-          if (a.url ?? a.unsafeUrl) uris.add(a.url ?? a.unsafeUrl);
-        }
-      }
       const missing = targets.filter(([, href]) => !uris.has(href)).map(([, href]) => href);
       if (missing.length) fail(`FAIL header link annotation missing: ${missing.join(", ")} (found: ${[...uris].join(", ") || "none"})`);
       const unlabelled = targets.filter(([label]) => !text.includes(label)).map(([label]) => label);
@@ -531,7 +540,9 @@ async function main(): Promise<void> {
     writer.setTitle(docTitle(stem, head0));
     writer.setAuthor(pyTitle(head0));
     writer.catalog.set(PDFName.of("Lang"), PDFString.of(stem.includes("-id-") ? "id" : "en"));
-    await Bun.write(pdfPath, await writer.save());
+    // stamp into the verified temp, then rename: a run killed mid-write never leaves a truncated .pdf
+    await Bun.write(tmpPath, await writer.save());
+    renameSync(tmpPath, pdfPath);
   } finally {
     rmSync(htmlPath, { force: true });
     rmSync(tmpPath, { force: true });

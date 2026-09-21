@@ -70,8 +70,13 @@ the headline. Inside a header line, `label <target>` renders as a link whose vis
 the label (`email <me@gmail.com>` → a `mailto:` link reading "email"); the target is an email
 address or a domain path (`github.com/…`, `linkedin.com/in/…`, `wa.me/…`,
 `fadhlillah2.github.io/…`). The wording check ignores ` <target>`, and both generators also verify
-that every target came out of Chrome as a clickable URI annotation with exactly that href and that
-its label is visible in the PDF text.
+that every target came out of Chrome as a clickable URI annotation with exactly that href, that
+its label is visible in the PDF text, and that no link wrapped across a line (one annotation per
+link — a wrapped URL gets one per fragment, and the whitespace-insensitive wording check cannot
+see the break that plain-text extraction turns into a dead 404). `bun run check:cv` re-verifies
+the committed PDFs the same way and additionally rasterises each one with `pdftoppm`
+(poppler-utils; installed by the deploy workflow) to gate ink coverage and the name's glyph size,
+which white type or Chrome's shrink-to-fit would otherwise pass silently.
 
 Job headers put the location/date column flush right on the header row's own baseline, in DOM order,
 so plain-text extraction still reads `COMPANY` → `LOCATION` → `Title` → `Dates` in that order in
@@ -346,6 +351,10 @@ artifact.
   over-attribute.
 - **The current resume must always have a matching current PDF.** Regenerate via `build-pdf.ts`
   whenever the .txt changes.
+- **A generator change has the same status as a `.txt` change.** Any edit to `build-pdf.ts` /
+  `build-pdf.py` that can alter the render (CSS, layout, stamping) regenerates all four current
+  PDFs in the same commit: the gates prove wording, metadata, links, page count, ink and scale —
+  not layout — so a PDF left over from an older generator passes `validate:ci` unnoticed.
 - On version bump, also update ALL version-pinned links:
   (a) in-repo — 15 references in total across the home components and writeup routes:
   `rg -o 'cv/(resume|consulting)[^"} ]+' src/lib/components src/routes | wc -l`.

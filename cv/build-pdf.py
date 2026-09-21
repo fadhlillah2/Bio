@@ -426,7 +426,8 @@ def main():
     pdf_path = txt_path.with_suffix(".pdf")
     tmp_path = txt_path.with_suffix(".tmp.pdf")  # verify BEFORE touching the real .pdf — a failed run must not leave a broken artifact
     try:
-        html_path.write_text(to_html(txt, txt_path.stem), encoding="utf-8")
+        markup = to_html(txt, txt_path.stem)
+        html_path.write_text(markup, encoding="utf-8")
         try:
             subprocess.run(
                 [chrome, "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
@@ -436,15 +437,21 @@ def main():
             sys.exit(f"FAIL Chrome exited {e.returncode}: {e.stderr.decode(errors='replace')[-500:]}")
         except subprocess.TimeoutExpired:
             sys.exit("FAIL Chrome timed out after 120s")
+        if not tmp_path.exists():
+            sys.exit("FAIL Chrome produced no PDF (exit 0, nothing written)")
         reader = PdfReader(str(tmp_path))
         pages = len(reader.pages)
         pdf_text = "".join(p.extract_text() or "" for p in reader.pages)
 
+        # one URI annotation per link: a URL wrapped across a line or page gets one per fragment,
+        # poppler/ATS then de-hyphenate it into a 404 — and canon() cannot see the break
+        annots = [a for page in reader.pages for a in (page["/Annots"] if "/Annots" in page else [])]
+        uris = [str(act["/URI"]) for annot in annots
+                if (act := annot.get_object().get("/A")) and act.get("/URI")]
+        if len(uris) != (hrefs := markup.count('href="')):
+            sys.exit(f"FAIL {len(uris)} link annotations for {hrefs} links: a URL wrapped across a line or page")
         # every "label <target>" in the header must survive as a clickable URI action
         if targets := header_targets(txt):
-            annots = [a for page in reader.pages for a in (page["/Annots"] if "/Annots" in page else [])]
-            uris = {str(act["/URI"]) for annot in annots
-                    if (act := annot.get_object().get("/A")) and act.get("/URI")}
             if missing := [href for _, href in targets if href not in uris]:
                 sys.exit(f"FAIL header link annotation missing: {', '.join(missing)} (found: {', '.join(uris) or 'none'})")
             if unlabelled := [label for label, _ in targets if label not in pdf_text]:
@@ -462,8 +469,9 @@ def main():
         writer = PdfWriter(clone_from=str(tmp_path))
         writer.add_metadata({"/Title": doc_title(txt_path.stem, head0), "/Author": head0.title()})
         writer._root_object[NameObject("/Lang")] = TextStringObject("id" if "-id-" in txt_path.stem else "en")
-        with open(pdf_path, "wb") as f:
+        with open(tmp_path, "wb") as f:  # stamp into the verified temp, then rename: no truncated .pdf on a kill
             writer.write(f)
+        tmp_path.replace(pdf_path)
     finally:
         html_path.unlink(missing_ok=True)
         tmp_path.unlink(missing_ok=True)

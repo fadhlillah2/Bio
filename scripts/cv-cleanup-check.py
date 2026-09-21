@@ -50,20 +50,17 @@ def check():
             failures.append("Bun overflowing max_pages: not rejected before Chrome")
         verify("Bun overflowing max_pages")
         marker.unlink(missing_ok=True)
-        for code in (1, 0):
-            chrome.write_text('#!/bin/sh\nfor arg in "$@"; do\n'
-                              'case "$arg" in --print-to-pdf=*) printf partial > "${arg#--print-to-pdf=}";; esac\n'
-                              f'done\nexit {code}\n')
+        for code in (1, 0, None):  # exit 1; exit 0 with a broken PDF; exit 0 without writing any PDF
+            write = ':' if code is None else 'case "$arg" in --print-to-pdf=*) printf partial > "${arg#--print-to-pdf=}";; esac'
+            chrome.write_text(f'#!/bin/sh\nfor arg in "$@"; do\n{write}\ndone\nexit {code or 0}\n')
             chrome.chmod(0o700)
             pdf.write_bytes(b"original PDF")
             result = subprocess.run([shutil.which("bun"), str(ROOT / "cv/build-pdf.ts"), str(src)],
                                     env=env, capture_output=True, text=True, timeout=15)
             assert result.returncode != 0, "invalid render must fail"
-            if code:
-                assert "FAIL Chrome exited 1" in result.stderr, result.stderr
-            else:
-                assert "Invalid PDF" in result.stderr, result.stderr
-            verify("Bun render failure" if code else "Bun invalid PDF")
+            expected = "FAIL Chrome exited 1" if code == 1 else "Invalid PDF" if code == 0 else "FAIL Chrome produced no PDF"
+            assert expected in result.stderr, result.stderr
+            verify(f"Bun Chrome exit={code}")
 
         # Replay an existing PDF through the real verifier/stamp without rendering current CVs.
         current = next((ROOT / "cv").glob("resume-onepager-v*.txt"))
@@ -90,8 +87,10 @@ def check():
         sys.argv = ["build-pdf.py", str(src), "01"]
         try:
             for error in (subprocess.CalledProcessError(1, [], stderr=b"crash"),
-                          subprocess.TimeoutExpired([], 120)):
+                          subprocess.TimeoutExpired([], 120), None):  # None: Chrome returns 0 without writing
                 def fail_render(*args, **kwargs):
+                    if error is None:
+                        return
                     temporary[1].write_bytes(b"partial")
                     raise error
                 subprocess.run = fail_render
@@ -100,13 +99,15 @@ def check():
                     main()
                     raise AssertionError("render failure must propagate")
                 except SystemExit as exc:
-                    expected = "FAIL Chrome timed out after 120s" if isinstance(error, subprocess.TimeoutExpired) else "FAIL Chrome exited 1: crash"
+                    expected = ("FAIL Chrome produced no PDF (exit 0, nothing written)" if error is None
+                                else "FAIL Chrome timed out after 120s" if isinstance(error, subprocess.TimeoutExpired)
+                                else "FAIL Chrome exited 1: crash")
                     assert str(exc) == expected, exc
                 verify(f"Python {type(error).__name__}")
         finally:
             subprocess.run = original_run
     assert not failures, "\n".join(failures)
-    print("CV checks OK: positive max_pages; Bun render/verification failure and success; Python render failure/timeout; original PDFs preserved on failure")
+    print("CV checks OK: positive max_pages; Bun render/verification/no-PDF failure and success; Python render failure/timeout/no-PDF; original PDFs preserved on failure")
 
 
 if __name__ == "__main__":

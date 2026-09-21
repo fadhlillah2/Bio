@@ -32,10 +32,15 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Install poppler-utils
+        # pdftoppm rasterises cv/*.pdf for the ink/scale gate in check:cv; the runner image ships none
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq --no-install-recommends poppler-utils
+
       - name: Validate
         timeout-minutes: 10
         run: |
           python3 --version
+          pdftoppm -v
           bun -e 'import { findChrome } from "./cv/build-pdf.ts"; console.log(findChrome())'
           bun run validate:ci
 

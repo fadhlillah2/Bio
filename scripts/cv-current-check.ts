@@ -1,31 +1,51 @@
-/** Check current CV artifacts without rendering. Run with Bun; --selftest uses temporary mutations. */
+/** Check current CV artifacts without Chrome (pdftoppm rasterises them). Run with Bun; --selftest uses temporary mutations. */
 import assert from "node:assert/strict";
 import { cpSync, mkdtempSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { PDFDocument, PDFName } from "pdf-lib";
+import { PDFDocument, PDFName, rgb } from "pdf-lib";
 import { extractText, getDocumentProxy } from "unpdf";
 import { canon, docTitle, headerLines, pyTitle, toHtml, visibleText } from "../cv/build-pdf.ts";
 
 const ROOT = resolve(import.meta.dir, "..");
 
+/** Mean darkness in % over every page of `pdftoppm -gray` output (concatenated binary PGMs). */
+function meanInk(pgm: Uint8Array): number {
+  let offset = 0, dark = 0, pixels = 0;
+  while (offset < pgm.length) {
+    const header = /^P5\s+(\d+)\s+(\d+)\s+255\s/.exec(new TextDecoder("latin1").decode(pgm.subarray(offset, offset + 32)));
+    assert(header, "pdftoppm output is not binary PGM");
+    const n = Number(header[1]) * Number(header[2]);
+    offset += header[0].length;
+    for (let k = 0; k < n; k++) dark += 255 - pgm[offset + k];
+    offset += n; pixels += n;
+  }
+  assert(pixels > 0, "pdftoppm rendered no pixels");
+  return dark / (255 * pixels) * 100;
+}
+
 async function checkCurrent(root: string): Promise<void> {
-  // Artifact families and page budgets are the contract; versions come only from current sources.
-  const budgets: Record<string, number> = { resume: 2, "resume-onepager": 1,
-    "consulting-onepager-en": 1, "consulting-onepager-id": 1 };
+  // Artifact families are the contract; versions come only from current sources. Per family: page
+  // budget; ink floor = % mean darkness of the rasterised pages at 36 dpi, about half of each
+  // healthy artifact (6.0 / 6.4 / 7.4 / 5.4 on 2026-09-21; white type or a white box leaves < 1.6);
+  // h1 = the name's glyph size in pt (body size x 1.4545 — Chrome's shrink-to-fit scales every item).
+  const contract: Record<string, { pages: number; ink: number; h1: number }> = {
+    resume: { pages: 2, ink: 2.5, h1: 12.36 }, "resume-onepager": { pages: 1, ink: 3.5, h1: 15.9975 },
+    "consulting-onepager-en": { pages: 1, ink: 3, h1: 24 }, "consulting-onepager-id": { pages: 1, ink: 3, h1: 24 } };
+  assert(Bun.which("pdftoppm"), "pdftoppm (poppler-utils) is required: the ink gate rasterises every PDF");
   const files = readdirSync(join(root, "cv")).filter(n => /\.(txt|pdf)$/.test(n)).sort();
   const sources = files.filter(n => n.endsWith(".txt"));
   const families = sources.map(n => /^(.*)-v\d+\.\d+\.txt$/.exec(n)?.[1]);
-  assert.deepEqual([...families].sort(), Object.keys(budgets).sort(), "current sources: exactly one version per artifact family required");
+  assert.deepEqual([...families].sort(), Object.keys(contract).sort(), "current sources: exactly one version per artifact family required");
   const expected = sources.flatMap(n => [n, n.replace(/\.txt$/, ".pdf")]).sort();
   assert.deepEqual(files, expected, "current files: each current source needs its matching PDF, no stale artifacts");
 
   for (const [i, file] of sources.entries()) {
-    const stem = file.slice(0, -4), pdfFile = stem + ".pdf";
+    const stem = file.slice(0, -4), pdfFile = stem + ".pdf", spec = contract[families[i]!];
     const txt = readFileSync(join(root, "cv", file), "utf8");
     const bytes = readFileSync(join(root, "cv", pdfFile));
     const pdf = await PDFDocument.load(bytes, { updateMetadata: false });
-    assert(pdf.getPageCount() > 0 && pdf.getPageCount() <= budgets[families[i]!], `${pdfFile}: pages exceed ${budgets[families[i]!]}`);
+    assert(pdf.getPageCount() > 0 && pdf.getPageCount() <= spec.pages, `${pdfFile}: pages exceed ${spec.pages}`);
     const name = headerLines(txt)[0];
     assert.equal(pdf.getTitle(), docTitle(stem, name), `${pdfFile}: title mismatch`);
     assert.equal(pdf.getAuthor(), pyTitle(name), `${pdfFile}: author mismatch`);
@@ -35,17 +55,25 @@ async function checkCurrent(root: string): Promise<void> {
     const actual = canon(text), wanted = canon(visibleText(txt));
     assert(actual === wanted, `${pdfFile}: wording differs from ${file}`);
     const uris = new Set<string>();
+    let links = 0;
     for (let p = 1; p <= doc.numPages; p++) {
       for (const a of await (await doc.getPage(p)).getAnnotations()) {
-        if (a.url ?? a.unsafeUrl) uris.add(a.url ?? a.unsafeUrl);
+        if (a.url ?? a.unsafeUrl) { links++; uris.add(a.url ?? a.unsafeUrl); }
       }
     }
     // Undo only the five HTML entities emitted by the generator, once each.
     const entities: Record<string, string> = { "&quot;": '"', "&#x27;": "'", "&lt;": "<", "&gt;": ">", "&amp;": "&" };
-    for (const match of toHtml(txt, stem).matchAll(/href="([^"]*)"/g)) {
-      const href = match[1].replace(/&(?:quot|#x27|lt|gt|amp);/g, entity => entities[entity]);
-      assert(uris.has(href), `${pdfFile}: missing link annotation ${href}`);
-    }
+    const hrefs = [...toHtml(txt, stem).matchAll(/href="([^"]*)"/g)]
+      .map(match => match[1].replace(/&(?:quot|#x27|lt|gt|amp);/g, entity => entities[entity]));
+    // a link wrapped across a line or page gets one annotation per fragment; canon() cannot see the break
+    assert.equal(links, hrefs.length, `${pdfFile}: ${links} link annotations for ${hrefs.length} links (a URL wrapped?)`);
+    for (const href of hrefs) assert(uris.has(href), `${pdfFile}: missing link annotation ${href}`);
+    const h1 = ((await (await doc.getPage(1)).getTextContent()).items as { str?: string; height: number }[]).find(item => item.str?.trim());
+    assert(h1 && Math.abs(h1.height - spec.h1) < 0.01, `${pdfFile}: h1 renders at ${h1?.height.toFixed(2)}pt, expected ${spec.h1}pt (shrink-to-fit?)`);
+    const raster = Bun.spawnSync(["pdftoppm", "-gray", "-r", "36", join(root, "cv", pdfFile)]);
+    assert(raster.success, `${pdfFile}: pdftoppm failed: ${raster.stderr}`);
+    const ink = meanInk(new Uint8Array(raster.stdout));
+    assert(ink >= spec.ink, `${pdfFile}: ink coverage ${ink.toFixed(2)}% is below the ${spec.ink}% floor (white type?)`);
   }
 
   assert.deepEqual(readdirSync(join(root, "static/cv")).sort(), expected, "static files: must contain only current PDF/TXT artifacts");
@@ -92,14 +120,18 @@ async function selftest() {
       } finally { writeFileSync(file, previous); }
     };
     await rejects(txt, readFileSync(txt, "utf8") + "\nUNSOURCED TEXT\n", /wording/);
-    for (const field of ["title", "author", "lang", "pages", "links"]) {
+    for (const field of ["title", "author", "lang", "pages", "links", "wrapped", "ink", "h1"]) {
       const doc = await PDFDocument.load(original, { updateMetadata: false });
+      const [first] = doc.getPages();
       if (field === "title") doc.setTitle("Wrong title");
       if (field === "author") doc.setAuthor("Wrong author");
       if (field === "lang") doc.catalog.set(PDFName.of("Lang"), PDFName.of("wrong"));
       if (field === "pages") doc.addPage();
       if (field === "links") for (const page of doc.getPages()) page.node.delete(PDFName.of("Annots"));
-      await rejects(pdf, await doc.save(), new RegExp(field === "links" ? "link" : field, "i"));
+      if (field === "wrapped") first.node.Annots()!.push(first.node.Annots()!.get(0));  // a second fragment of one link
+      if (field === "ink") first.drawRectangle({ x: 0, y: 0, width: first.getWidth(), height: first.getHeight(), color: rgb(1, 1, 1) });
+      if (field === "h1") first.scaleContent(0.7366, 0.7366);  // Chrome's shrink-to-fit on an over-wide URL
+      await rejects(pdf, await doc.save(), new RegExp({ links: "link", wrapped: "link annotations", ink: "ink coverage" }[field] ?? field, "i"));
     }
     await rejects(join(root, "static/cv", name), "stale copy", /static copy/);
     const component = join(root, "src/lib/components/Topbar.svelte");
