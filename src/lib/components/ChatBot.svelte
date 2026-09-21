@@ -50,8 +50,8 @@
     busy = true;
     await scrollLog();
     try {
-      const reply = await ask(endpoint, $state.snapshot(messages));
-      messages.push({ role: "assistant", content: reply });
+      const { reply, sig } = await ask(endpoint, $state.snapshot(messages));
+      messages.push({ role: "assistant", content: reply, sig });
     } catch (e) {
       error = e.name === "AbortError" ? "The answer took too long." : e.message;
     } finally {

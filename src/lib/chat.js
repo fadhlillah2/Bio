@@ -68,7 +68,9 @@ export async function ask(endpoint, messages, signal) {
     });
     const body = await res.json().catch(() => ({}));
     if (!res.ok) throw new Error(body.error || 'The chat service returned an error.');
-    return body.reply;
+    // `sig` is the proxy's tag over this exact reply. It is carried back with the turn so the
+    // proxy can tell its own words from an assistant turn someone typed into the request.
+    return { reply: body.reply, sig: body.sig };
   } finally {
     clearTimeout(timer);
   }
