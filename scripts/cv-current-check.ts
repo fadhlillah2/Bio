@@ -9,29 +9,34 @@ import { canon, docTitle, headerLines, pyTitle, toHtml, visibleText } from "../c
 
 const ROOT = resolve(import.meta.dir, "..");
 
-/** Mean darkness in % over every page of `pdftoppm -gray` output (concatenated binary PGMs). */
-function meanInk(pgm: Uint8Array): number {
-  let offset = 0, dark = 0, pixels = 0;
+/** Mean darkness in % of each page of `pdftoppm -gray` output (concatenated binary PGMs). */
+function pageInk(pgm: Uint8Array): number[] {
+  const pages: number[] = [];
+  let offset = 0;
   while (offset < pgm.length) {
     const header = /^P5\s+(\d+)\s+(\d+)\s+255\s/.exec(new TextDecoder("latin1").decode(pgm.subarray(offset, offset + 32)));
     assert(header, "pdftoppm output is not binary PGM");
     const n = Number(header[1]) * Number(header[2]);
     offset += header[0].length;
+    let dark = 0;
     for (let k = 0; k < n; k++) dark += 255 - pgm[offset + k];
-    offset += n; pixels += n;
+    offset += n; pages.push(dark / (255 * n) * 100);
   }
-  assert(pixels > 0, "pdftoppm rendered no pixels");
-  return dark / (255 * pixels) * 100;
+  assert(pages.length > 0, "pdftoppm rendered no pages");
+  return pages;
 }
 
 async function checkCurrent(root: string): Promise<void> {
   // Artifact families are the contract; versions come only from current sources. Per family: page
-  // budget; ink floor = % mean darkness of the rasterised pages at 36 dpi, about half of each
-  // healthy artifact (6.0 / 6.4 / 7.4 / 5.4 on 2026-09-21; white type or a white box leaves < 1.6);
-  // h1 = the name's glyph size in pt (body size x 1.4545 — Chrome's shrink-to-fit scales every item).
+  // budget; ink floor = % mean darkness of EACH rasterised page at 36 dpi, ~75% of the lightest
+  // healthy page (6.0 / 6.4 / 7.4 / 6.1+4.7 on 2026-09-21). Measured: all-white, #999 grey or
+  // white bullet bodies read 2.0–4.6 and a whited-out page ~0, while a lost heading or paragraph
+  // shifts only tenths and passes — a whole-page proxy, not a per-element one. h1 = the name's
+  // glyph size in pt (resume/onepager: body x 1.4545; consulting: a fixed 24pt) — Chrome's
+  // shrink-to-fit scales every item.
   const contract: Record<string, { pages: number; ink: number; h1: number }> = {
-    resume: { pages: 2, ink: 2.5, h1: 12.36 }, "resume-onepager": { pages: 1, ink: 3.5, h1: 15.9975 },
-    "consulting-onepager-en": { pages: 1, ink: 3, h1: 24 }, "consulting-onepager-id": { pages: 1, ink: 3, h1: 24 } };
+    resume: { pages: 2, ink: 3.5, h1: 12.36 }, "resume-onepager": { pages: 1, ink: 5.5, h1: 15.9975 },
+    "consulting-onepager-en": { pages: 1, ink: 4.5, h1: 24 }, "consulting-onepager-id": { pages: 1, ink: 4.5, h1: 24 } };
   assert(Bun.which("pdftoppm"), "pdftoppm (poppler-utils) is required: the ink gate rasterises every PDF");
   const files = readdirSync(join(root, "cv")).filter(n => /\.(txt|pdf)$/.test(n)).sort();
   const sources = files.filter(n => n.endsWith(".txt"));
@@ -72,8 +77,9 @@ async function checkCurrent(root: string): Promise<void> {
     assert(h1 && Math.abs(h1.height - spec.h1) < 0.01, `${pdfFile}: h1 renders at ${h1?.height.toFixed(2)}pt, expected ${spec.h1}pt (shrink-to-fit?)`);
     const raster = Bun.spawnSync(["pdftoppm", "-gray", "-r", "36", join(root, "cv", pdfFile)]);
     assert(raster.success, `${pdfFile}: pdftoppm failed: ${raster.stderr}`);
-    const ink = meanInk(new Uint8Array(raster.stdout));
-    assert(ink >= spec.ink, `${pdfFile}: ink coverage ${ink.toFixed(2)}% is below the ${spec.ink}% floor (white type?)`);
+    for (const [p, ink] of pageInk(new Uint8Array(raster.stdout)).entries()) {
+      assert(ink >= spec.ink, `${pdfFile}: page ${p + 1} ink coverage ${ink.toFixed(2)}% is below the ${spec.ink}% floor (white type or a blank page?)`);
+    }
   }
 
   assert.deepEqual(readdirSync(join(root, "static/cv")).sort(), expected, "static files: must contain only current PDF/TXT artifacts");
@@ -133,6 +139,12 @@ async function selftest() {
       if (field === "h1") first.scaleContent(0.7366, 0.7366);  // Chrome's shrink-to-fit on an over-wide URL
       await rejects(pdf, await doc.save(), new RegExp({ links: "link", wrapped: "link annotations", ink: "ink coverage" }[field] ?? field, "i"));
     }
+    // top half of the resume's page 2 whited out: page 2 reads ~2.4% but a document-wide mean ~4.2% would pass
+    const resume = join(root, "cv", readdirSync(join(root, "cv")).find(n => /^resume-v.*\.pdf$/.test(n))!);
+    const twoPages = await PDFDocument.load(readFileSync(resume), { updateMetadata: false });
+    const last = twoPages.getPage(twoPages.getPageCount() - 1), height = last.getHeight() / 2;
+    last.drawRectangle({ x: 0, y: height, width: last.getWidth(), height, color: rgb(1, 1, 1) });
+    await rejects(resume, await twoPages.save(), /page 2 ink coverage/);
     await rejects(join(root, "static/cv", name), "stale copy", /static copy/);
     const component = join(root, "src/lib/components/Topbar.svelte");
     await rejects(component, readFileSync(component, "utf8").replace(name.replace(/\.txt$/, ".pdf"), "resume-onepager-v0.0.pdf"), /reference/);

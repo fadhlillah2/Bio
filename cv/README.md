@@ -75,8 +75,8 @@ its label is visible in the PDF text, and that no link wrapped across a line (on
 link — a wrapped URL gets one per fragment, and the whitespace-insensitive wording check cannot
 see the break that plain-text extraction turns into a dead 404). `bun run check:cv` re-verifies
 the committed PDFs the same way and additionally rasterises each one with `pdftoppm`
-(poppler-utils; installed by the deploy workflow) to gate ink coverage and the name's glyph size,
-which white type or Chrome's shrink-to-fit would otherwise pass silently.
+(poppler-utils; installed by the deploy workflow) to gate every page's ink coverage and the name's
+glyph size, which white type or Chrome's shrink-to-fit would otherwise pass silently.
 
 Job headers put the location/date column flush right on the header row's own baseline, in DOM order,
 so plain-text extraction still reads `COMPANY` → `LOCATION` → `Title` → `Dates` in that order in
