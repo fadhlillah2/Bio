@@ -61,9 +61,27 @@ bun run build        # prerendered output in build/
 bun run validate     # core checks + build + sky check; requires Chrome and Python 3
 bun run validate:ci  # all checks, including browser acceptance; requires native Chrome and Python 3
 bun run chat         # local CV assistant backend for the dev-only chat widget (needs the opencode CLI; CHAT_MODEL overrides the model)
+bun run chat:worker  # the deployable backend (worker/chat.ts) run locally; needs CHAT_API_KEY + CHAT_SIGNING_KEY
 ```
 
 ## Deployment
+
+The chat widget is dev-only until a backend is hosted: `PROD_ENDPOINT` in `src/lib/chat.js` is
+empty, so outside localhost the widget is never rendered and the published page makes no request.
+
+To put it live, deploy `worker/` (Cloudflare Worker, calls the provider API directly — no opencode
+CLI and no personal credential file on a public host):
+
+```bash
+cd worker
+bunx wrangler kv namespace create CHAT_KV   # paste the id into wrangler.toml
+bunx wrangler secret put CHAT_API_KEY       # a fresh provider key, scoped with a spend cap
+bunx wrangler secret put CHAT_SIGNING_KEY   # openssl rand -hex 32
+bunx wrangler deploy
+```
+
+Then set `PROD_ENDPOINT` in `src/lib/chat.js` to the worker URL. The worker refuses to answer
+unless KV, the API key and the signing key are all present.
 
 Pushes to `master` run [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), build the
 static site, and deploy the resulting `build/` artifact. The repository's Pages source must be set

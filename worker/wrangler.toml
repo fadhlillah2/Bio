@@ -1,0 +1,42 @@
+name = "bio-chat"
+main = "chat.ts"
+compatibility_date = "2026-09-01"
+
+# Counters for the rate limit and the daily cap. Without it the worker refuses to answer, because
+# a worker isolate is too short-lived for an in-memory counter to bound anything.
+# Create with: bunx wrangler kv namespace create CHAT_KV — then paste the id below.
+[[kv_namespaces]]
+binding = "CHAT_KV"
+id = "PASTE_THE_ID_FROM_wrangler_kv_namespace_create"
+
+# Atomic per-caller limiting at the edge. A counter built on KV is read-then-write, so a
+# concurrent burst all reads the same value and passes together — measured at 40 requests through
+# a limit of 5. This binding is what actually holds the line in production.
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 5
+  period = 60
+
+[vars]
+# The site origin. Only requests carrying one of these is answered; the dev origins are NOT
+# unioned in here, or anyone could pass the gate by sending Origin: http://localhost:5173.
+CHAT_ORIGINS = "https://fadhlillah2.github.io"
+# Any OpenAI-compatible endpoint. Verified working: https://api.deepseek.com (deepseek-chat) and
+# https://open.bigmodel.cn/api/coding/paas/v4 (glm-5.3-flash, covered by the GLM coding plan).
+CHAT_API_URL = "https://api.deepseek.com"
+CHAT_MODEL = "deepseek-chat"
+# Keep in step with the ratelimits binding above; this value only shapes the 429 message.
+CHAT_RATE_PER_MIN = "5"
+# A signal, not a spend cap — KV cannot count a burst exactly. The real ceiling is the spend cap
+# you set on CHAT_API_KEY in the provider dashboard. Set one; this is not a substitute.
+CHAT_DAILY_MAX = "200"
+
+# Secrets — never in this file, set them with `bunx wrangler secret put <NAME>`:
+#   CHAT_API_KEY      provider key. Mint a fresh one scoped to this worker with a spend cap.
+#   CHAT_SIGNING_KEY  any 32+ random chars (openssl rand -hex 32). Tags the assistant turns so a
+#                     forged one cannot pass as something the assistant actually said.
+#   CHAT_TOKEN        optional. Only for a private instance or a proxy that injects it — the
+#                     public page cannot hold a secret.
