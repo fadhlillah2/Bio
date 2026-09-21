@@ -43,12 +43,21 @@ for await (const path of new Bun.Glob("src/**/*.svelte").scan({ cwd: repo })) {
   }
 }
 assert(shipped.size > templateAssets.size, "src/ must declare og:image/twitter:image cards");
-for (const file of [...shipped].sort()) assert.equal(unusable(file), "", `referenced asset ${file}: ${unusable(file)}`);
+
+// The counter og-render.ts asserts on is duplicated per template; one stale copy would quietly
+// move a single card's floor. Same bytes in all three, or the floors mean nothing.
+const sentinel = (name: string) => template(name).match(/<script>([\s\S]*?)<\/script>\s*<\/body>/)![1];
+for (const name of CARDS.slice(1)) assert.equal(sentinel(name), sentinel(CARDS[0]), `${name}: sentinel counter drifted from ${CARDS[0]}`);
+for (const file of [...shipped].sort()) {
+  const why = unusable(file);
+  assert.equal(why, "", `referenced asset ${file}: ${why}`);
+}
 console.log(`OK   ${shipped.size} referenced card assets exist on disk with a valid signature and size`);
 
 // Copy the templates must mirror in the components they advertise; the hybrid deck is a deliberate condensation.
 const MIRROR: [string, string, RegExp][] = [
   ["cover", "src/lib/components/Hero.svelte", /<h1[^>]*>([\s\S]*?)<\/h1>/],
+  ["cover", "src/lib/components/Hero.svelte", /<p class="sub">([\s\S]*?)<\/p>/],
   ["writeup-hybrid-retrieval", "src/routes/writeups/hybrid-retrieval/+page.svelte", /<h1[^>]*>([\s\S]*?)<\/h1>/],
   ["writeup-fox-asset-project-management", "src/routes/writeups/fox-asset-project-management/+page.svelte", /<h1[^>]*>([\s\S]*?)<\/h1>/],
   ["writeup-fox-asset-project-management", "src/routes/writeups/fox-asset-project-management/+page.svelte", /<p class="deck">([\s\S]*?)<\/p>/],

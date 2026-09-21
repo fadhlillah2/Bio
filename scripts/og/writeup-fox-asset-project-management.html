@@ -70,7 +70,7 @@
       let visible = 0, text = 0;
       for (const el of document.body.querySelectorAll("*")) {
         const box = el.getBoundingClientRect();
-        if (box.width < 1 || box.height < 1 || box.top > 630 || box.left > 1200) continue;
+        if (box.width < 1 || box.height < 1 || box.bottom < 1 || box.right < 1 || box.top > 630 || box.left > 1200) continue;
         if (getComputedStyle(el).visibility === "hidden") continue;
         visible++;
         for (const node of el.childNodes) if (node.nodeType === 3) text += node.data.trim().length;

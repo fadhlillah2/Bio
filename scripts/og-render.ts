@@ -6,16 +6,53 @@
 import { mkdtempSync, renameSync, rmSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { inflateSync } from "node:zlib";
 import { findChrome, chromePath } from "../cv/build-pdf.ts";
 
 const ROOT = resolve(import.meta.dir, "..");
-// visible/text are floors measured on a healthy card, so a blank, half-painted or unstyled render fails.
-const CARDS: Record<string, { png: string; visible: number; text: number }> = {
-  cover: { png: "og-cover.png", visible: 40, text: 470 },
-  "writeup-hybrid-retrieval": { png: "og-writeup-retrieval.png", visible: 11, text: 250 },
-  "writeup-fox-asset-project-management": { png: "og-writeup-fox-asset-project-management.png", visible: 11, text: 250 },
+// visible/text: DOM floors measured on healthy cards (cover 44/508, hybrid 12/279, fox 13/305).
+// ink: lit-pixel band of the raster itself, because those DOM counters stay high when the paint layer
+// breaks (opaque overlay, transparent text, content pushed off canvas). Both re-measure with a render.
+const CARDS: Record<string, { png: string; visible: number; text: number; ink: [number, number] }> = {
+  cover: { png: "og-cover.png", visible: 40, text: 470, ink: [18000, 52000] }, // healthy 25845 lit px
+  "writeup-hybrid-retrieval": { png: "og-writeup-retrieval.png", visible: 11, text: 250, ink: [16000, 47000] }, // healthy 23510
+  "writeup-fox-asset-project-management": { png: "og-writeup-fox-asset-project-management.png", visible: 11, text: 250, ink: [19000, 55000] }, // healthy 27581
 };
 const W = 1200, H = 630;
+
+/** Pixels bright enough to read as ink in the PNG we are about to publish (8-bit RGB, non-interlaced). */
+function litPixels(bytes: Uint8Array, view: DataView): number {
+  if (bytes[24] !== 8 || bytes[25] !== 2 || bytes[28] !== 0) throw new Error(`unsupported PNG (depth ${bytes[24]}, color ${bytes[25]}, interlace ${bytes[28]})`);
+  const idat: Uint8Array[] = [];
+  for (let p = 8; p + 12 <= bytes.length; ) {
+    const len = view.getUint32(p);
+    if (String.fromCharCode(...bytes.subarray(p + 4, p + 8)) === "IDAT") idat.push(bytes.subarray(p + 8, p + 8 + len));
+    p += 12 + len;
+  }
+  const raw = inflateSync(Buffer.concat(idat));
+  const stride = W * 3;
+  const row = new Uint8Array(stride), prior = new Uint8Array(stride);
+  let lit = 0;
+  for (let y = 0, at = 0; y < H; y++) {
+    const filter = raw[at++]; // PNG per-scanline predictor: 0 none, 1 sub, 2 up, 3 average, 4 paeth
+    for (let i = 0; i < stride; i++) {
+      const a = i >= 3 ? row[i - 3] : 0, b = prior[i], c = i >= 3 ? prior[i - 3] : 0;
+      let predictor = 0;
+      if (filter === 1) predictor = a;
+      else if (filter === 2) predictor = b;
+      else if (filter === 3) predictor = (a + b) >> 1;
+      else if (filter === 4) {
+        const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c);
+        predictor = pa <= pb && pa <= pc ? a : pb <= pc ? b : c;
+      }
+      row[i] = (raw[at + i] + predictor) & 255;
+    }
+    at += stride;
+    for (let i = 0; i < stride; i += 3) if (0.2126 * row[i] + 0.7152 * row[i + 1] + 0.0722 * row[i + 2] >= 160) lit++;
+    prior.set(row);
+  }
+  return lit;
+}
 
 const chrome = findChrome();
 const wsl = chrome.endsWith(".exe");
@@ -58,8 +95,12 @@ for (const [stem, card] of Object.entries(CARDS)) {
       const [loaded, wanted] = mark(kind).split("/").map(Number);
       if (!(wanted > 0) || loaded !== wanted) throw new Error(`${loaded}/${wanted} ${kind} loaded`);
     }
+    const lit = litPixels(bytes, view);
+    if (lit < card.ink[0] || lit > card.ink[1]) {
+      throw new Error(`raster ink out of band: ${lit} lit pixels (want ${card.ink[0]}–${card.ink[1]})`);
+    }
     renameSync(fresh, out);
-    console.log(`OK   ${png}: ${size[0]}×${size[1]}, ${bytes.length} bytes (chrome exit ${run.exitCode})`);
+    console.log(`OK   ${png}: ${size[0]}×${size[1]}, ${bytes.length} bytes, ${lit} lit px (chrome exit ${run.exitCode})`);
   } catch (error) {
     failed++;
     console.error(`FAIL ${png}: ${error instanceof Error ? error.message : error}`);
