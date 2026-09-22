@@ -3,13 +3,17 @@
  *
  * The alternative, hosting scripts/chat-proxy.ts, would put the opencode CLI and the author's
  * personal `auth.json` — every provider credential at once — on a public machine. Here the blast
- * radius is one API key that can be scoped, capped and revoked without disturbing anything else.
+ * radius is one API key that can be revoked without disturbing anything else, bounded by the GLM
+ * coding plan's plan-wide credits (5-hour + weekly) plus this worker's daily quotas and the edge
+ * rate limit.
  * There is no CLI, so there is also no tool-capable agent to fall back to: the assistant's rules
  * travel as a system message and the model has no tools at all.
  *
- * Deploy (you run these; they touch your account, not this repo):
+ * Deploy: .github/workflows/deploy-worker.yml deploys automatically on push to master (after the
+ * content-check and selftest gates) once the GitHub secrets and the KV id are in place. The manual
+ * path below remains the fallback (you run these; they touch your account, not this repo):
  *   cd worker && bunx wrangler kv namespace create CHAT_KV      # paste the id into wrangler.toml
- *   bunx wrangler secret put CHAT_API_KEY                       # provider key, scoped + capped
+ *   bunx wrangler secret put CHAT_API_KEY                       # provider key (GLM coding plan)
  *   bunx wrangler secret put CHAT_SIGNING_KEY                   # openssl rand -hex 32
  *   bunx wrangler deploy
  * Then set PROD_ENDPOINT in src/lib/chat.js to the worker URL and CHAT_ORIGINS to the site origin.
@@ -62,8 +66,8 @@ const MAX_BODY_BYTES = 128 * 1024;
  * It is NOT a hard cap: KV is read-then-write, so a concurrent burst all reads the same old value
  * and every writer stores it + 1 — an adversarial burst was measured passing 40 requests while
  * the counter moved by one. Per-caller limiting therefore uses the edge rate limiter above, and
- * the real ceiling on spend is the cap set on the API key itself. This bounds the ordinary case
- * and gives the widget a polite way to stop.
+ * the real ceilings on spend are the GLM coding plan's plan-wide credits (5-hour + weekly) over
+ * these daily quotas. This bounds the ordinary case and gives the widget a polite way to stop.
  */
 async function countDay(kv: KVNamespace, key: string, limit: number): Promise<boolean> {
   const used = Number((await kv.get(key)) || 0);

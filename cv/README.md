@@ -355,6 +355,10 @@ artifact.
   `build-pdf.py` that can alter the render (CSS, layout, stamping) regenerates all four current
   PDFs in the same commit: the gates prove wording, metadata, links, page count, ink and scale —
   not layout — so a PDF left over from an older generator passes `validate:ci` unnoticed.
+- **A CV bump also travels to the chat worker.** Regenerate the bundle with
+  `bun run chat:worker:build` in the same commit, and `.github/workflows/deploy-worker.yml`
+  redeploys the worker automatically on the push; the `chat:worker:build --check` gate (part of
+  `check:regressions`) fails the build on a stale bundle.
 - On version bump, also update ALL version-pinned links:
   (a) in-repo — 15 references in total across the home components and writeup routes:
   `rg -o 'cv/(resume|consulting)[^"} ]+' src/lib/components src/routes | wc -l`.

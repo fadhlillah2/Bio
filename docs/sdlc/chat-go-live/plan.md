@@ -306,7 +306,9 @@ jobs:
 - **Test dulu, lalu cara membuktikan selesai:** assert baru di `scripts/chat-proxy-selftest.ts`:
   - `"no stale dev-only claim ships in the README"` — `README.md` tidak memuat `dev-only`.
   - `"no spend-cap claim ships in README, wrangler.toml or worker/chat.ts"` — tiga berkas tidak memuat `/spend[- ]cap|capped|cap set on the API key/i` (regex lama `/spend cap/i` buta terhadap frasa lama di `worker/chat.ts`: `scoped, capped and revoked`, `scoped + capped`, `the real ceiling on spend is the cap set on the API key itself`); tulis batas riilnya, bukan frasa penyangkalan "spend cap".
+  - Simpangan kecil (ditulis balik 2026-09-22): satu assert tambahan `"the living docs point readers at the worker deploy workflow"` — `README.md` dan `cv/README.md` wajib memuat `deploy-worker`; ini setengah bukti grep "deploy-worker" yang bisa di-CI (bagian `CLAUDE.md` tetap grep manual, file gitignored), dan tanpa ini bullet `cv/README.md` tidak dipin gerbang mana pun.
   - Perintah: `bun scripts/chat-proxy-selftest.ts`, plus grep manual untuk bagian yang tidak di-commit CI (`CLAUDE.md` gitignored): `grep -n "chat" CLAUDE.md`, `grep -n "docs/sdlc" CLAUDE.md`, `grep -n "deploy-worker" README.md CLAUDE.md cv/README.md` — semuanya menghasilkan baris.
+  - Bukti merah: 4721962680d90d744247e7c634955aa5bd6a8614 scripts/chat-proxy-selftest.ts
 
 ### T9 — `PROD_ENDPOINT` menyala (menunggu worker live)
 
