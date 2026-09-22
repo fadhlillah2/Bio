@@ -340,6 +340,13 @@ try {
   } as never);
   assert(!("thinking" in providerCalls.at(-1)!.body), "a non-bigmodel endpoint never receives the bigmodel-only parameter");
 
+  const badUrl = await worker.fetch(post('{"messages":[{"role":"user","content":"hi"}]}'), {
+    ...workerEnv(true, []),
+    CHAT_API_URL: "not-a-url"
+  } as never);
+  assert.equal(badUrl.status, 502, "a malformed provider URL answers 502 JSON, not an uncaught throw");
+  assert.equal(await badUrl.text(), '{"error":"The model did not answer."}', "a malformed provider URL answers 502 JSON, not an uncaught throw");
+
   upstream = () => new Response('{"error":"invalid key, request id 42"}', { status: 500 });
   const failed = await worker.fetch(post('{"messages":[{"role":"user","content":"hi"}]}'), {
     ...workerEnv(true, []),
