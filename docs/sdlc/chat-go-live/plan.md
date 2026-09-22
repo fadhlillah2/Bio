@@ -154,7 +154,9 @@ Kerjakan berurutan T1 → T9: hampir semua tugas menyentuh `scripts/chat-proxy-s
   - `"the request carries the configured model and max_tokens 700"`.
   - `"a provider failure answers 502 without provider detail"` — stub melempar/`ok=false` ⇒ status 502, body `{"error":"The model did not answer."}`.
   - `"the wrangler config still binds the edge rate limiter and the site origin"` — scan berkas `worker/wrangler.toml` (pola sama dengan assert `spend cap` di T8) dan wajibkan `[[ratelimits]]`, `name = "RATE_LIMITER"`, dan `CHAT_ORIGINS = "https://fadhlillah2.github.io"` masih ada. T4/T5 menulis ulang berkas itu dan tidak ada gerbang lain yang membacanya untuk binding; tanpa assert ini separuh AC-06 ("binding tetap ada di `wrangler.toml`") tidak punya bukti — `wrangler deploy` tetap sukses tanpa blok itu dan rate limit edge diam-diam turun ke penghitung KV non-atomik (komentar berkas itu sendiri mencatat 40 request lolos batas 5).
+  - Simpangan kecil (ditulis balik 2026-09-22): satu assert tambahan `"the wrangler config points production at the GLM coding-plan endpoint"` — memindai `CHAT_API_URL = "https://open.bigmodel.cn/api/coding/paas/v4"` dan `CHAT_MODEL = "glm-5.3-flash"`; tanpa ini tidak ada gerbang yang membaca nilai provider produksi di `wrangler.toml` (alasan yang sama dengan assert binding di atasnya).
   - Perintah: `bun scripts/chat-proxy-selftest.ts`.
+  - Bukti merah: fd97fd233b3630964d4f96e3e0ec8fd0131c786b scripts/chat-proxy-selftest.ts
 
 ### T5 — Kuota harian per pemanggil (KV-03)
 

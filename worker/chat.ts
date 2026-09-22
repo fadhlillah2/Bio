@@ -153,6 +153,8 @@ export default {
     }
 
     const endpoint = `${(env.CHAT_API_URL || 'https://api.deepseek.com').replace(/\/+$/, '')}/chat/completions`;
+    // bigmodel-only: GLM burns the 700-token budget on reasoning unless disabled; other endpoints reject the parameter.
+    const bigmodel = new URL(endpoint).hostname.endsWith('bigmodel.cn');
     try {
       const upstream = await fetch(endpoint, {
         method: 'POST',
@@ -161,6 +163,7 @@ export default {
           model,
           max_tokens: MAX_ANSWER_TOKENS,
           temperature: 0.2,
+          ...(bigmodel && { thinking: { type: 'disabled' } }),
           messages: [
             { role: 'system', content: RULES },
             { role: 'user', content: buildPrompt(CV, SITE_FACTS, messages, newNonce()) }
