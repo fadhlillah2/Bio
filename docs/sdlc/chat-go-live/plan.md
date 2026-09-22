@@ -40,6 +40,7 @@ Semua kontrol lama (Origin allowlist tanpa union dev origins, rate limit edge, H
 - **D6 — `max_tokens` tetap 700.** Probe: puncak 389 token completion pada mode default, ≤110 dengan thinking disabled; margin cukup untuk 2–5 kalimat. Naikkan hanya kalau AC-03 (uji nyata) menunjukkan `content` kosong/terpotong.
 - **D7 — `thinking` digerbang dari hostname endpoint** (`new URL(endpoint).hostname.endsWith('bigmodel.cn')`), bukan variabel baru; endpoint non-GLM tidak boleh menerimanya.
 - **D10 (amandemen user 2026-09-23) — provider produksi pindah ke gateway OpenCode Go** `https://opencode.ai/zen/go/v1` (kunci `opencode-go` dari auth store opencode; kolam kuota terpisah dari GLM coding plan). Worker menambah header routing `x-opencode-session: bio-chat` — wajib, tanpa itu gateway menjawab 400 MissingSessionID (probe langsung 2026-09-23). `thinking:disabled` TETAP bigmodel-only (D7): A/B via gateway 35 vs 39 completion token — parameter tidak dihormati gateway, tak ada manfaat mengirimnya. Docs/wrangler/komentar ikut menyebut OpenCode Go sebagai langganan pembatas belanja.
+- **D11 (keputusan user 2026-09-23, dari temuan review keamanan)** — ketiga action pihak ketiga di `deploy-worker.yml` dipin ke commit SHA (`actions/checkout` v6 `d23441a4`, `oven-sh/setup-bun` v2 `0c5077e5`, `cloudflare/wrangler-action` v4 `ebbaa158`; tag asli dicatat sebagai komentar, selftest menolak `uses:` tanpa SHA-40). Workflow Pages `deploy.yml` yang lama menyusul dipin terpisah — di luar scope change ini.
 
 ## 2. Kontrak data: blok SITE FACTS (persis)
 
