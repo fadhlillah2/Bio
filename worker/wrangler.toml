@@ -7,7 +7,7 @@ compatibility_date = "2026-09-01"
 # Create with: bunx wrangler kv namespace create CHAT_KV — then paste the id below.
 [[kv_namespaces]]
 binding = "CHAT_KV"
-id = "PASTE_THE_ID_FROM_wrangler_kv_namespace_create"
+id = "d8d9a8dbed0840bcaea9e2b2f3d60e0e"
 
 # Atomic per-caller limiting at the edge. A counter built on KV is read-then-write, so a
 # concurrent burst all reads the same value and passes together — measured at 40 requests through
