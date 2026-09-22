@@ -289,6 +289,7 @@ jobs:
   - `"the worker deploy workflow uses the pinned wrangler action with account credentials"` — memuat `accountId`, `workingDirectory: worker`, `apiToken`.
   - `"the worker deploy workflow is triggered by every grounding source"` — blok `paths:` memuat ketujuh path komponen §2, `cv/resume-v*.txt`, `.opencode/agent/bio-guide.md`, `worker/**`, ketiga skrip chat, dan `.github/workflows/deploy-worker.yml` (satu path terlewat ⇒ worker basi diam-diam saat fakta situs berubah, B8/AC-17).
   - Perintah: `bun scripts/chat-proxy-selftest.ts`.
+  - Bukti merah: 9033ac26d7712d8cd6971d6390fe4b8cf40c7ee5 scripts/chat-proxy-selftest.ts
 
 ### T8 — Dokumen hidup
 
