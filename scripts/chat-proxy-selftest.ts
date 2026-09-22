@@ -25,7 +25,8 @@ import {
   replyWasOurs,
   resolveOrigins,
   signReply,
-  tokenMatches
+  tokenMatches,
+  utcDay
 } from "./chat-core.ts";
 import { rulesFrom } from "./chat-worker-build.ts";
 import * as WORKER from "../worker/content.generated.ts";
@@ -283,6 +284,12 @@ const post = (body: string) =>
     headers: { "content-type": "application/json", origin: "https://example.test", "cf-connecting-ip": "9.9.9.9" },
     body
   });
+const postFrom = (ip: string, body: string) =>
+  new Request("https://worker.test/chat", {
+    method: "POST",
+    headers: { "content-type": "application/json", origin: "https://example.test", "cf-connecting-ip": ip },
+    body
+  });
 
 const blocked: string[] = [];
 const limited = await worker.fetch(post('{"messages":[{"role":"user","content":"hi"}]}'), workerEnv(false, blocked) as never);
@@ -336,6 +343,39 @@ try {
   } as never);
   assert.equal(failed.status, 502, "a provider failure does not pass its status through");
   assert.equal(await failed.text(), '{"error":"The model did not answer."}', "a provider failure answers 502 without provider detail");
+
+  // The per-caller daily quota (KV-03): one visitor must not be able to spend the whole site's day.
+  // The KV mock is key-aware on purpose — "20" only for the 9.9.9.9 keys, null for everyone else —
+  // because a blanket "20" for every `caller:` key would refuse caller B too and leave these
+  // asserts unsatisfiable. The edge limiter stub passes, so a KV `rate:` fallback cannot write.
+  upstream = () => Response.json({ choices: [{ message: { content: "He works at Fineksi." }, finish_reason: "stop" }] });
+  const quotaPuts: string[] = [];
+  const quotaEnv = {
+    CHAT_API_KEY: "dummy",
+    CHAT_SIGNING_KEY: "s".repeat(32),
+    CHAT_ORIGINS: "https://example.test",
+    CHAT_KV: {
+      async get(key: string) { return key.endsWith(":9.9.9.9") ? "20" : null; },
+      async put(key: string) { quotaPuts.push(key); }
+    } as never,
+    RATE_LIMITER: { async limit() { return { success: true }; } }
+  };
+  const hi = '{"messages":[{"role":"user","content":"hi"}]}';
+  const refused = await worker.fetch(postFrom("9.9.9.9", hi), quotaEnv as never);
+  assert.equal(refused.status, 429, "a caller over its daily allowance is refused while another caller is served");
+  assert((await refused.json()).error.includes("contact"), "a caller over its daily allowance is refused while another caller is served");
+  assert(!quotaPuts.some((k) => k.startsWith("day:") || k.startsWith("caller:")), "a refused caller does not spend the global daily budget");
+  const served = await worker.fetch(postFrom("8.8.8.8", hi), quotaEnv as never);
+  assert.equal(served.status, 200, "a caller over its daily allowance is refused while another caller is served");
+  assert(quotaPuts.includes(`caller:${utcDay(Date.now())}:8.8.8.8`), "the per-caller counter is keyed by caller and UTC day");
+  assert(!quotaPuts.some((k) => k.includes("9.9.9.9")), "the per-caller counter is keyed by caller and UTC day");
+  assert.equal(quotaPuts.filter((k) => k.startsWith("day:")).length, 1, "a refused caller does not spend the global daily budget");
+
+  const putsBefore = quotaPuts.length;
+  const malformed = await worker.fetch(postFrom("7.7.7.7", "{nope"), quotaEnv as never);
+  assert.equal(malformed.status, 400, "a malformed body is refused before any per-caller quota is spent");
+  assert.equal(quotaPuts.length, putsBefore, "a malformed body is refused before any per-caller quota is spent");
+  assert(!quotaPuts.some((k) => k.includes("7.7.7.7")), "a malformed body is refused before any per-caller quota is spent");
 } finally {
   globalThis.fetch = realFetch;
 }
