@@ -3,13 +3,16 @@
  *
  * The alternative, hosting scripts/chat-proxy.ts, would put the opencode CLI and the author's
  * personal `auth.json` — every provider credential at once — on a public machine. Here the blast
- * radius is one API key that can be scoped, capped and revoked without disturbing anything else.
+ * radius is one API key that can be revoked without disturbing anything else, bounded by the
+ * OpenCode Go plan's quota plus this worker's daily quotas and the edge rate limit.
  * There is no CLI, so there is also no tool-capable agent to fall back to: the assistant's rules
  * travel as a system message and the model has no tools at all.
  *
- * Deploy (you run these; they touch your account, not this repo):
+ * Deploy: .github/workflows/deploy-worker.yml deploys automatically on push to master (after the
+ * content-check and selftest gates) once the GitHub secrets and the KV id are in place. The manual
+ * path below remains the fallback (you run these; they touch your account, not this repo):
  *   cd worker && bunx wrangler kv namespace create CHAT_KV      # paste the id into wrangler.toml
- *   bunx wrangler secret put CHAT_API_KEY                       # provider key, scoped + capped
+ *   bunx wrangler secret put CHAT_API_KEY                       # provider key (OpenCode Go)
  *   bunx wrangler secret put CHAT_SIGNING_KEY                   # openssl rand -hex 32
  *   bunx wrangler deploy
  * Then set PROD_ENDPOINT in src/lib/chat.js to the worker URL and CHAT_ORIGINS to the site origin.
@@ -30,7 +33,7 @@ import {
   tokenMatches,
   utcDay
 } from '../scripts/chat-core.ts';
-import { CV, RULES } from './content.generated.ts';
+import { CV, RULES, SITE_FACTS } from './content.generated.ts';
 
 /** Cloudflare's rate limiting binding: atomic at the edge, unlike anything built on KV. */
 interface RateLimiter {
@@ -46,6 +49,7 @@ export interface Env {
   CHAT_TOKEN?: string;
   CHAT_RATE_PER_MIN?: string;
   CHAT_DAILY_MAX?: string;
+  CHAT_DAILY_PER_CALLER?: string;
   CHAT_KV?: KVNamespace;
   RATE_LIMITER?: RateLimiter;
 }
@@ -61,8 +65,8 @@ const MAX_BODY_BYTES = 128 * 1024;
  * It is NOT a hard cap: KV is read-then-write, so a concurrent burst all reads the same old value
  * and every writer stores it + 1 — an adversarial burst was measured passing 40 requests while
  * the counter moved by one. Per-caller limiting therefore uses the edge rate limiter above, and
- * the real ceiling on spend is the cap set on the API key itself. This bounds the ordinary case
- * and gives the widget a polite way to stop.
+ * the real ceilings on spend are the OpenCode Go plan's quota over these daily quotas. This
+ * bounds the ordinary case and gives the widget a polite way to stop.
  */
 async function countDay(kv: KVNamespace, key: string, limit: number): Promise<boolean> {
   const used = Number((await kv.get(key)) || 0);
@@ -98,6 +102,7 @@ export default {
     // probes /health first and stays unrendered rather than offering a box that cannot answer.
     let perMin: number;
     let dailyMax: number;
+    let dailyPerCaller: number;
     try {
       if (!env.CHAT_KV) throw new Error('CHAT_KV binding is missing');
       if (!env.CHAT_API_KEY) throw new Error('CHAT_API_KEY is missing');
@@ -105,6 +110,7 @@ export default {
       if (env.CHAT_TOKEN) assertStrongSecret('CHAT_TOKEN', env.CHAT_TOKEN);
       perMin = numberEnv('CHAT_RATE_PER_MIN', env.CHAT_RATE_PER_MIN, 5);
       dailyMax = numberEnv('CHAT_DAILY_MAX', env.CHAT_DAILY_MAX, 200);
+      dailyPerCaller = numberEnv('CHAT_DAILY_PER_CALLER', env.CHAT_DAILY_PER_CALLER, 20);
     } catch (e) {
       console.error(`refusing to serve: ${(e as Error).message}`);
       return json({ error: 'The assistant is not configured.' }, 503, cors);
@@ -147,23 +153,39 @@ export default {
       return json({ error: `bad request: ${(e as Error).message}` }, 400, cors);
     }
 
-    // Charged only once a run is about to start, so malformed bodies cannot burn the day.
+    // Charged only once a run is about to start, so malformed bodies cannot burn the day. The
+    // per-caller quota is charged first: a caller past their own allowance is turned away without
+    // also spending the budget every other caller shares.
+    if (!(await countDay(env.CHAT_KV, `caller:${utcDay(Date.now())}:${caller}`, dailyPerCaller))) {
+      return json({ error: "You have reached today's question limit. Please use the contact section." }, 429, cors);
+    }
     if (!(await countDay(env.CHAT_KV, `day:${utcDay(Date.now())}`, dailyMax))) {
       return json({ error: 'The assistant has reached its daily limit. Please use the contact section.' }, 503, cors);
     }
 
-    const endpoint = `${(env.CHAT_API_URL || 'https://api.deepseek.com').replace(/\/+$/, '')}/chat/completions`;
     try {
+      // Parsed inside the try: a malformed CHAT_API_URL must surface as the same 502 as any other
+      // provider failure, not as an uncaught TypeError after the day's quotas were already spent.
+      const endpoint = `${(env.CHAT_API_URL || 'https://api.deepseek.com').replace(/\/+$/, '')}/chat/completions`;
+      // bigmodel-only: GLM burns the 700-token budget on reasoning unless disabled; other endpoints reject the parameter.
+      const bigmodel = new URL(endpoint).hostname.endsWith('bigmodel.cn');
       const upstream = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'content-type': 'application/json', authorization: `Bearer ${env.CHAT_API_KEY}` },
+        headers: {
+          'content-type': 'application/json',
+          authorization: `Bearer ${env.CHAT_API_KEY}`,
+          // The OpenCode Go gateway refuses a request without a session header (400 MissingSessionID);
+          // it only routes, any stable value works.
+          'x-opencode-session': 'bio-chat'
+        },
         body: JSON.stringify({
           model,
           max_tokens: MAX_ANSWER_TOKENS,
           temperature: 0.2,
+          ...(bigmodel && { thinking: { type: 'disabled' } }),
           messages: [
             { role: 'system', content: RULES },
-            { role: 'user', content: buildPrompt(CV, messages, newNonce()) }
+            { role: 'user', content: buildPrompt(CV, SITE_FACTS, messages, newNonce()) }
           ]
         }),
         signal: AbortSignal.timeout(ANSWER_TIMEOUT_MS)
