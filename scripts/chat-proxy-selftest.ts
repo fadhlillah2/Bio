@@ -499,10 +499,18 @@ try {
 // check and this selftest must both run before the wrangler deploy step, and the trigger list
 // must cover every grounding source — one missing path ships a stale worker without any red CI.
 const deployWorkflow = readFileSync(join(ROOT, ".github", "workflows", "deploy-worker.yml"), "utf8");
+// The workflow carries every deployment secret, so third-party actions are pinned by commit sha:
+// a swapped mutable tag would run attacker code with those secrets. The comment next to each
+// ref records which tag the sha was resolved from.
+const usesRefs = [...deployWorkflow.matchAll(/uses:\s*(\S+)/g)].map((m) => m[1]);
+assert(
+  usesRefs.length >= 3 && usesRefs.every((ref) => /^[\w.-]+\/[\w.-]+@[0-9a-f]{40}$/.test(ref)),
+  "the worker deploy workflow pins every third-party action by commit sha, not a mutable tag"
+);
 assert(
   deployWorkflow.indexOf("bun scripts/chat-worker-build.ts --check") <
-    deployWorkflow.indexOf("cloudflare/wrangler-action@v4") &&
-    deployWorkflow.indexOf("bun scripts/chat-proxy-selftest.ts") < deployWorkflow.indexOf("cloudflare/wrangler-action@v4"),
+    deployWorkflow.indexOf("cloudflare/wrangler-action@") &&
+    deployWorkflow.indexOf("bun scripts/chat-proxy-selftest.ts") < deployWorkflow.indexOf("cloudflare/wrangler-action@"),
   "the worker deploy workflow gates on the content check and the guard selftest before deploying"
 );
 assert(
