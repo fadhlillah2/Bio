@@ -304,10 +304,10 @@ assert.equal(passed.status, 400, "an allowed caller reaches body validation");
 const unconfigured = await worker.fetch(post('{"messages":[]}'), { ...workerEnv(true, []), CHAT_SIGNING_KEY: "short" } as never);
 assert.equal(unconfigured.status, 503, "a weak signing key takes the whole worker out of service");
 
-// The provider call itself. Production points at GLM's coding-plan endpoint, where the model
-// burns its completion budget on hidden reasoning unless `thinking` is explicitly disabled —
-// and an endpoint that does not know the parameter rejects it, so it may only travel to a
-// bigmodel hostname. The stub captures the request; no provider is contacted.
+// The provider call itself. Production points at the OpenCode Go gateway; the bigmodel-direct
+// endpoint burns its completion budget on hidden reasoning unless `thinking` is explicitly
+// disabled — and an endpoint that does not know the parameter rejects it, so it may only travel
+// to a bigmodel hostname. The stub captures the request; no provider is contacted.
 const realFetch = globalThis.fetch;
 const providerCalls: { url: string; body: any; headers: Record<string, string> }[] = [];
 let upstream = () => Response.json({ choices: [{ message: { content: "He works at Fineksi." }, finish_reason: "stop" }] });

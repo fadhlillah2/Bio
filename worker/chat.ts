@@ -65,8 +65,8 @@ const MAX_BODY_BYTES = 128 * 1024;
  * It is NOT a hard cap: KV is read-then-write, so a concurrent burst all reads the same old value
  * and every writer stores it + 1 — an adversarial burst was measured passing 40 requests while
  * the counter moved by one. Per-caller limiting therefore uses the edge rate limiter above, and
- * the real ceilings on spend are the GLM coding plan's plan-wide credits (5-hour + weekly) over
- * these daily quotas. This bounds the ordinary case and gives the widget a polite way to stop.
+ * the real ceilings on spend are the OpenCode Go plan's quota over these daily quotas. This
+ * bounds the ordinary case and gives the widget a polite way to stop.
  */
 async function countDay(kv: KVNamespace, key: string, limit: number): Promise<boolean> {
   const used = Number((await kv.get(key)) || 0);
@@ -163,10 +163,12 @@ export default {
       return json({ error: 'The assistant has reached its daily limit. Please use the contact section.' }, 503, cors);
     }
 
-    const endpoint = `${(env.CHAT_API_URL || 'https://api.deepseek.com').replace(/\/+$/, '')}/chat/completions`;
-    // bigmodel-only: GLM burns the 700-token budget on reasoning unless disabled; other endpoints reject the parameter.
-    const bigmodel = new URL(endpoint).hostname.endsWith('bigmodel.cn');
     try {
+      // Parsed inside the try: a malformed CHAT_API_URL must surface as the same 502 as any other
+      // provider failure, not as an uncaught TypeError after the day's quotas were already spent.
+      const endpoint = `${(env.CHAT_API_URL || 'https://api.deepseek.com').replace(/\/+$/, '')}/chat/completions`;
+      // bigmodel-only: GLM burns the 700-token budget on reasoning unless disabled; other endpoints reject the parameter.
+      const bigmodel = new URL(endpoint).hostname.endsWith('bigmodel.cn');
       const upstream = await fetch(endpoint, {
         method: 'POST',
         headers: {
