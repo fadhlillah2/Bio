@@ -93,9 +93,8 @@ quotas (200 answers global, 20 per caller) and the edge rate limit (5 per minute
 gateway key cannot carry a per-key limit.
 
 Kill switch: empty `PROD_ENDPOINT` in `src/lib/chat.js` and rebuild, or delete the worker — the
-widget's probe fails and the widget disappears with no errors. `PROD_ENDPOINT` is still empty
-today; it is filled with the worker URL after the first deploy, and until then the widget never
-renders outside localhost.
+widget's probe fails and the widget disappears with no errors. Production endpoint:
+`https://bio-chat.fadhlillah2.workers.dev`.
 
 Pushes to `master` also run [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml), build
 the static site, and deploy the resulting `build/` artifact. The repository's Pages source must be

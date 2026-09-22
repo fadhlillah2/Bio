@@ -1,16 +1,17 @@
 /**
- * Transport for the chat widget. The page is static and holds no key: it talks to a proxy
- * (scripts/chat-proxy.ts) that runs opencode locally.
+ * Transport for the chat widget. The page is static and holds no key: on the published site it
+ * talks to the Cloudflare Worker in worker/chat.ts; on localhost it defaults to the dev proxy
+ * (scripts/chat-proxy.ts).
  *
- * PROD_ENDPOINT is empty because no proxy is hosted yet, so the widget is dev-only. Point it at
- * a deployed proxy and the widget goes live everywhere — that is the whole production switch.
+ * PROD_ENDPOINT is the production switch and the kill switch: empty it and rebuild, or delete the
+ * worker, and the /health probe fails so the widget never renders.
  *
  * The ?chat= and localStorage overrides are honoured on localhost only: on the published site
  * they would let a crafted link point the visitor's chat at someone else's server under
  * Fadhlillah's domain.
  */
 
-const PROD_ENDPOINT = '';
+const PROD_ENDPOINT = 'https://bio-chat.fadhlillah2.workers.dev';
 const DEV_ENDPOINT = 'http://127.0.0.1:4317';
 const PROBE_TIMEOUT_MS = 2000;
 const ASK_TIMEOUT_MS = 120000;
