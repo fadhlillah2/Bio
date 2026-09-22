@@ -28,6 +28,7 @@ import {
   tokenMatches
 } from "./chat-core.ts";
 import { rulesFrom } from "./chat-worker-build.ts";
+import * as WORKER from "../worker/content.generated.ts";
 import worker from "../worker/chat.ts";
 
 const ROOT = resolve(import.meta.dir, "..");
@@ -295,6 +296,13 @@ assert.equal(
 - Skills section, "DevOps / Cloud" group: "Kubernetes"`,
   "site facts output equals the contract block exactly"
 );
+
+// The bundle the worker ships must carry the same grounding the proxy reads from disk: the CV
+// byte for byte, and the site-facts block the shared extractor builds. That identity is what
+// lets `--check` speak for both backends — a CV bump or a component edit without a regen makes
+// the generated file stale and fails the gate.
+assert.equal(WORKER.CV, readFileSync(currentResume(ROOT), "utf8"), "generated worker content equals the current resume file byte for byte");
+assert.equal(WORKER.SITE_FACTS, FACTS, "generated site facts equal the extractor output byte for byte");
 
 // A moved or duplicated anchor must be refused, not guessed around: all seven components are
 // copied into a temp repo, so the throw can only come from the anchor check, never ENOENT.
