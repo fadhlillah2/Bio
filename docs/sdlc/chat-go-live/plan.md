@@ -39,6 +39,7 @@ Semua kontrol lama (Origin allowlist tanpa union dev origins, rate limit edge, H
 - **D5 — Pemicu job worker (paths):** `worker/**`, `scripts/chat-core.ts`, `scripts/chat-proxy.ts`, `scripts/chat-worker-build.ts`, `cv/resume-v*.txt`, `.opencode/agent/bio-guide.md`, 7 komponen sumber fakta situs (About, Hero, Resume, Portfolio, HomeHead, Services, Skills), dan berkas workflow itu sendiri (`.github/workflows/deploy-worker.yml`, supaya edit gerbang/versi action ikut dijalankan). Plus `workflow_dispatch`.
 - **D6 — `max_tokens` tetap 700.** Probe: puncak 389 token completion pada mode default, ≤110 dengan thinking disabled; margin cukup untuk 2–5 kalimat. Naikkan hanya kalau AC-03 (uji nyata) menunjukkan `content` kosong/terpotong.
 - **D7 — `thinking` digerbang dari hostname endpoint** (`new URL(endpoint).hostname.endsWith('bigmodel.cn')`), bukan variabel baru; endpoint non-GLM tidak boleh menerimanya.
+- **D10 (amandemen user 2026-09-23) — provider produksi pindah ke gateway OpenCode Go** `https://opencode.ai/zen/go/v1` (kunci `opencode-go` dari auth store opencode; kolam kuota terpisah dari GLM coding plan). Worker menambah header routing `x-opencode-session: bio-chat` — wajib, tanpa itu gateway menjawab 400 MissingSessionID (probe langsung 2026-09-23). `thinking:disabled` TETAP bigmodel-only (D7): A/B via gateway 35 vs 39 completion token — parameter tidak dihormati gateway, tak ada manfaat mengirimnya. Docs/wrangler/komentar ikut menyebut OpenCode Go sebagai langganan pembatas belanja.
 
 ## 2. Kontrak data: blok SITE FACTS (persis)
 

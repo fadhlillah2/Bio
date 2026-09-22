@@ -24,22 +24,23 @@ namespace_id = "1001"
 # The site origin. Only requests carrying one of these is answered; the dev origins are NOT
 # unioned in here, or anyone could pass the gate by sending Origin: http://localhost:5173.
 CHAT_ORIGINS = "https://fadhlillah2.github.io"
-# Production provider: GLM glm-5.3-flash under the GLM coding plan. Any OpenAI-compatible endpoint
-# works too (verified: https://api.deepseek.com / deepseek-chat).
-CHAT_API_URL = "https://open.bigmodel.cn/api/coding/paas/v4"
+# Production provider: GLM glm-5.3-flash through the OpenCode Go gateway (it requires the
+# x-opencode-session routing header the worker sends). Any OpenAI-compatible endpoint works too
+# (verified: https://api.deepseek.com / deepseek-chat).
+CHAT_API_URL = "https://opencode.ai/zen/go/v1"
 CHAT_MODEL = "glm-5.3-flash"
 # Keep in step with the ratelimits binding above; this value only shapes the 429 message.
 CHAT_RATE_PER_MIN = "5"
-# A signal, not a hard limit — KV cannot count a burst exactly. The real ceilings are the GLM
-# coding plan's plan-wide credits (5-hour + weekly), this daily quota and the edge rate limit.
+# A signal, not a hard limit — KV cannot count a burst exactly. The real ceilings are the OpenCode
+# Go plan's quota, this daily quota and the edge rate limit.
 CHAT_DAILY_MAX = "200"
 # Daily answers per caller, so one visitor cannot spend the whole site's day; other callers keep
 # being served. Same KV-counter softness as CHAT_DAILY_MAX, same two-day TTL on the counter.
 CHAT_DAILY_PER_CALLER = "20"
 
 # Secrets — never in this file, set them with `bunx wrangler secret put <NAME>`:
-#   CHAT_API_KEY      provider key (GLM coding plan). Its plan-wide credits are the ceiling — a
-#                     per-key limit cannot be minted on a coding-plan key.
+#   CHAT_API_KEY      provider key (OpenCode Go). The plan's quota is the ceiling — a per-key
+#                     limit cannot be minted on it.
 #   CHAT_SIGNING_KEY  any 32+ random chars (openssl rand -hex 32). Tags the assistant turns so a
 #                     forged one cannot pass as something the assistant actually said.
 #   CHAT_TOKEN        optional. Only for a private instance or a proxy that injects it — the

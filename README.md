@@ -73,12 +73,12 @@ opencode CLI and no personal credential file on a public host) is deployed autom
 site components the facts are quoted from). Two gates run before the deploy step:
 `bun run chat:worker:build --check` (generated bundle matches its sources) and
 `bun scripts/chat-proxy-selftest.ts` (the guard selftest). Production provider: GLM `glm-5.3-flash`
-under the GLM coding plan (see `worker/wrangler.toml`).
+through the OpenCode Go gateway (see `worker/wrangler.toml`).
 
 One-time setup — the secrets and the KV namespace live in your accounts, not in this repo:
 
-- GitHub repo secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `CHAT_API_KEY` (a GLM
-  coding-plan key), `CHAT_SIGNING_KEY` (`openssl rand -hex 32`). The action copies the two worker
+- GitHub repo secrets: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, `CHAT_API_KEY` (an
+  OpenCode Go key), `CHAT_SIGNING_KEY` (`openssl rand -hex 32`). The action copies the two worker
   secrets to Cloudflare on every deploy; its preflight step fails with `::error::` naming anything
   missing.
 - Create the KV namespace once (`cd worker && bunx wrangler kv namespace create CHAT_KV`) and
@@ -88,9 +88,9 @@ A private instance that also wants the optional access token sets it by hand —
 `bunx wrangler secret put CHAT_TOKEN` (32+ characters) — deliberately not part of the action's
 `secrets:` list, because the public page cannot hold a secret.
 
-What actually bounds spending: the GLM coding plan's plan-wide credits (a 5-hour and a weekly
-allowance) on top of the worker's own daily quotas (200 answers global, 20 per caller) and the
-edge rate limit (5 per minute per IP). A coding-plan key cannot carry a per-key limit.
+What actually bounds spending: the OpenCode Go plan's quota on top of the worker's own daily
+quotas (200 answers global, 20 per caller) and the edge rate limit (5 per minute per IP). The
+gateway key cannot carry a per-key limit.
 
 Kill switch: empty `PROD_ENDPOINT` in `src/lib/chat.js` and rebuild, or delete the worker — the
 widget's probe fails and the widget disappears with no errors. `PROD_ENDPOINT` is still empty
