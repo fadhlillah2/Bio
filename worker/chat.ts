@@ -46,6 +46,7 @@ export interface Env {
   CHAT_TOKEN?: string;
   CHAT_RATE_PER_MIN?: string;
   CHAT_DAILY_MAX?: string;
+  CHAT_DAILY_PER_CALLER?: string;
   CHAT_KV?: KVNamespace;
   RATE_LIMITER?: RateLimiter;
 }
@@ -98,6 +99,7 @@ export default {
     // probes /health first and stays unrendered rather than offering a box that cannot answer.
     let perMin: number;
     let dailyMax: number;
+    let dailyPerCaller: number;
     try {
       if (!env.CHAT_KV) throw new Error('CHAT_KV binding is missing');
       if (!env.CHAT_API_KEY) throw new Error('CHAT_API_KEY is missing');
@@ -105,6 +107,7 @@ export default {
       if (env.CHAT_TOKEN) assertStrongSecret('CHAT_TOKEN', env.CHAT_TOKEN);
       perMin = numberEnv('CHAT_RATE_PER_MIN', env.CHAT_RATE_PER_MIN, 5);
       dailyMax = numberEnv('CHAT_DAILY_MAX', env.CHAT_DAILY_MAX, 200);
+      dailyPerCaller = numberEnv('CHAT_DAILY_PER_CALLER', env.CHAT_DAILY_PER_CALLER, 20);
     } catch (e) {
       console.error(`refusing to serve: ${(e as Error).message}`);
       return json({ error: 'The assistant is not configured.' }, 503, cors);
@@ -147,7 +150,12 @@ export default {
       return json({ error: `bad request: ${(e as Error).message}` }, 400, cors);
     }
 
-    // Charged only once a run is about to start, so malformed bodies cannot burn the day.
+    // Charged only once a run is about to start, so malformed bodies cannot burn the day. The
+    // per-caller quota is charged first: a caller past their own allowance is turned away without
+    // also spending the budget every other caller shares.
+    if (!(await countDay(env.CHAT_KV, `caller:${utcDay(Date.now())}:${caller}`, dailyPerCaller))) {
+      return json({ error: "You have reached today's question limit. Please use the contact section." }, 429, cors);
+    }
     if (!(await countDay(env.CHAT_KV, `day:${utcDay(Date.now())}`, dailyMax))) {
       return json({ error: 'The assistant has reached its daily limit. Please use the contact section.' }, 503, cors);
     }

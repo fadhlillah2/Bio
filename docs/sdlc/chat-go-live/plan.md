@@ -182,6 +182,7 @@ Kerjakan berurutan T1 → T9: hampir semua tugas menyentuh `scripts/chat-proxy-s
     ```
 
     ⇒ baris kedua `429` (batas dari env diteruskan ke Env runner). Request pertama boleh berakhir `502` (kunci `dummy` ditolak provider) — kuota per pemanggil di-charge sebelum panggilan provider, jadi bukti batasnya tetap sah.
+- Bukti merah: 9826a0fdce765fc33fbd14014945b3529fee1df3 scripts/chat-proxy-selftest.ts
 
 ### T6 — Disclosure panel widget
 

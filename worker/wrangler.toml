@@ -33,6 +33,9 @@ CHAT_RATE_PER_MIN = "5"
 # A signal, not a hard limit — KV cannot count a burst exactly. The real ceilings are the GLM
 # coding plan's plan-wide credits (5-hour + weekly), this daily quota and the edge rate limit.
 CHAT_DAILY_MAX = "200"
+# Daily answers per caller, so one visitor cannot spend the whole site's day; other callers keep
+# being served. Same KV-counter softness as CHAT_DAILY_MAX, same two-day TTL on the counter.
+CHAT_DAILY_PER_CALLER = "20"
 
 # Secrets — never in this file, set them with `bunx wrangler secret put <NAME>`:
 #   CHAT_API_KEY      provider key (GLM coding plan). Its plan-wide credits are the ceiling — a

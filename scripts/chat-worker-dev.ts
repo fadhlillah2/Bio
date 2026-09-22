@@ -6,6 +6,10 @@
  * the prompt assembly, the provider call — is the same code the worker runs.
  *
  *   CHAT_API_KEY=… CHAT_SIGNING_KEY=… bun scripts/chat-worker-dev.ts
+ *
+ * Locally every request is the same caller (cf-connecting-ip is forced to 127.0.0.1 below), so the
+ * per-caller daily quota applies to the whole process: the 21st question in one run hits the 429
+ * default of 20. Override it with CHAT_DAILY_PER_CALLER, which is forwarded like the other limits.
  */
 import worker, { type Env } from '../worker/chat.ts';
 import { numberEnv } from './chat-core.ts';
@@ -36,6 +40,7 @@ const env: Env = {
   CHAT_TOKEN: process.env.CHAT_TOKEN,
   CHAT_RATE_PER_MIN: process.env.CHAT_RATE_PER_MIN,
   CHAT_DAILY_MAX: process.env.CHAT_DAILY_MAX,
+  CHAT_DAILY_PER_CALLER: process.env.CHAT_DAILY_PER_CALLER,
   CHAT_KV: memoryKv()
 };
 
