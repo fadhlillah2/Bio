@@ -484,4 +484,40 @@ try {
   rmSync(factRepo, { recursive: true, force: true });
 }
 
+// The deploy workflow is what stands between a red guard and the public worker, so the content
+// check and this selftest must both run before the wrangler deploy step, and the trigger list
+// must cover every grounding source — one missing path ships a stale worker without any red CI.
+const deployWorkflow = readFileSync(join(ROOT, ".github", "workflows", "deploy-worker.yml"), "utf8");
+assert(
+  deployWorkflow.indexOf("bun scripts/chat-worker-build.ts --check") <
+    deployWorkflow.indexOf("cloudflare/wrangler-action@v4") &&
+    deployWorkflow.indexOf("bun scripts/chat-proxy-selftest.ts") < deployWorkflow.indexOf("cloudflare/wrangler-action@v4"),
+  "the worker deploy workflow gates on the content check and the guard selftest before deploying"
+);
+assert(
+  deployWorkflow.includes("accountId") &&
+    deployWorkflow.includes("workingDirectory: worker") &&
+    deployWorkflow.includes("apiToken"),
+  "the worker deploy workflow uses the pinned wrangler action with account credentials"
+);
+const pathsBlock = deployWorkflow.slice(deployWorkflow.indexOf("paths:"), deployWorkflow.indexOf("workflow_dispatch:"));
+for (const path of [
+  "worker/**",
+  "scripts/chat-core.ts",
+  "scripts/chat-proxy.ts",
+  "scripts/chat-worker-build.ts",
+  "cv/resume-v*.txt",
+  ".opencode/agent/bio-guide.md",
+  "src/lib/components/About.svelte",
+  "src/lib/components/Hero.svelte",
+  "src/lib/components/Resume.svelte",
+  "src/lib/components/Portfolio.svelte",
+  "src/lib/components/HomeHead.svelte",
+  "src/lib/components/Services.svelte",
+  "src/lib/components/Skills.svelte",
+  ".github/workflows/deploy-worker.yml"
+]) {
+  assert(pathsBlock.includes(path), `the worker deploy workflow is triggered by every grounding source (missing ${path})`);
+}
+
 console.log("chat proxy selftest: all checks passed");
