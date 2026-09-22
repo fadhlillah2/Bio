@@ -559,4 +559,14 @@ assert(
   "the living docs point readers at the worker deploy workflow"
 );
 
+// The Pages deploy workflow holds pages: write and id-token: write, so its third-party actions are
+// pinned by commit sha like the worker deploy workflow: a swapped mutable tag runs attacker code
+// inside the deploy. The comment next to each ref records the tag the sha was resolved from.
+const pagesWorkflow = readFileSync(join(ROOT, ".github", "workflows", "deploy.yml"), "utf8");
+const pagesUses = [...pagesWorkflow.matchAll(/uses:\s*(\S+)/g)].map((m) => m[1]);
+assert(
+  pagesUses.length >= 5 && pagesUses.every((ref) => /^[\w.-]+\/[\w.-]+@[0-9a-f]{40}$/.test(ref)),
+  "the pages deploy workflow pins every third-party action by commit sha, not a mutable tag"
+);
+
 console.log("chat proxy selftest: all checks passed");
