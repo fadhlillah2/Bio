@@ -520,4 +520,24 @@ for (const path of [
   assert(pathsBlock.includes(path), `the worker deploy workflow is triggered by every grounding source (missing ${path})`);
 }
 
+// The living docs must not promise what the deployment cannot deliver. A coding-plan key carries
+// no per-key limit, so the README, the wrangler config and the worker header state the real
+// ceilings instead — and once the worker deploy workflow exists the README stops calling the
+// widget a local-only feature. README and cv/README must point at that workflow by name; the
+// CLAUDE.md half of that proof stays a manual grep because the file is gitignored.
+const readme = readFileSync(join(ROOT, "README.md"), "utf8");
+assert(!readme.includes("dev-only"), "no stale dev-only claim ships in the README");
+const spendCapClaim = /spend[- ]cap|capped|cap set on the API key/i;
+assert(
+  !spendCapClaim.test(readme) &&
+    !spendCapClaim.test(wrangler) &&
+    !spendCapClaim.test(readFileSync(join(ROOT, "worker", "chat.ts"), "utf8")),
+  "no spend-cap claim ships in README, wrangler.toml or worker/chat.ts"
+);
+assert(
+  readme.includes("deploy-worker") &&
+    readFileSync(join(ROOT, "cv", "README.md"), "utf8").includes("deploy-worker"),
+  "the living docs point readers at the worker deploy workflow"
+);
+
 console.log("chat proxy selftest: all checks passed");
