@@ -194,6 +194,7 @@ Kerjakan berurutan T1 → T9: hampir semua tugas menyentuh `scripts/chat-proxy-s
   - `"the old categorical opening line is gone"` — tidak memuat `Answers come from the CV on this site` dan tidak memuat `it says so instead of guessing`.
   - `"the chat render path never uses raw HTML"` — tidak memuat `{@html`.
   - Perintah: `bun scripts/chat-proxy-selftest.ts`.
+  - Bukti merah: b8be1c8e60aa72e4d46af6c6ad18c6b60c011cde scripts/chat-proxy-selftest.ts
 
 ### T7 — Workflow deploy worker
 
