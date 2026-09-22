@@ -420,6 +420,13 @@ assert(
   "the old categorical opening line is gone"
 );
 assert(!chatbot.includes("{@html"), "the chat render path never uses raw HTML");
+// The per-caller quota keys KV on the visitor's IP with a two-day TTL, so the panel says so — and
+// the stated retention is pinned to the TTL the worker actually writes: change one, the other fails.
+const workerSource = readFileSync(join(ROOT, "worker", "chat.ts"), "utf8");
+assert(
+  chatbot.includes("IP address") && chatbot.includes("48 hours") && workerSource.includes("expirationTtl: 172_800"),
+  "the panel discloses that the visitor's IP is kept for the quota's 48-hour window"
+);
 
 // The site publishes facts the CV does not (Fineksi, availability, the Kubernetes tag); the shared
 // extractor quotes them from the components themselves. "Contains" asserts alone would let
