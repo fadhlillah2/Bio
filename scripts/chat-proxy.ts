@@ -230,7 +230,7 @@ if (import.meta.main) {
 
   const grounding = await Bun.file(CV).text();
   // Fail-closed: extraction runs at startup so a moved anchor stops the proxy, not serves stale facts.
-  siteFacts(REPO);
+  const facts = siteFacts(REPO);
   // Per process, never persisted: a tag only has to outlive the conversation it belongs to.
   const SIGNING_KEY = await importSigningKey(crypto.getRandomValues(new Uint8Array(32)));
 
@@ -333,7 +333,7 @@ if (import.meta.main) {
 
         const started = Date.now();
         try {
-          const run = await ask(buildPrompt(grounding, messages, newNonce()));
+          const run = await ask(buildPrompt(grounding, facts, messages, newNonce()));
           // clamped before signing: the transcript truncates to the same length on the way back,
           // and a tag over the longer text would never verify again
           const reply = clampReply(run.reply);

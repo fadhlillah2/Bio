@@ -30,7 +30,7 @@ import {
   tokenMatches,
   utcDay
 } from '../scripts/chat-core.ts';
-import { CV, RULES } from './content.generated.ts';
+import { CV, RULES, SITE_FACTS } from './content.generated.ts';
 
 /** Cloudflare's rate limiting binding: atomic at the edge, unlike anything built on KV. */
 interface RateLimiter {
@@ -163,7 +163,7 @@ export default {
           temperature: 0.2,
           messages: [
             { role: 'system', content: RULES },
-            { role: 'user', content: buildPrompt(CV, messages, newNonce()) }
+            { role: 'user', content: buildPrompt(CV, SITE_FACTS, messages, newNonce()) }
           ]
         }),
         signal: AbortSignal.timeout(ANSWER_TIMEOUT_MS)

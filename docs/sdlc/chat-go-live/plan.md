@@ -139,6 +139,7 @@ Kerjakan berurutan T1 → T9: hampir semua tugas menyentuh `scripts/chat-proxy-s
   - `"the rules define CONTEXT as the CV plus facts published on the site"` — `rulesFrom(<berkas agent>)` yang whitespace-nya dinormalkan (`replace(/\s+/g, ' ')`; kalimat di berkas agent bisa terlipat antar baris) memuat `which is his current CV plus facts already published on his site` (frasa unik berkas agent; header prompt memakai varian ber-koma).
   - Assert lama yang menyebut `BEGIN CV deadbeef`/instruction-last tetap lulus.
   - Perintah: `bun scripts/chat-proxy-selftest.ts` **plus** `bun run chat:worker:build --check` → `worker content: in sync with cv/ and the agent definition` (RULES baru hanya sampai ke bundle setelah regen).
+  - Bukti merah: 098480d6cb169520daf72ffa01d00ab65806f77d scripts/chat-proxy-selftest.ts
 
 ### T4 — Provider produksi GLM + `thinking: disabled` khusus bigmodel
 
