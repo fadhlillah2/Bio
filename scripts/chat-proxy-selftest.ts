@@ -8,7 +8,7 @@ import assert from "node:assert/strict";
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { AGENT, agentFile, collect, currentResume, fellBackToDefaultAgent, parseRun } from "./chat-proxy.ts";
+import { AGENT, agentFile, collect, currentResume, fellBackToDefaultAgent, parseRun, siteFacts } from "./chat-proxy.ts";
 import {
   assertStrongSecret,
   buildPrompt,
@@ -265,5 +265,63 @@ assert.equal(passed.status, 400, "an allowed caller reaches body validation");
 
 const unconfigured = await worker.fetch(post('{"messages":[]}'), { ...workerEnv(true, []), CHAT_SIGNING_KEY: "short" } as never);
 assert.equal(unconfigured.status, 503, "a weak signing key takes the whole worker out of service");
+
+// The site publishes facts the CV does not (Fineksi, availability, the Kubernetes tag); the shared
+// extractor quotes them from the components themselves. "Contains" asserts alone would let
+// component leftovers ride into the public bot's CONTEXT block, so the output is also pinned to
+// the contract byte for byte — only trailing whitespace is tolerated.
+const FACTS = siteFacts(ROOT);
+assert(FACTS.includes('"Software Engineer — Fineksi"'), "site facts quote the About Current fact verbatim");
+assert(
+  FACTS.includes('"Freelance Availability: 40–60 hours/week · Jakarta (UTC+7)."') && !FACTS.includes("&middot;"),
+  "site facts quote the Services availability sentence with the entity decoded"
+);
+assert(
+  FACTS.includes('"Fineksi — Financial Document Processing"') &&
+    FACTS.includes('"Kubernetes"') &&
+    FACTS.includes('JSON-LD "worksFor": "Fineksi"'),
+  "site facts list the Fineksi card, the Kubernetes tag and the worksFor entry"
+);
+assert.equal(
+  FACTS.trimEnd(),
+  `SITE FACTS — statements already published on fadhlillah2.github.io/Bio, quoted from the page. Some of these are published only on the site, not in the CV document: answer from this block and do not claim where the CV shows them.
+
+- About section, "Current" fact: "Software Engineer — Fineksi"
+- Experience timeline, Fineksi entry: "Software Engineer", dates "Present"
+- Hero proof list "Production systems built at": "Fineksi"
+- Project Showcase, flagship card: "Fineksi — Financial Document Processing"
+- JSON-LD "worksFor": "Fineksi"
+- Services section: "Freelance Availability: 40–60 hours/week · Jakarta (UTC+7)."
+- Skills section, "DevOps / Cloud" group: "Kubernetes"`,
+  "site facts output equals the contract block exactly"
+);
+
+// A moved or duplicated anchor must be refused, not guessed around: all seven components are
+// copied into a temp repo, so the throw can only come from the anchor check, never ENOENT.
+const FACT_COMPONENTS = [
+  "About.svelte",
+  "Resume.svelte",
+  "Hero.svelte",
+  "Portfolio.svelte",
+  "HomeHead.svelte",
+  "Services.svelte",
+  "Skills.svelte"
+];
+const anchorRefused = (err: unknown) =>
+  err instanceof Error && err.message.includes("Skills.svelte") && err.message.includes("Kubernetes");
+const factRepo = mkdtempSync(join(tmpdir(), "bio-chat-facts-"));
+try {
+  const components = join(factRepo, "src", "lib", "components");
+  mkdirSync(components, { recursive: true });
+  const source = (name: string) => readFileSync(join(ROOT, "src", "lib", "components", name), "utf8");
+  for (const name of FACT_COMPONENTS) writeFileSync(join(components, name), source(name));
+  const skills = join(components, "Skills.svelte");
+  writeFileSync(skills, source("Skills.svelte").replace("<li>Kubernetes</li>", "<li>KubernetesX</li>"));
+  assert.throws(() => siteFacts(factRepo), anchorRefused, "site facts extraction refuses a missing anchor");
+  writeFileSync(skills, source("Skills.svelte").replace("<li>Kubernetes</li>", "<li>Kubernetes</li><li>Kubernetes</li>"));
+  assert.throws(() => siteFacts(factRepo), anchorRefused, "site facts extraction refuses an ambiguous anchor");
+} finally {
+  rmSync(factRepo, { recursive: true, force: true });
+}
 
 console.log("chat proxy selftest: all checks passed");
