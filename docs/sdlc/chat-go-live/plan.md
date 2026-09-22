@@ -109,6 +109,7 @@ Kerjakan berurutan T1 → T9: hampir semua tugas menyentuh `scripts/chat-proxy-s
   - `"site facts extraction refuses a missing anchor"` — repo temp berisi salinan ketujuh komponen di `<tmp>/src/lib/components/`; ubah anchor di salinan `Skills.svelte` (`<li>Kubernetes</li>` → `<li>KubernetesX</li>`); assert `siteFacts(tmp)` melempar dengan pesan memuat `Skills.svelte` **dan** `Kubernetes` (mis. `assert.throws(fn, (err) => err.message.includes('Skills.svelte') && err.message.includes('Kubernetes'))`). Ketujuh berkas disalin, jadi tidak ada jalur ENOENT — throw hanya bisa berasal dari pengecekan anchor. Rancangan lama `siteFacts(<tmpdir kosong>)` tidak sah: ENOENT kebetulan memuat nama `About.svelte` sehingga lulus tanpa mengeksekusi jalur anchor.
   - `"site facts extraction refuses an ambiguous anchor"` — repo temp yang sama, tetapi `<li>Kubernetes</li>` di salinan `Skills.svelte` digandakan (dua match di grup `DevOps / Cloud`); assert pesan memuat `Skills.svelte` dan `Kubernetes`.
   - Perintah: `bun scripts/chat-proxy-selftest.ts` → baris akhir `chat proxy selftest: all checks passed`.
+  - Bukti merah: 3d7f752a1b6686664d2b7e9f9460c0af8ef182bd scripts/chat-proxy-selftest.ts
 
 ### T2 — Generator meng-inline SITE_FACTS
 

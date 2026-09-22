@@ -21,7 +21,7 @@
  * Every guard shared with the worker lives in scripts/chat-core.ts.
  */
 
-import { existsSync, readdirSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import {
   assertStrongSecret,
   buildPrompt,
@@ -65,6 +65,68 @@ export function currentResume(repo: string): string {
   const found = readdirSync(`${repo}/cv`).filter((name) => /^resume-v\d+\.\d+\.txt$/.test(name));
   if (found.length !== 1) throw new Error(`expected one current resume in cv/, found ${found.length}`);
   return `${repo}/cv/${found[0]}`;
+}
+
+/**
+ * Facts the site publishes but the CV does not (Fineksi, freelance availability, the Kubernetes
+ * tag), quoted from the rendered components so the wording can only be what the page ships. Every
+ * anchor must match exactly once: a moved anchor throws, refusing startup rather than grounding
+ * the bot on stale text. The worker bundle generator inlines this same output.
+ */
+export function siteFacts(repo: string): string {
+  const read = (name: string) => readFileSync(`${repo}/src/lib/components/${name}`, 'utf8');
+  const grab = (name: string, text: string, re: RegExp): string => {
+    const found = [...text.matchAll(re)];
+    if (found.length !== 1)
+      throw new Error(`${name}: anchor ${re} matched ${found.length} times, expected exactly 1`);
+    return found[0][1]!;
+  };
+  const anchorAt = (name: string, text: string, needle: string): number => {
+    const hits = text.split(needle).length - 1;
+    if (hits !== 1) throw new Error(`${name}: anchor ${needle} matched ${hits} times, expected exactly 1`);
+    return text.indexOf(needle);
+  };
+
+  const current = grab('About.svelte', read('About.svelte'), /<dt>Current<\/dt><dd>([^<]*)<\/dd>/g);
+
+  const resume = read('Resume.svelte');
+  const org = '<span class="tl-org">Fineksi</span>';
+  const orgAt = anchorAt('Resume.svelte', resume, org);
+  const cardFrom = resume.lastIndexOf('<details class="experience-card">', orgAt);
+  const cardTo = resume.indexOf('</details>', orgAt);
+  if (cardFrom < 0 || cardTo < 0) throw new Error(`Resume.svelte: anchor ${org} has no enclosing experience card`);
+  const card = resume.slice(cardFrom, cardTo);
+  const role = grab('Resume.svelte', card, /<h3>([^<]*)<\/h3>/g);
+  const dates = grab('Resume.svelte', card, /<span class="tl-dates">([^<]*)<\/span>/g);
+
+  const hero = read('Hero.svelte');
+  const labelAt = anchorAt('Hero.svelte', hero, '<p class="proof-label">Production systems built at</p>');
+  const listFrom = hero.indexOf('<ul class="proof-list">', labelAt);
+  const listTo = listFrom >= 0 ? hero.indexOf('</ul>', listFrom) : -1;
+  if (listFrom < 0 || listTo < 0) throw new Error('Hero.svelte: no proof list under "Production systems built at"');
+  const heroOrg = grab('Hero.svelte', hero.slice(listFrom, listTo), /<li>(Fineksi)<\/li>/g);
+
+  const flagship = grab('Portfolio.svelte', read('Portfolio.svelte'), /<h3 class="flagship-title">(Fineksi[^<]*)<\/h3>/g);
+  const worksFor = grab('HomeHead.svelte', read('HomeHead.svelte'), /"worksFor": \{ "@type": "Organization", "name": "(Fineksi)" \}/g);
+  const availability = grab('Services.svelte', read('Services.svelte'), /<strong>(Freelance Availability:[^<]*)<\/strong>/g)
+    .replaceAll('&middot;', '·');
+
+  const skills = read('Skills.svelte');
+  const groupAt = anchorAt('Skills.svelte', skills, '<h3>DevOps / Cloud</h3>');
+  const groupTo = skills.indexOf('</div>', groupAt);
+  if (groupTo < 0) throw new Error('Skills.svelte: the "DevOps / Cloud" group never closes');
+  const kubernetes = grab('Skills.svelte', skills.slice(groupAt, groupTo), /<li>(Kubernetes)<\/li>/g);
+
+  return `SITE FACTS — statements already published on fadhlillah2.github.io/Bio, quoted from the page. Some of these are published only on the site, not in the CV document: answer from this block and do not claim where the CV shows them.
+
+- About section, "Current" fact: "${current}"
+- Experience timeline, Fineksi entry: "${role}", dates "${dates}"
+- Hero proof list "Production systems built at": "${heroOrg}"
+- Project Showcase, flagship card: "${flagship}"
+- JSON-LD "worksFor": "${worksFor}"
+- Services section: "${availability}"
+- Skills section, "DevOps / Cloud" group: "${kubernetes}"
+`;
 }
 
 /**
@@ -167,6 +229,8 @@ if (import.meta.main) {
   if (TOKEN) assertStrongSecret('CHAT_TOKEN', TOKEN);
 
   const grounding = await Bun.file(CV).text();
+  // Fail-closed: extraction runs at startup so a moved anchor stops the proxy, not serves stale facts.
+  siteFacts(REPO);
   // Per process, never persisted: a tag only has to outlive the conversation it belongs to.
   const SIGNING_KEY = await importSigningKey(crypto.getRandomValues(new Uint8Array(32)));
 
