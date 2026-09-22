@@ -120,6 +120,7 @@ Kerjakan berurutan T1 → T9: hampir semua tugas menyentuh `scripts/chat-proxy-s
   - `"generated worker content equals the current resume file byte for byte"` — `WORKER.CV === readFileSync(currentResume(ROOT), 'utf8')`.
   - `"generated site facts equal the extractor output byte for byte"` — `WORKER.SITE_FACTS === siteFacts(ROOT)`; assert ini membuktikan kedua jalur identik, bukan kepersisan keluaran (dua pemakaian ekstraktor yang sama tetap hijau bila ada teks berlebih) — kepersisan terhadap kontrak §2 dipin assert kesamaan penuh di T1.
   - Perintah: `bun scripts/chat-proxy-selftest.ts` dan `bun run chat:worker:build --check` → `worker content: in sync with cv/ and the agent definition`.
+  - Bukti merah: 0322424f3e5966fc4a85f8e64a72e31a5a82c8e2 scripts/chat-proxy-selftest.ts
 
 ### T3 — Prompt dua blok + definisi CONTEXT
 
