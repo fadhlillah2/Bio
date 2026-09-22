@@ -309,11 +309,11 @@ assert.equal(unconfigured.status, 503, "a weak signing key takes the whole worke
 // and an endpoint that does not know the parameter rejects it, so it may only travel to a
 // bigmodel hostname. The stub captures the request; no provider is contacted.
 const realFetch = globalThis.fetch;
-const providerCalls: { url: string; body: any }[] = [];
+const providerCalls: { url: string; body: any; headers: Record<string, string> }[] = [];
 let upstream = () => Response.json({ choices: [{ message: { content: "He works at Fineksi." }, finish_reason: "stop" }] });
 try {
-  globalThis.fetch = (async (url: unknown, init: { body: string }) => {
-    providerCalls.push({ url: String(url), body: JSON.parse(init.body) });
+  globalThis.fetch = (async (url: unknown, init: { body: string; headers?: Record<string, string> }) => {
+    providerCalls.push({ url: String(url), body: JSON.parse(init.body), headers: init.headers || {} });
     return upstream();
   }) as typeof fetch;
 
@@ -328,6 +328,10 @@ try {
   assert.equal(glm.url, "https://open.bigmodel.cn/api/coding/paas/v4/chat/completions", "the request goes to the endpoint's chat/completions route");
   assert.deepEqual(glm.body.thinking, { type: "disabled" }, "the GLM request disables thinking to keep reasoning out of the completion budget");
   assert(glm.body.model === "glm-5.3-flash" && glm.body.max_tokens === 700, "the request carries the configured model and max_tokens 700");
+  assert(
+    typeof glm.headers["x-opencode-session"] === "string" && glm.headers["x-opencode-session"].length > 0,
+    "the provider request carries the opencode gateway routing header"
+  );
 
   await worker.fetch(post('{"messages":[{"role":"user","content":"hi"}]}'), {
     ...workerEnv(true, []),
@@ -391,9 +395,9 @@ assert(
   "the wrangler config still binds the edge rate limiter and the site origin"
 );
 assert(
-  wrangler.includes('CHAT_API_URL = "https://open.bigmodel.cn/api/coding/paas/v4"') &&
+  wrangler.includes('CHAT_API_URL = "https://opencode.ai/zen/go/v1"') &&
     wrangler.includes('CHAT_MODEL = "glm-5.3-flash"'),
-  "the wrangler config points production at the GLM coding-plan endpoint"
+  "the wrangler config points production at the OpenCode Go gateway"
 );
 
 // The panel's opening line is widget UI copy, but it still may not promise more than the bot
