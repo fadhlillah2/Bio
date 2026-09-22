@@ -297,6 +297,65 @@ assert.equal(passed.status, 400, "an allowed caller reaches body validation");
 const unconfigured = await worker.fetch(post('{"messages":[]}'), { ...workerEnv(true, []), CHAT_SIGNING_KEY: "short" } as never);
 assert.equal(unconfigured.status, 503, "a weak signing key takes the whole worker out of service");
 
+// The provider call itself. Production points at GLM's coding-plan endpoint, where the model
+// burns its completion budget on hidden reasoning unless `thinking` is explicitly disabled —
+// and an endpoint that does not know the parameter rejects it, so it may only travel to a
+// bigmodel hostname. The stub captures the request; no provider is contacted.
+const realFetch = globalThis.fetch;
+const providerCalls: { url: string; body: any }[] = [];
+let upstream = () => Response.json({ choices: [{ message: { content: "He works at Fineksi." }, finish_reason: "stop" }] });
+try {
+  globalThis.fetch = (async (url: unknown, init: { body: string }) => {
+    providerCalls.push({ url: String(url), body: JSON.parse(init.body) });
+    return upstream();
+  }) as typeof fetch;
+
+  const glmEnv = {
+    ...workerEnv(true, []),
+    CHAT_API_URL: "https://open.bigmodel.cn/api/coding/paas/v4",
+    CHAT_MODEL: "glm-5.3-flash"
+  };
+  const answered = await worker.fetch(post('{"messages":[{"role":"user","content":"hi"}]}'), glmEnv as never);
+  assert.equal(answered.status, 200, "a stubbed provider answer still round-trips");
+  const glm = providerCalls.at(-1)!;
+  assert.equal(glm.url, "https://open.bigmodel.cn/api/coding/paas/v4/chat/completions", "the request goes to the endpoint's chat/completions route");
+  assert.deepEqual(glm.body.thinking, { type: "disabled" }, "the GLM request disables thinking to keep reasoning out of the completion budget");
+  assert(glm.body.model === "glm-5.3-flash" && glm.body.max_tokens === 700, "the request carries the configured model and max_tokens 700");
+
+  await worker.fetch(post('{"messages":[{"role":"user","content":"hi"}]}'), {
+    ...workerEnv(true, []),
+    CHAT_API_URL: "https://api.deepseek.com",
+    CHAT_MODEL: "deepseek-chat"
+  } as never);
+  assert(!("thinking" in providerCalls.at(-1)!.body), "a non-bigmodel endpoint never receives the bigmodel-only parameter");
+
+  upstream = () => new Response('{"error":"invalid key, request id 42"}', { status: 500 });
+  const failed = await worker.fetch(post('{"messages":[{"role":"user","content":"hi"}]}'), {
+    ...workerEnv(true, []),
+    CHAT_API_URL: "https://api.deepseek.com"
+  } as never);
+  assert.equal(failed.status, 502, "a provider failure does not pass its status through");
+  assert.equal(await failed.text(), '{"error":"The model did not answer."}', "a provider failure answers 502 without provider detail");
+} finally {
+  globalThis.fetch = realFetch;
+}
+
+// wrangler.toml is rewritten for the production provider and no other gate reads it back, so the
+// edge binding and the site origin are pinned here: a rewrite that drops them deploys fine and
+// silently downgrades limiting to the non-atomic KV counter.
+const wrangler = readFileSync(join(ROOT, "worker", "wrangler.toml"), "utf8");
+assert(
+  wrangler.includes("[[ratelimits]]") &&
+    wrangler.includes('name = "RATE_LIMITER"') &&
+    wrangler.includes('CHAT_ORIGINS = "https://fadhlillah2.github.io"'),
+  "the wrangler config still binds the edge rate limiter and the site origin"
+);
+assert(
+  wrangler.includes('CHAT_API_URL = "https://open.bigmodel.cn/api/coding/paas/v4"') &&
+    wrangler.includes('CHAT_MODEL = "glm-5.3-flash"'),
+  "the wrangler config points production at the GLM coding-plan endpoint"
+);
+
 // The site publishes facts the CV does not (Fineksi, availability, the Kubernetes tag); the shared
 // extractor quotes them from the components themselves. "Contains" asserts alone would let
 // component leftovers ride into the public bot's CONTEXT block, so the output is also pinned to
