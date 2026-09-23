@@ -87,7 +87,7 @@ Bukti merah: 49dd000 test/unit.map.test.mjs
 - Test: `unit.path` — rute valid (edge berturutan, ujung sambung), shortest pada graf kecil yang diketahui, deterministik dua panggilan + dua seed, rute menghindari edge tertutup (dan berubah setelah `close`). `unit.steer` — dua agen bertetangga bergerak saling menjauh (jarak naik); agen di belakang leader melambat; dua run state awal sama → state akhir identik (hash).
 - Cara membuktikan selesai: `npm test` hijau.
 
-Bukti merah: <hash> test/unit.path.test.mjs
+Bukti merah: 5fe5c8b test/unit.path.test.mjs test/unit.steer.test.mjs
 
 ### Tugas 4 — Sim inti deterministik + replay + desync
 
