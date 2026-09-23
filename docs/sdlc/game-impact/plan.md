@@ -109,7 +109,7 @@ Bukti merah: 7b07c6a test/unit.sim.test.mjs
 - Test: `test/unit.markup.test.mjs` — index.html memuat id HUD yang dipakai render.js; scan `index.html` + `src/*.js`: tidak ada URL `http(s)://` pihak ketiga (hanya boleh `127.0.0.1`/komentar `homepage` di package.json); atribut `data-frame`/`data-box`/`data-sim-hash`/`data-metrics`/`data-draws`/`data-gl` disebut di main.js.
 - Cara membuktikan selesai: `npm test` hijau. Celah bernama: acuan visual - tampilan game baru tidak punya mock; yang digerbangi adalah determinisme capture (screenshot gate G6) dan struktur DOM (smoke G6), bukan kesesuaian dengan desain visual eksternal.
 
-Bukti merah: <hash> test/unit.markup.test.mjs
+Bukti merah: a9bfdc5 test/unit.markup.test.mjs
 
 ### Tugas 6 — Smoke lintas-lingkungan + screenshot gate
 
