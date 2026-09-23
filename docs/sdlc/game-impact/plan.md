@@ -65,7 +65,7 @@ Konvensi eksekusi: tugas 1–7 dikerjakan di repo game (`cd ../gridlock-webgl` d
 - Test: `test/unit.rng.test.mjs` (seed sama → urutan `next()` identik ≥1000 nilai; seed beda → urutan beda; `nextInt` di rentang). `test/unit.fixed.test.mjs` (round-trip toFp/fromFp; `fpMul` exact pada kasus identitas; hasil `fnv1a` stabil dan beda untuk input beda).
 - Cara membuktikan selesai: `npm test` hijau (`node --test` menemukan kedua file; keluaran `# pass` ≥ jumlah test, exit 0).
 
-Bukti merah: <hash> test/unit.rng.test.mjs
+Bukti merah: 9a2cf70 test/unit.rng.test.mjs
 
 ### Tugas 2 — Peta prosedural dari seed
 
