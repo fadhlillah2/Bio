@@ -76,7 +76,7 @@ Bukti merah: 9a2cf70 test/unit.rng.test.mjs
 - Test: seed sama → `hash()` peta identik; seed beda → beda; `close` tercermin di adjacency tapi `hash()` struktur topologi awal tetap fungsi seed; jumlah edge dalam rentang wajar (≥ 50% edge grid penuh; konektivitas = properti konstruksi spanning-tree, tanpa test BFS terpisah).
 - Cara membuktikan selesai: `npm test` hijau.
 
-Bukti merah: <hash> test/unit.map.test.mjs
+Bukti merah: 49dd000 test/unit.map.test.mjs
 
 ### Tugas 3 — Pathfinding A* + steering
 
