@@ -165,7 +165,7 @@ Bukti merah: 7c561d8 tools/smoke.mjs
 - Acuan visual (tugas mengubah tampilan): Celah bernama: acuan visual - Bio tidak punya gerbang screenshot section otomatis (frontend-regression.ts = cek DOM/print/menu, bukan piksel; diff piksel section tinggi nondeterministik per pelajaran memory), dan loop pembanding manual baru hanya menggandakan probe yang sudah ada. Bukti tampilan = tiga lapis yang direncanakan: markup kartu verbatim pola pendahulu (di atas), assertion struktural `check:app` (posisi, CTA, aset, anatomi), dan probe visual tiga look + screenshot bukti di V3 langkah 6.
 - Cara membuktikan selesai: `bun run build && bun run check:app` hijau (assertion kartu lulus); `bun run check` (svelte-check) bersih.
 
-Bukti merah: <hash> scripts/app-smoke.ts
+Bukti merah: 70be068 scripts/app-smoke.ts
 
 ### Tugas 9 — Verifikasi lengkap repo game
 

@@ -89,6 +89,26 @@
           </div>
         </article>
 
+        <!-- Interactive experiment: deterministic WebGL2 traffic simulation; live build and source are linked -->
+        <article class="flagship" data-reveal>
+          <div class="flagship-body">
+            <p class="flagship-badge">Interactive experiment &middot; WebGL2</p>
+            <h3 class="flagship-title">Gridlock — a hand-written WebGL2 traffic simulation</h3>
+            <p class="flagship-desc">A deterministic traffic simulation rendered by a small hand-written WebGL2 pipeline: a road grid generated procedurally from a seed, autonomous vehicles that route with hand-written A* and steering on a fixed timestep with fixed-point state, and input-logged runs that replay exactly while a state hash catches any desync. Close a road and watch the network reroute. No engine, no runtime dependencies.</p>
+            <p class="flagship-result">Vanilla JS + GLSL; the repo ships unit tests for determinism, replay, and desync detection, a Chrome-headless smoke test that cross-checks the browser against Node, and a screenshot gate that fails unless two captures of the same frame agree byte for byte.</p>
+            <ul class="tag-row">
+              <li>WebGL2</li><li>GLSL</li><li>Vanilla JS</li><li>A* + steering</li><li>Deterministic replay</li>
+            </ul>
+            <div class="flagship-cta">
+              <a href="https://fadhlillah2.github.io/gridlock-webgl/" class="btn btn-solid btn-sm" target="_blank" rel="noopener" aria-label="Play the Gridlock demo (opens in new tab)">Play the demo</a>
+              <a href="https://github.com/fadhlillah2/gridlock-webgl" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" aria-label="View the Gridlock source on GitHub (opens in new tab)">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
+            </div>
+          </div>
+          <div class="flagship-shot" aria-hidden="true">
+            <img src={base + "/assets/img/gridlock.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
+          </div>
+        </article>
+
         <!-- Interactive experiment: real WebGL2 brick breaker; live build and source are linked -->
         <article class="flagship" data-reveal>
           <div class="flagship-body">
