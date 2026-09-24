@@ -244,4 +244,4 @@ Tidak ada kekhawatiran spec yang belum beres (spec: "Tidak ada kekhawatiran yang
 4. CLAUDE.md masih mencatat invarian footer "Updated <bulan> <tahun>" yang basi (footer sudah tidak memuatnya) — memperbarui CLAUDE.md di luar scope change ini; keputusan lead/user terpisah.
 5. TERSELESAIKAN oleh lead saat penerimaan plan: kriteria 9 "setara pendahulu" = CI menjalankan unit+smoke; screenshot gate dua-capture = gerbang lokal (lihat Risiko 7). Menaikkan screenshot ke CI hanya setelah terbukti stabil lintas mesin — keputusan lead terpisah, bukan scope build.
 
-Status penerimaan: diterima user Fadhlillah 2026-09-24T05:16:47+07:00 sha256:70bbe527.
+Status penerimaan: diterima user Fadhlillah 2026-09-24T07:38:39+07:00 sha256:27cc9d0e.
