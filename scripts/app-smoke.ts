@@ -178,6 +178,24 @@ try {
   await check("innerWidth === 390 && scrollY === 0", "home hydrates at mobile viewport before scroll");
   await check("document.querySelectorAll('#resume .tl-role details').length === 6 && document.querySelectorAll('#resume details[open]').length === 0 && !document.querySelector('.cred-card details')", "six experience cards start closed; credentials stay expanded");
   await check("['resume','services'].every(id=>{const a=document.querySelector('.hero a[href=\"#'+id+'\"]'); return a && document.getElementById(id) && a.getBoundingClientRect().width>0;})", "both audience links have visible controls and existing destinations");
+  const gridlockTitle = "Gridlock — a hand-written WebGL2 traffic simulation";
+  await check(`(() => { const titles = [...document.querySelectorAll('#portfolio .flagship-title')].map(e => e.textContent.trim());
+      return titles.includes(${JSON.stringify(gridlockTitle)})
+        && titles.indexOf(${JSON.stringify(gridlockTitle)}) === titles.indexOf('Breakout 3D — a hand-written WebGL2 brick breaker') - 1; })()`,
+    "Gridlock card sits directly above the Breakout 3D card");
+  await check(`(() => { const titles = [...document.querySelectorAll('#portfolio .flagship-title')].map(e => e.textContent.trim());
+      const cards = document.querySelectorAll('#portfolio .flagship');
+      if (titles.length !== cards.length) return false; // review nit 8: judul dan kartu harus sejajar satu-satu
+      const card = cards[titles.indexOf(${JSON.stringify(gridlockTitle)})];
+      if (!card) return false;
+      const hrefs = [...card.querySelectorAll('.flagship-cta a')].map(a => a.href);
+      const img = card.querySelector('.flagship-shot img');
+      return hrefs.includes('https://fadhlillah2.github.io/gridlock-webgl/') && hrefs.includes('https://github.com/fadhlillah2/gridlock-webgl')
+        && !!img && img.getAttribute('src').endsWith('/assets/img/gridlock.png')
+        && img.getAttribute('width') === '1200' && img.getAttribute('height') === '675'; })()`,
+    "Gridlock card links demo and source with a sized screenshot");
+  await check(`[...document.querySelectorAll('#portfolio .flagship-title')].filter(e => e.textContent.trim().startsWith('Fineksi')).length === 1`,
+    "only the Fineksi card title starts with Fineksi");
   const originalLook = await js("document.documentElement.getAttribute('data-look')");
   const luminance = (hex: string) => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
     .map(c => c <= .04045 ? c / 12.92 : ((c + .055) / 1.055) ** 2.4)
