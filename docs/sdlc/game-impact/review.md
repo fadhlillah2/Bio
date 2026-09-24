@@ -1,12 +1,14 @@
 # Review — rantai SDLC game-impact
 
-Dibuat oleh: sdlc-deploy review, args root/change/base, slot model pelaksana glm-5.3[1m], tanggal-jam 2026-09-24T08:09:36+07:00, dilepas oleh: Fadhlillah, skrip: sdlc-deploy.js sha256 18b18e99, sha256 pendek CLAUDE.md edcbc7ee, REVIEW.md tidak ada
+Dibuat oleh: sdlc-deploy review, args root/change/base, slot model pelaksana glm-5.3[1m], tanggal-jam 2026-09-24T09:05:25+07:00, dilepas oleh: Fadhlillah, skrip: sdlc-deploy.js sha256 18b18e99, sha256 pendek CLAUDE.md 8230c45e, REVIEW.md tidak ada
 
 ## Diff yang direview
 
-`c713fc5` → HEAD `a7e304506274caac2fee6378b2b6ca21ef2f349b` (`git rev-parse HEAD`), 14 commit:
+`c713fc5` → HEAD `66fc6fb1330c1e011e0ec30e4c18038939ab25fe` (`git rev-parse HEAD`), 16 commit:
 
 ```
+66fc6fb Record the review response and commit the SDLC artifact policy change
+65c4066 Guard the Gridlock card assertions against title/card index drift
 a7e3045 Record the green test-stage report for the game-impact SDLC chain
 8789864 Re-accept the plan after the sanctioned red-proof write-backs
 7af34ea Add the Gridlock portfolio card with screenshot asset
@@ -29,87 +31,65 @@ fa7b385 Record the accepted plan for the game-impact SDLC chain
 
 ## Temuan
 
-Hitungan: blocker/major/minor/nit = 0/3/4/1 terkonfirmasi, blocker/major belum dibantah = 0/0 (mentah 9, digabung 1, terbantah 0)
+Hitungan: blocker/major/minor/nit = 0/1/5/0 terkonfirmasi, blocker/major belum dibantah = 0/0 (mentah 6, digabung 0, terbantah 0)
 
 ### Temuan terkonfirmasi
 
 #### 1. major — pass bug — src/lib/components/Portfolio.svelte:103
 
-Klaim: Kedua link pada kartu Gridlock yang di-commit saat ini mati: `https://fadhlillah2.github.io/gridlock-webgl/` dan `https://github.com/fadhlillah2/gridlock-webgl` sama-sama merespons HTTP 404, jadi bila PR di-merge sebelum repo game di-push, situs live menerbitkan dua link 404 di kartu portfolio tanpa ada gerbang otomatis yang menangkapnya.
+Klaim: Kedua link pada kartu Gridlock yang di-commit saat ini mati: https://fadhlillah2.github.io/gridlock-webgl/ dan https://github.com/fadhlillah2/gridlock-webgl sama-sama 404 per pemeriksaan ulang 2026-09-24, dan tidak ada gerbang deterministik yang menangkapnya — app-smoke memblokir semua request non-origin (scripts/app-smoke.ts:50-53) sehingga check:app/validate hijau apa pun status URL; bila PR di-merge sebelum repo game di-push, situs live menerbitkan dua link 404 di kartu portfolio. Sudah tercatat di review.md rantai ini (temuan #1, major) dengan mitigasi lead berupa langkah curl di release checklist — tetap latent karena penegaknya manual, bukan otomatis.
 
-Evidence: Reproduksi 2026-09-24: `curl -sI https://fadhlillah2.github.io/gridlock-webgl/` -> 404 dan `curl -sI https://github.com/fadhlillah2/gridlock-webgl` -> 404; repo game lokal `../gridlock-webgl` sudah selesai (HEAD `f2e60ce`, `git status --porcelain` kosong) tapi belum di-push. Urutan gate manusia sudah tertulis di docs/sdlc/game-impact/plan.md:241-242 (open questions #1 repo live sebelum #2 merge, Risiko 11 plan.md:203), namun tidak ada pemeriksaan deterministik yang menegakkannya: app-smoke memblokir semua request non-origin (`scripts/app-smoke.ts:50-53`, diakui plan.md:203), jadi `check:app`/`validate` hijau apa pun status URL. Untuk lead: tambahkan satu pemeriksaan pra-merge deterministik (mis. langkah di review checklist atau script `curl -fsSI` kedua URL -> 200 wajib sebelum PR dibuka) karena aturan tertulis di plan saja tidak menahan merge premature.
+Evidence: Reproduksi 2026-09-24: `curl -sI -o /dev/null -w "%{http_code}" https://fadhlillah2.github.io/gridlock-webgl/` -> 404 dan `https://github.com/fadhlillah2/gridlock-webgl` -> 404; href ter-commit di src/lib/components/Portfolio.svelte:103-104; socket handler scripts/app-smoke.ts:50-53 `const allowed = new URL(message.params.request.url).origin === origin; ... Fetch.failRequest ... "BlockedByClient"` membuat assertion kartu (app-smoke.ts:182-197) hanya memverifikasi string href (`hrefs.includes(...)`), bukan resolusinya. Catatan dedupe: docs/sdlc/game-impact/review.md temuan #1 (major) + Respons lead (curl -fsSI wajib di release checklist, di luar validate karena akan merah lokal sampai repo game di-push).
 
-Alasan pembantah tidak membantah: Reproduced directly: curl -sI on 2026-09-24 returns 404 for both https://fadhlillah2.github.io/gridlock-webgl/ and https://github.com/fadhlillah2/gridlock-webgl, and both hrefs are committed at src/lib/components/Portfolio.svelte:103-104. Local repo ../gridlock-webgl is finished (HEAD f2e60ce, clean) but has no git remote at all; scripts/app-smoke.ts:51 blocks all non-origin requests so the smoke test only asserts the href strings exist (line 191), never that they resolve, matching plan.md Risiko 11 (line 203) and the human-gate ordering at plan.md:241-242 with no deterministic pre-merge check.
-
-Penilaian lead: (berguna|derau) -
-
-#### 2. major — pass keamanan (juga_dari: kepatuhan) — docs/sdlc/game-impact/intent.md:1
-
-Klaim: Klain: docs/sdlc/game-impact/{intent.md,spec.md,test.md} di-commit ke repo publik padahal keputusan user tercatat hanya plan.md yang ter-commit di docs/sdlc sementara intent.md/spec.md/probes wajib gitignored, sehingga artefak perencanaan internal (prompt user verbatim, hash penerimaan, identitas model/skrip) masuk history repo publik github.com/fadhlillah2/Bio.
-
-Evidence: Aturan tertulis: CLAUDE.md:18-19 "`docs/sdlc` = direktori riil di repo tempat artefak rantai SDLC (`plan.md` ter-commit di repo; `intent.md`/`spec.md`/probes gitignored di dalamnya — keputusan user 2026-09-22...)" dan .gitignore:26 (`docs/sdlc`, komentar baris 25 "spec/plan lokal (keputusan user 2026-09-05)"). Verifikasi: `git check-ignore` membuktikan semua path docs/sdlc match aturan ignore, namun `git ls-files docs/sdlc/` menunjukkan intent.md, spec.md, test.md (game-impact) ter-track — berarti di add melewati ignore; ditambahkan pada commit 7e43380 (intent), 5ac6f2a (spec), a7e3045 (test). Preseden rantai sebelumnya patuh: docs/sdlc/chat-go-live hanya plan.md yang ter-track (commit 6be19cd) dan scan rilisnya mewajibkan "nol berkas gitignored" dalam diff (docs/sdlc/chat-go-live/plan.md:356). Dampak paparan rendah-sensitivitas (tanpa kredensial, email sengaja dibuang, tanpa path mesin — diverifikasi grep), tetapi setelah push ke repo publik penghapusannya butuh history rewrite (preseden insiden growth-docs 2026-09-19 di memory). Usulan penegak untuk lead: gerbang deterministik di `validate` (atau check:regressions) yang gagal bila `git ls-files docs/sdlc` memuat berkas selain `*/plan.md`, karena aturan tertulis saja tidak mencegah add paksa.
-
-Klaim gabungan (digabung) dari pass kepatuhan, severity major, di baris ini: intent.md dan spec.md di-force-add ke repo publik meski keputusan user 2026-09-22 (CLAUDE.md:18-20) menyatakan keduanya gitignored dan hanya plan.md yang ter-commit; plan.md:182 mengesankan ini "pola intent/spec" padahal rantai pendahulu tidak pernah melakukannya. — Evidence gabungan: CLAUDE.md:18-20: "`docs/sdlc` = direktori riil di repo tempat artefak rantai SDLC (`plan.md` ter-commit di repo; `intent.md`/`spec.md`/probes gitignored di dalamnya — keputusan user 2026-09-22 ...)`"; `git ls-files docs/sdlc/` menunjukkan rantai sebelumnya hanya men-track `docs/sdlc/chat-go-live/plan.md` — preseden "pola intent/spec" yang dikutip plan.md:182 tidak ada di repo; rantai chat-go-live bahkan memuat scan permintaan user "nol berkas gitignored" dalam diff (docs/sdlc/chat-go-live/plan.md:356). Pelanggaran aturan tertulis CLAUDE.md:18-20; penegak deterministik yang diusulkan sama: pemeriksaan `git ls-files -i -c --exclude-standard` kosong sebagai gerbang, karena aturan tertulis saja tidak mencegah.
-
-Alasan pembantah tidak membantah: Dikonfirmasi: git ls-files menunjukkan docs/sdlc/game-impact/{intent.md,spec.md,test.md} ter-track (ditambahkan 7e43380/5ac6f2a/a7e3045, 2026-09-24) padahal CLAUDE.md:18-19 (keputusan user 2026-09-22) hanya mengizinkan plan.md ter-commit dan .gitignore:26 'docs/sdlc' (berdiri sejak 6be19cd, 2026-09-22) match ketiga path itu menurut check-ignore --no-index — berarti di-add melewati ignore; preseden chat-go-live hanya men-track plan.md; isi file memuat prompt user verbatim (intent.md:9), identitas skrip sha256 (intent.md:3), hash penerimaan (intent.md:72); commit belum ter-push ke origin publik, persis seperti dibingkai temuan. Klaim gabungan [0] juga benar: plan.md:182 memang menyebut 'pola intent/spec' dan memasukkan {intent,spec,plan}.md sebagai isi diff yang diharapkan, padahal rantai pendahulu chat-go-live (yang plan.md-nya ~baris 356 mewajibkan 'nol berkas gitignored' dalam diff) tidak pernah men-track intent/spec.
+Alasan pembantah tidak membantah: Direproduksi langsung 2026-09-24: curl kedua URL mengembalikan 404, href ter-commit di src/lib/components/Portfolio.svelte:103-104, scripts/app-smoke.ts:51-53 memblokir semua request non-origin sementara assertion baris 193 hanya string-match hrefs (tanpa resolusi) sehingga validate hijau apa pun status URL, dan ../gridlock-webgl lokal (HEAD f2e60ce, clean) tidak punya git remote sama sekali — belum ter-push; satu-satunya penegak adalah langkah curl manual lead di release checklist (docs/sdlc/game-impact/review.md:128), persis klaim "latent".
 
 Penilaian lead: (berguna|derau) -
 
-#### 3. major — pass kepatuhan — docs/sdlc/game-impact/test.md:1
+#### 2. minor — pass keamanan — docs/sdlc/game-impact/riset-game-impact.md:5
 
-Klaim: Berkas test.md di-commit ke repo padahal tidak ada dalam daftar berkas diff yang diharapkan plan (tambahan di luar scope) dan `docs/sdlc` seluruhnya di-gitignore.
+Klaim: Deliverable rantai yang dirujuk tiga artefak ter-commit berisi path mesin ber-username namun hanya dijaga aturan tertulis tanpa gerbang deterministik, padahal force-add melewati aturan tertulis sudah terjadi tiga kali pada folder yang sama dalam rentang diff ini, sehingga satu `git add -f` di masa depan mempublikasikan username dan path journal internal ke repo publik (penghapusannya pasca-push butuh history rewrite).
 
-Evidence: `git ls-files docs/sdlc/` memuat `docs/sdlc/game-impact/test.md` (ter-track); plan.md:182 menghitung diff yang diharapkan "hanya `src/lib/components/Portfolio.svelte`, `static/assets/img/gridlock.png`, `scripts/app-smoke.ts`, dan `docs/sdlc/game-impact/{intent,spec,plan}.md`" — test.md tidak disebut; `.gitignore:26` = `docs/sdlc`. Aturan pencegahnya sudah tertulis di CLAUDE.md:18-20 (hanya `plan.md` ter-commit di repo; sisanya gitignored — keputusan user 2026-09-22) tapi terbukti tidak mencegah; usulan penegak deterministik untuk lead: gerbang di `validate` atau pre-commit hook yang gagal bila `git ls-files -i -c --exclude-standard` tidak kosong (berkas ter-track sekaligus ter-gitignore).
-
-Alasan pembantah tidak membantah: Terkonfirmasi: `git ls-files docs/sdlc/` memuat docs/sdlc/game-impact/test.md dan `git diff c713fc5..HEAD --stat` memuatnya (commit a7e3045); plan.md:182 persis berbunyi diff diharapkan "hanya ... `docs/sdlc/game-impact/{intent,spec,plan}.md`" tanpa test.md (grep "test.md" di plan/spec/intent = 0 kecocokan, jadi tak ada sanksi tertulis untuknya); `.gitignore:26` = `docs/sdlc` dan CLAUDE.md:18-20 (keputusan user 2026-09-22) menyatakan hanya plan.md yang ter-commit — check-ignore exit 1 justru karena berkas sudah ter-track, persis kondisi kebocoran yang diklaim. Preseden chat-go-live (hanya plan.md ter-track) menguatkan; tidak ada REVIEW.md dan tidak ada gerbang deterministik serupa di repo.
-
-Penilaian lead: (berguna|derau) -
-
-#### 4. minor — pass kepatuhan — CLAUDE.md:18
-
-Klaim: Perubahan ini membuat bagian "Memory & living docs" CLAUDE.md basi: dokumen menyatakan intent.md/spec.md/probes gitignored di dalam docs/sdlc, kenyataannya intent.md, spec.md, dan test.md kini ter-commit di repo.
-
-Evidence: CLAUDE.md:18-20 ("`intent.md`/`spec.md`/probes gitignored di dalamnya") vs `git ls-files docs/sdlc/` yang kini memuat `docs/sdlc/game-impact/{intent,spec,test}.md`. Usulan untuk lead (belum ada aturannya di rubrik): satu baris REVIEW.md — reviewer/pass kepatuhan wajib gagal-kan diff yang menambah berkas ter-gitignore ke index.
+Evidence: docs/sdlc/game-impact/riset-game-impact.md:5 mengandung kutipan: `~/.claude/projects/-home-finskor017-Documents-PROJECTS-Bio/05dba1e6-0e5a-46f0-a41a-6a4fab71db14/subagents/workflows/wf_8680a678-6e2/journal.jsonl` (username mesin + UUID sesi). Diverifikasi: `git check-ignore -v` -> `.gitignore:26:docs/sdlc`; file tidak ada di `git ls-files docs/sdlc/` (belum bocor, range juga belum di-push — tidak ada remote branch yang memuat HEAD). Direferensikan sebagai deliverable tree-Bio oleh artefak ter-commit intent.md (Hasil #1), spec.md, dan plan.md bagian Rujukan. Aturan pelindungnya hanya tertulis: CLAUDE.md lokal (kebijakan 2026-09-24) "Wajib scan pra-push: nol kredensial/path mesin/email di artefak; berkas non-artefak (mis. probes, draf) tetap gitignored" — tanpa pemeriksaan deterministik, dan dalam range ini sendiri tiga berkas pernah di-force-add melewati aturan tertulis 2026-09-22 (docs/sdlc/game-impact/review.md temuan #2/#3, dijawab keputusan user). Usulan penegak untuk lead: gerbang di `validate`/`check:regressions` yang gagal bila `git ls-files docs/sdlc` memuat nama berkas di luar enam artefak ter enumerasi kebijakan (atau `git ls-files -i -c --exclude-standard` tak kosong).
 
 Alasan pembantah tidak membantah: tidak dibantah (minor/nit)
 
 Penilaian lead: (berguna|derau) -
 
-#### 5. minor — pass kepatuhan — docs/sdlc/game-impact/plan.md:110
+#### 3. minor — pass kepatuhan — docs/sdlc/game-impact/spec.md:66
 
-Klaim: [Celah bernama: acuan visual - game] kriteria spec 8/behavior 2 pada sisi visual (kualitas tampilan game, hook terlihat) tidak punya gerbang visual/piksel di repo — yang digerbangi hanya determinisme capture (screenshot gate) dan struktur DOM (smoke), bukan kesesuaian desain visual.
+Klaim: Kriteria 1 (repo publik fadhlillah2/gridlock-webgl + demo live HTTP 200 + frame pertama), kriteria 9 bagian live (CI repo game pada push pertama), kriteria 13 bagian CI (validate:ci pada push master), dan kriteria 15b (run "Deploy chat worker" post-merge) belum bisa diverifikasi dari diff — semuanya menunggu gate manusia push/merge; bagian lokal kriteria 13/15a serta gate chat tercatat hijau di test.md (data, tidak dijalankan ulang di pass ini; anchor Fineksi tetap tunggal diverifikasi grep sendiri).
 
-Evidence: plan.md:110: "Celah bernama: acuan visual - tampilan game baru tidak punya mock; yang digerbangi adalah determinisme capture (screenshot gate G6) dan struktur DOM (smoke G6), bukan kesesuaian dengan desain visual eksternal"; bukti visual hidup hanya probe V3 sekali jalan yang direkam di test.md:74-75 (data, tidak dijalankan ulang di pass ini).
-
-Alasan pembantah tidak membantah: tidak dibantah (minor/nit)
-
-Penilaian lead: (berguna|derau) -
-
-#### 6. minor — pass kepatuhan — docs/sdlc/game-impact/plan.md:165
-
-Klaim: [Celah bernama: acuan visual - kartu Bio] kriteria 10/behavior 1 pada sisi visual kartu (tampil benar di ketiga look) tidak punya gerbang screenshot section otomatis di repo Bio; bukti = assertion struktural app-smoke + probe manual sekali jalan.
-
-Evidence: plan.md:165: "Celah bernama: acuan visual - Bio tidak punya gerbang screenshot section otomatis (frontend-regression.ts = cek DOM/print/menu, bukan piksel ...)"; sisi struktural terpenuhi di diff (assertion app-smoke kartu lulus, tercatat test.md:52/65) namun sisi visual tiga look hanya dari probe V3 test.md:77 (data).
+Evidence: plan.md:241-242 (open questions #1-#2: push repo game dan merge PR Bio = gate manusia, build tidak push); test.md:88-90 mencatat keempat item sebagai "menunggu gate manusia"; verifikasi statis pass ini: grep -cE '<h3 class="flagship-title">(Fineksi[^<]*)</h3>' src/lib/components/Portfolio.svelte = 1.
 
 Alasan pembantah tidak membantah: tidak dibantah (minor/nit)
 
 Penilaian lead: (berguna|derau) -
 
-#### 7. minor — pass kepatuhan — docs/sdlc/game-impact/spec.md:66
+#### 4. minor — pass kepatuhan — docs/sdlc/game-impact/plan.md:110
 
-Klaim: Kriteria 1 (repo publik fadhlillah2/gridlock-webgl + demo live HTTP 200 + frame pertama), kriteria 9 bagian live (CI repo game pada push pertama), kriteria 13 bagian CI (validate:ci pada push master), dan kriteria 15b (run Deploy chat worker post-merge) belum bisa diverifikasi — semuanya menunggu gate manusia push/merge.
+Klaim: [Celah bernama: acuan visual - game] Sisi visual kriteria 8/behavior 2 (hook terlihat ≤ ~10 detik, kualitas tampilan game) tidak punya gerbang visual/piksel — yang digerbangi hanya determinisme capture (screenshot gate G6) dan struktur DOM (smoke G6), bukan kesesuaian desain visual; bukti visual hidup hanya probe V3 sekali jalan yang direkam di test.md.
 
-Evidence: plan.md:241-242 (open questions #1-#2: push repo game dan merge PR Bio = gate manusia, build tidak push); demo live `https://fadhlillah2.github.io/gridlock-webgl/` tidak diperiksa di pass ini (belum diterbitkan); `bun run validate`/`validate:ci` lokal tercatat hijau di docs/sdlc/game-impact/test.md:22-23 (data, tidak dijalankan ulang di pass ini) — bagian lokal kriteria 13/15a terpenuhi per rekaman itu.
+Evidence: plan.md:110: "Celah bernama: acuan visual - tampilan game baru tidak punya mock; yang digerbangi adalah determinisme capture (screenshot gate G6) dan struktur DOM (smoke G6), bukan kesesuaian dengan desain visual eksternal"; rekaman probe V3 di test.md:74-75 adalah data, tidak dijalankan ulang di pass ini.
 
 Alasan pembantah tidak membantah: tidak dibantah (minor/nit)
 
 Penilaian lead: (berguna|derau) -
 
-#### 8. nit — pass bug — scripts/app-smoke.ts:187
+#### 5. minor — pass kepatuhan — docs/sdlc/game-impact/plan.md:165
 
-Klaim: Assertion "Gridlock card links demo and source" mengindeks daftar `#portfolio .flagship` memakai indeks dari daftar `#portfolio .flagship-title` tanpa memastikan kedua daftar sepanjang dan sejajar, sehingga kartu yang salah bisa ikut diperiksa diam-diam bila kelak ada kartu flagship tanpa `.flagship-title` atau judul di luar `article.flagship`.
+Klaim: [Celah bernama: acuan visual - kartu Bio] Sisi visual kriteria 10/behavior 1 (kartu tampil benar di ketiga look) tidak punya gerbang screenshot section otomatis di repo Bio — bukti = assertion struktural app-smoke (ada di diff, hijau per rekaman) plus probe manual tiga look sekali jalan.
 
-Evidence: `const card = document.querySelectorAll('#portfolio .flagship')[titles.indexOf(${JSON.stringify(gridlockTitle)})];` — coupling implisit 7 artikel = 7 judul (hari ini benar; `bun run build && bun run check:app` hijau atas ketiga assertion baru saat dijalankan ulang di review ini). Cukup ditambah `titles.length === document.querySelectorAll('#portfolio .flagship').length` di assertion pertama.
+Evidence: plan.md:165: "Celah bernama: acuan visual - Bio tidak punya gerbang screenshot section otomatis (frontend-regression.ts = cek DOM/print/menu, bukan piksel ...)"; sisi struktural diverifikasi di diff (scripts/app-smoke.ts:181-197 memuat ketiga assertion kartu); sisi visual tiga look hanya dari probe V3 test.md:77 (data).
+
+Alasan pembantah tidak membantah: tidak dibantah (minor/nit)
+
+Penilaian lead: (berguna|derau) -
+
+#### 6. minor — pass kepatuhan — docs/sdlc/game-impact/review.md:129
+
+Klaim: Kebijakan baru "seluruh artefak rantai ter-commit" (keputusan user 2026-09-24, menggantikan 2026-09-22) yang tersanksi tambahan test.md/review.md di luar daftar diff plan.md:182 tidak dibarengi penegak deterministik dan .gitignore masih meng-ignore seluruh docs/sdlc, sehingga batas artefak-wajib-commit vs non-artefak-gitignored tak terdefinisi mesin: artefak yang kelak terlupa di-commit tak muncul di git status (ignored), dan riset-game-impact.md — deliverable Hasil #1 intent yang dirujuk spec.md:10 sebagai "tree Bio" — kini untracked tanpa kata keputusan mana pun.
+
+Evidence: review.md:129 mencatat keputusan user "seluruh artefak rantai SDLC ikut ter-commit" dengan enumerasi intent/spec/plan/test/review/release dan "berkas non-artefak (probes, draf) tetap gitignored"; .gitignore:26 = `docs/sdlc` (masih meng-ignore semua); `git ls-files docs/sdlc/` = 6 berkas tanpa riset-game-impact.md padahal `ls docs/sdlc/game-impact/` memuatnya; scan pra-push "nol kredensial/path mesin/email" dijalankan pass ini atas kelima artefak ter-commit (grep '/home/|finskor|@…' → 0 kecocokan) tetapi gerbangnya manual. Usulan untuk lead: aturan kebijakan ada di CLAUDE.md bagian "Memory & living docs" (baris docs/sdlc, kebijakan 2026-09-24) namun tanpa penegak — tambahkan pemeriksaan deterministik di `validate`/pre-push yang gagal bila artefak enumerasi kebijakan untuk change aktif tidak ter-track (mis. `git ls-files --error-unmatch docs/sdlc/<change>/{intent,spec,plan,test,review}.md`) atau bila diff menambah berkas di docs/sdlc di luar enumerasi.
 
 Alasan pembantah tidak membantah: tidak dibantah (minor/nit)
 
@@ -122,11 +102,3 @@ Tidak ada (refuted, digabung_gugur, dan klaim_utama_gugur kosong — terbantah =
 ### Belum dibantah
 
 Tidak ada (tidak ada pembantah yang gagal pulang hasil).
-
-## Respons lead (2026-09-24, sesudah run)
-
-- **#1 major (link kartu 404 pra-push) — BERGUNA, ditindak**: urutan gate manusia memang sudah tertulis (Risiko 11), tapi aturan tertulis tak menahan merge premature. Penegak deterministik ditambahkan sebagai langkah WAJIB release checklist + body PR: `curl -fsSI` kedua URL → `200` sebelum PR Bio dibuka/di-merge (dijalankan lead; tidak masuk `validate` karena akan merah lokal sampai repo game di-push).
-- **#2+#3 major + #4 minor (intent/spec/test ter-commit vs kebijakan 2026-09-22) — BERGUNA, eskalasi ke user → TERJAWAB 2026-09-24**: gerbang commit rantai SDLC saat ini (intent_tercommit/spec_tercommit/test_tercommit di sdlc-design/build/test/deploy) MENUNTUT artefak hulu ter-commit; kebijakan CLAUDE.md 2026-09-22 menyatakan hanya plan.md. **Keputusan user (wawancara lead): seluruh artefak rantai SDLC ikut ter-commit** — CLAUDE.md diperbarui (kebijakan 2026-09-24 menggantikan 2026-09-22), disiplin baru: scan pra-push nol kredensial/path mesin/email; berkas non-artefak (probes, draf) tetap gitignored. Isi ketiga artefak sudah diverifikasi reviewer: nol kredensial/email/path mesin.
-- **#5+#6 minor (celah acuan visual) — DERAU tercatat**: gap memang dideklarasikan plan ("Celah bernama") dan diterima saat penerimaan plan; bukti visual hidup = probe V3 (test.md).
-- **#7 minor (kriteria pasca-gate-manusia belum terverifikasi) — BY DESIGN**: menunggu push/merge (open questions #1–#2).
-- **#8 nit (coupling indeks app-smoke) — BERGUNA, DIPERBAIKI**: assertion `titles.length === cards.length` ditambahkan `scripts/app-smoke.ts:187`; `bun run build` + `bun run check:app` hijau sesudahnya (commit terpisah).
