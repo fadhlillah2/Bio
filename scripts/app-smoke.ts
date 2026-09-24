@@ -184,7 +184,9 @@ try {
         && titles.indexOf(${JSON.stringify(gridlockTitle)}) === titles.indexOf('Breakout 3D — a hand-written WebGL2 brick breaker') - 1; })()`,
     "Gridlock card sits directly above the Breakout 3D card");
   await check(`(() => { const titles = [...document.querySelectorAll('#portfolio .flagship-title')].map(e => e.textContent.trim());
-      const card = document.querySelectorAll('#portfolio .flagship')[titles.indexOf(${JSON.stringify(gridlockTitle)})];
+      const cards = document.querySelectorAll('#portfolio .flagship');
+      if (titles.length !== cards.length) return false; // review nit 8: judul dan kartu harus sejajar satu-satu
+      const card = cards[titles.indexOf(${JSON.stringify(gridlockTitle)})];
       if (!card) return false;
       const hrefs = [...card.querySelectorAll('.flagship-cta a')].map(a => a.href);
       const img = card.querySelector('.flagship-shot img');
