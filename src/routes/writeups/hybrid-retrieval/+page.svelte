@@ -14,7 +14,7 @@
     "headline": "Hybrid retrieval for scanned Indonesian contracts",
     "description": "Why vector search can miss exact clause references, how the retrieval layer combines semantic search, TF-IDF and a literal fallback, and which limitations remain.",
     "datePublished": "2026-08-17",
-    "dateModified": "2026-09-05",
+    "dateModified": "2026-09-17",
     "inLanguage": "en",
     "author": {
       "@type": "Person",

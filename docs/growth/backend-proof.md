@@ -18,17 +18,22 @@ Official archive: [Go 1.24.7 Linux amd64](https://go.dev/dl/go1.24.7.linux-amd64
 da18191ddb7db8a9339816f3e2b54bdded8047cdc2a5d67059478f8d1595c43f
 ```
 
-Runtime reported `go version go1.24.7 linux/amd64`. The toolchain, source snapshot, module cache, build cache and logs are retained in session-owned `/tmp/bio-go-proof-XCcUuy` (temporary paths are not permanent public evidence). GCC was available for race builds. Redis tests use miniredis; no external Redis service was started.
+Runtime reported `go version go1.24.7 linux/amd64`. The toolchain, source snapshot, module cache, build cache and logs were held in a temporary session directory; that local evidence is no longer retained. GCC was available for race builds. Redis tests use miniredis; no external Redis service was started.
+
+Documentation cleanup 1 October 2026: no tests rerun; the recorded results remain from 16 September 2026 and the CI run for `cb4bced819d2b1ece7c7662a908844586acf6fc1` linked above.
 
 The approved download resolved the locked module graph without changing manifests; `go mod verify` returned `all modules verified`. These environment settings isolate caches and prevent implicit toolchain/module downloads during tests:
 
+For reproduction, choose your own `PROOF_WORKDIR`, extract the verified toolchain into its `go/` directory, and check out `cb4bced819d2b1ece7c7662a908844586acf6fc1` into its `source/` directory. Replace the placeholder path below with that work directory.
+
 ```sh
-export PATH=/tmp/bio-go-proof-XCcUuy/go/bin:$PATH
-export GOPATH=/tmp/bio-go-proof-XCcUuy/gopath
-export GOMODCACHE=/tmp/bio-go-proof-XCcUuy/modules
-export GOCACHE=/tmp/bio-go-proof-XCcUuy/cache
+export PROOF_WORKDIR="/path/to/go-proof"
+export PATH="$PROOF_WORKDIR/go/bin:$PATH"
+export GOPATH="$PROOF_WORKDIR/gopath"
+export GOMODCACHE="$PROOF_WORKDIR/modules"
+export GOCACHE="$PROOF_WORKDIR/cache"
 export GOTOOLCHAIN=local GOFLAGS=-mod=readonly
-cd /tmp/bio-go-proof-XCcUuy/source
+cd "$PROOF_WORKDIR/source"
 go version
 go mod download
 go mod verify
@@ -69,7 +74,7 @@ The test closes its server and limiter. It demonstrates fixed-window HTTP enforc
 
 Failures were observed before fixes: original examples could not compile together (`main redeclared`); Go vet rejected redundant newlines; Redis batch counts and retry durations failed existing tests. New regressions first exposed rejected-batch quota use, zero fractional-window TTLs, fixed-window division by zero, premature HTTP retry rounding, and duration-conversion overflow. A temporary mutation replacing the batch nonce with timestamp-based member IDs made the deterministic same-millisecond test fail (two stored entries instead of four); restoring the nonce passed. Final tests include these regressions.
 
-Raw local evidence: `test.log`, `race.log`, `coverage.log`, `coverage-functions.log`, `http-demo.log`, and `source/coverage.out` under the retained session directory. All Go files were byte-compared with the final tested snapshot; `go.mod` and `go.sum` also match baseline HEAD. `source-manifest.sha256` binds the final local repository files, including the CI/documentation additions, while those documentation additions were not part of runtime execution.
+Raw local evidence, no longer retained: `test.log`, `race.log`, `coverage.log`, `coverage-functions.log`, `http-demo.log`, and `source/coverage.out` were recorded in the temporary session directory. All Go files were byte-compared with the final tested snapshot; `go.mod` and `go.sum` also matched baseline HEAD. The historical `source-manifest.sha256` bound the final local repository files, including the CI/documentation additions, while those documentation additions were not part of runtime execution.
 
 ## CI and limits
 

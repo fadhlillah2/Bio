@@ -58,8 +58,8 @@ bun run dev          # http://localhost:5173/Bio/
 bun run check        # Svelte diagnostics
 bun run cv:selftest  # CV parser checks
 bun run build        # prerendered output in build/
-bun run validate     # core checks + build + sky check; requires Chrome and Python 3
-bun run validate:ci  # all checks, including browser acceptance; requires native Chrome and Python 3
+bun run validate     # core checks + build + sky check; requires Chrome, Python 3, and pdftoppm (poppler-utils)
+bun run validate:ci  # all checks, including browser acceptance; requires native Chrome, Python 3, and pdftoppm (poppler-utils)
 bun run chat         # local dev backend for the chat widget (needs the opencode CLI; CHAT_MODEL overrides the model)
 bun run chat:worker  # the deployable backend (worker/chat.ts) run locally; needs CHAT_API_KEY + CHAT_SIGNING_KEY; the per-caller daily quota applies here too (all local requests are one caller, 127.0.0.1) — override with CHAT_DAILY_PER_CALLER
 ```

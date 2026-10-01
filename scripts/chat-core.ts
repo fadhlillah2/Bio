@@ -14,8 +14,9 @@ const encoder = new TextEncoder();
 
 export const MAX_TURNS = 20;
 export const MAX_CHARS = 2000;
+export const MAX_BODY_BYTES = 128 * 1024;
 
-/** Always allowed; a deployment adds its own through CHAT_ORIGINS. */
+/** Development defaults only; deployments use CHAT_ORIGINS. */
 export const DEV_ORIGINS = [
   'http://localhost:5173',
   'http://127.0.0.1:5173',
@@ -66,10 +67,11 @@ export const originAllowed = (origin: string | null, allowed: Set<string>) =>
 export function numberEnv(name: string, raw: string | undefined, fallback: number): number {
   if (raw === undefined || raw === '') return fallback;
   const text = raw.trim();
-  if (!/^\d+$/.test(text)) {
-    throw new Error(`${name} must be a non-negative whole number, got ${JSON.stringify(raw)}`);
+  const value = Number(text);
+  if (!/^\d+$/.test(text) || !Number.isSafeInteger(value) || value < 0) {
+    throw new Error(`${name} must be a non-negative whole number within the safe integer range, got ${JSON.stringify(raw)}`);
   }
-  return Number(text);
+  return value;
 }
 
 const equalBytes = (a: Uint8Array, b: Uint8Array) => {
@@ -204,6 +206,7 @@ export function createRateLimiter(perWindow: number, windowMs: number) {
   const seen = new Map<string, { start: number; count: number }>();
   return {
     take(key: string, now: number): boolean {
+      if (perWindow === 0) return false;
       for (const [other, window] of seen) if (now - window.start >= windowMs) seen.delete(other);
       const window = seen.get(key);
       if (!window || now - window.start >= windowMs) {

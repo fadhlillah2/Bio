@@ -45,6 +45,15 @@ for (const fg of ["head", "bright", "text", "muted", "accent", "metric"]) {
 }
 pairs.push(["muted", "ink-3"], ["solid-ink", "solid"], ["solid-ink", "accent"]);
 
+// Read the button declarations so changing its token pair cannot bypass the floor.
+const chatSend = /\.chat-send\s*\{([^}]+)\}/.exec(css)?.[1] || "";
+const chatToken = (property: string): string => {
+  const token = new RegExp(`(?:^|;)\\s*${property}:\\s*var\\(--([\\w-]+)\\)\\s*;`).exec(chatSend)?.[1];
+  if (!token) throw new Error(`missing .chat-send ${property} token`);
+  return token;
+};
+pairs.push([chatToken("color"), chatToken("background")]);
+
 // Accepted .term-title baseline (~4.41): compare at full precision, not the rounded display.
 const ALLOWED = "night muted/ink-3";
 const BASELINE = ratio("#788394", "#161d29");

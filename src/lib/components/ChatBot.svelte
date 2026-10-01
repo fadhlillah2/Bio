@@ -1,7 +1,4 @@
-<!-- Ask-the-CV widget. Unlike the rest of the page, behaviour lives here rather than in
-     enhance.js: the markup must not exist at all unless a chat backend answered the probe, and
-     the published build has no backend. During prerender `endpoint` is null, so the static HTML
-     ships zero chat markup and the live site makes no request. -->
+<!-- SSR omits the widget; it appears only after the browser health probe succeeds. -->
 <script>
   import { onMount, tick } from "svelte";
   import { resolveEndpoint, probe, ask } from "$lib/chat.js";
@@ -14,9 +11,9 @@
   let error = $state("");
   let messages = $state([]);
 
-  let logEl;
-  let inputEl;
-  let launcherEl;
+  let logEl = $state();
+  let inputEl = $state();
+  let launcherEl = $state();
 
   onMount(async () => {
     const url = resolveEndpoint();

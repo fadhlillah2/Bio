@@ -22,8 +22,7 @@ import {
   buildPrompt,
   clampReply,
   importSigningKey,
-  MAX_CHARS,
-  MAX_TURNS,
+  MAX_BODY_BYTES,
   newNonce,
   normalizeTurns,
   numberEnv,
@@ -56,8 +55,6 @@ export interface Env {
 
 const ANSWER_TIMEOUT_MS = 60_000;
 const MAX_ANSWER_TOKENS = 700;
-/** 20 turns × 2000 chars plus JSON overhead; anything larger is not a conversation. */
-const MAX_BODY_BYTES = 128 * 1024;
 
 /**
  * A day counter on KV, and only a counter.
@@ -122,14 +119,17 @@ export default {
     // Set by the Cloudflare edge, not by the caller — unlike x-forwarded-for, which a client can
     // simply invent to get a fresh rate-limit bucket per request.
     const caller = request.headers.get('cf-connecting-ip') || 'unknown';
-    if (env.RATE_LIMITER) {
-      if (!(await env.RATE_LIMITER.limit({ key: caller })).success) {
+    try {
+      if (env.RATE_LIMITER) {
+        if (!(await env.RATE_LIMITER.limit({ key: caller })).success) {
+          return json({ error: `Too many questions — up to ${perMin} per minute.` }, 429, cors);
+        }
+      } else if (!(await countDay(env.CHAT_KV, `rate:${caller}:${Math.floor(Date.now() / 60_000)}`, perMin))) {
+        // Local fallback only; the deployed binding above handles concurrent bursts atomically.
         return json({ error: `Too many questions — up to ${perMin} per minute.` }, 429, cors);
       }
-    } else if (!(await countDay(env.CHAT_KV, `rate:${caller}:${Math.floor(Date.now() / 60_000)}`, perMin))) {
-      // Local fallback only. In a deployment the binding above is what holds; this branch cannot
-      // survive a concurrent burst and wrangler.toml configures the binding for that reason.
-      return json({ error: `Too many questions — up to ${perMin} per minute.` }, 429, cors);
+    } catch {
+      return json({ error: 'The assistant is temporarily unavailable. Please try again later.' }, 503, cors);
     }
 
     if (env.CHAT_TOKEN && !(await tokenMatches(request.headers.get('authorization'), env.CHAT_TOKEN))) {
@@ -146,7 +146,29 @@ export default {
 
     let messages;
     try {
-      const body = (await request.json()) as { messages?: unknown };
+      let text = '';
+      const reader = request.body?.getReader();
+      if (reader) {
+        const decoder = new TextDecoder();
+        let bytes = 0;
+        try {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            bytes += value.byteLength;
+            if (bytes > MAX_BODY_BYTES) {
+              // A failed or stalled cancellation must not replace the 413 response.
+              void reader.cancel().catch(() => {});
+              return json({ error: 'request too large' }, 413, cors);
+            }
+            text += decoder.decode(value, { stream: true });
+          }
+          text += decoder.decode();
+        } finally {
+          reader.releaseLock();
+        }
+      }
+      const body = JSON.parse(text) as { messages?: unknown };
       messages = await normalizeTurns(body.messages, signingKey, () =>
         console.warn(`dropped an unsigned assistant turn from ${caller}`));
     } catch (e) {
@@ -156,11 +178,15 @@ export default {
     // Charged only once a run is about to start, so malformed bodies cannot burn the day. The
     // per-caller quota is charged first: a caller past their own allowance is turned away without
     // also spending the budget every other caller shares.
-    if (!(await countDay(env.CHAT_KV, `caller:${utcDay(Date.now())}:${caller}`, dailyPerCaller))) {
-      return json({ error: "You have reached today's question limit. Please use the contact section." }, 429, cors);
-    }
-    if (!(await countDay(env.CHAT_KV, `day:${utcDay(Date.now())}`, dailyMax))) {
-      return json({ error: 'The assistant has reached its daily limit. Please use the contact section.' }, 503, cors);
+    try {
+      if (!(await countDay(env.CHAT_KV, `caller:${utcDay(Date.now())}:${caller}`, dailyPerCaller))) {
+        return json({ error: "You have reached today's question limit. Please use the contact section." }, 429, cors);
+      }
+      if (!(await countDay(env.CHAT_KV, `day:${utcDay(Date.now())}`, dailyMax))) {
+        return json({ error: 'The assistant has reached its daily limit. Please use the contact section.' }, 503, cors);
+      }
+    } catch {
+      return json({ error: 'The assistant is temporarily unavailable. Please try again later.' }, 503, cors);
     }
 
     try {
@@ -201,11 +227,13 @@ export default {
       // `content` only: reasoning models also return `reasoning_content`, which is thinking aloud
       // and not an answer anyone should be shown. Clamped to the same length the transcript keeps,
       // so the tag below still verifies when the turn comes back.
-      const reply = clampReply(String(data?.choices?.[0]?.message?.content ?? '').trim());
-      if (!reply) {
-        console.error(`provider returned no answer (finish_reason ${data?.choices?.[0]?.finish_reason})`);
+      const choice = data?.choices?.[0];
+      const content = choice?.message?.content;
+      if (choice?.finish_reason === 'length' || typeof content !== 'string' || !content.trim()) {
+        console.error('provider returned no complete answer');
         return json({ error: 'The model did not answer.' }, 502, cors);
       }
+      const reply = clampReply(content.trim());
 
       return json({ reply, sig: await signReply(reply, signingKey), model }, 200, cors);
     } catch (e) {
@@ -214,5 +242,3 @@ export default {
     }
   }
 };
-
-export const LIMITS = { MAX_BODY_BYTES, MAX_ANSWER_TOKENS, MAX_TURNS, MAX_CHARS };

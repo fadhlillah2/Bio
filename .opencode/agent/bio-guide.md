@@ -1,5 +1,5 @@
 ---
-description: Portfolio guide for fadhlillah2.github.io/Bio — answers visitor questions from supplied CV context only
+description: Portfolio guide for fadhlillah2.github.io/Bio — answers visitor questions from the supplied CV and published site facts
 mode: primary
 temperature: 0.2
 tools:

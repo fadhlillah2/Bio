@@ -208,11 +208,11 @@ export function mountSky(hero) {
   var from = palette(), to = from, tweenAt = 0;
   var target = [0, 0], cur = [0, 0], lastMove = null;
   var shelter = [0, 0, 0, 0], shelter2 = [0, 0, 0, 0], feather = [1, 1], height = 1;
-  var frame = 0, running = false, inView = false;
+  var frame = 0, running = false, inView = false, disposed = false;
 
   var render = function (now) {
     // The sky is hidden in print; direct resize/theme redraws must also stay idle.
-    if (printing.matches) return;
+    if (disposed || printing.matches) return;
     var e = reduced ? 1 : Math.min(1, (now - tweenAt) / TWEEN_MS);
     e = e * e * (3 - 2 * e);
     if (lastMove) {
@@ -243,12 +243,14 @@ export function mountSky(hero) {
     if (running) frame = window.requestAnimationFrame(tick);
   };
   var update = function () {
+    if (disposed) return;
     var want = inView && document.visibilityState === 'visible' && !reduced && !printing.matches;
     if (want && !running) { running = true; frame = window.requestAnimationFrame(tick); }
     if (!want && running) { running = false; if (frame) { window.cancelAnimationFrame(frame); frame = 0; } }
   };
 
   var resize = function () {
+    if (disposed) return;
     var scale = window.innerWidth > 980 ? Math.min(window.devicePixelRatio || 1, 1.5) : 0.6;
     canvas.width = Math.max(1, Math.round(hero.clientWidth * scale));
     canvas.height = Math.max(1, Math.round(hero.clientHeight * scale));
@@ -322,9 +324,19 @@ export function mountSky(hero) {
     hero.addEventListener('pointerleave', onLeave);
   }
 
-  return function cleanup() {
+  function onContextLost() {
+    cleanup();
+    fail('error', 'WebGL context lost');
+  }
+  canvas.addEventListener('webglcontextlost', onContextLost);
+
+  function cleanup() {
+    hero.removeAttribute('data-sky');
+    hero.removeAttribute('data-sky-error');
+    if (disposed) return;
+    disposed = true;
     running = false;
-    if (frame) window.cancelAnimationFrame(frame);
+    if (frame) { window.cancelAnimationFrame(frame); frame = 0; }
     ro.disconnect();
     mo.disconnect();
     io.disconnect();
@@ -333,10 +345,11 @@ export function mountSky(hero) {
     printing.removeEventListener('change', onPrint);
     hero.removeEventListener('pointermove', onMove);
     hero.removeEventListener('pointerleave', onLeave);
-    var lose = gl.getExtension('WEBGL_lose_context');
+    canvas.removeEventListener('webglcontextlost', onContextLost);
+    var lose = gl.isContextLost() ? null : gl.getExtension('WEBGL_lose_context');
     if (lose) lose.loseContext();
     canvas.remove();
     hero.classList.remove('is-gl');
-    hero.removeAttribute('data-sky');
-  };
+  }
+  return cleanup;
 }

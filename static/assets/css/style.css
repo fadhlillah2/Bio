@@ -54,7 +54,6 @@
 
   /* accents: teal = structure & interaction, amber = measured numbers */
   --accent: #5ce1c6;
-  --accent-2: #34c2a5;
   --accent-wash: rgba(92, 225, 198, 0.1);
   --metric: #f2c078;
 
@@ -139,7 +138,6 @@
   --text: #4a4338;
   --muted: #665e51;
   --accent: #0a6f5f;
-  --accent-2: #086657;
   --accent-hover: #075e50;
   --accent-wash: rgba(10, 111, 95, 0.1);
   --metric: #845402;
@@ -179,7 +177,6 @@
   --text: #c6b6b1;
   --muted: #a3928f;
   --accent: #ff9d80;
-  --accent-2: #ff8660;
   --accent-hover: #ffb9a3;
   --accent-wash: rgba(255, 157, 128, 0.12);
   --metric: #f2c96a;
@@ -776,10 +773,8 @@ html.js [data-reveal-children].is-in > :nth-child(n + 9) { transition-delay: 440
 
 /* Prose links: underline so colour isn't the only cue (WCAG 1.4.1) */
 .section-deck a,
-.about-body a,
 .cred-card a,
-.hero-buyer a,
-.tl-body a {
+.hero-buyer a {
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 1px;
@@ -787,10 +782,8 @@ html.js [data-reveal-children].is-in > :nth-child(n + 9) { transition-delay: 440
 }
 
 .section-deck a:hover,
-.about-body a:hover,
 .cred-card a:hover,
-.hero-buyer a:hover,
-.tl-body a:hover {
+.hero-buyer a:hover {
   text-decoration-color: currentColor;
 }
 
@@ -1560,6 +1553,10 @@ section {
 .flagship-body {
   padding: clamp(26px, 3vw, 36px);
   min-width: 0;
+}
+
+.flagship-body:only-child {
+  grid-column: 1 / -1;
 }
 
 .flagship-badge {
@@ -2375,11 +2372,6 @@ a.channel:hover {
   outline-offset: 1px;
 }
 
-.field input::placeholder,
-.field textarea::placeholder {
-  color: var(--muted);
-}
-
 /* error/sent text colours chosen for WCAG AA on their banner backgrounds.
    Always rendered (an :empty box collapses to zero height) so the
    role=status/alert live regions announce reliably on text injection. */
@@ -2796,7 +2788,7 @@ html:not(.js) .look-switch {
   background: none;
   font-size: 12.5px;
   line-height: 1.7;
-  color: var(--code, var(--bright));
+  color: var(--bright);
   white-space: pre;
 }
 
@@ -2810,8 +2802,13 @@ html:not(.js) .look-switch {
   background: var(--accent);
   transform: scaleX(0);
   transform-origin: 0 50%;
-  animation: read-progress linear both;
-  animation-timeline: scroll(root block);
+}
+
+@supports (animation-timeline: scroll()) {
+  .read-progress {
+    animation: read-progress linear both;
+    animation-timeline: scroll(root block);
+  }
 }
 
 @keyframes read-progress {
@@ -2857,8 +2854,7 @@ html:not(.js) .look-switch {
 
 /*--------------------------------------------------------------
 # CV assistant — a console panel above the floating actions.
-# Only rendered when a chat backend answered the probe, so these
-# rules never apply on the published build.
+# The production widget appears after the browser health probe succeeds.
 --------------------------------------------------------------*/
 .chat-fab {
   position: fixed;
@@ -3005,7 +3001,7 @@ html:not(.js) .look-switch {
   border: 1px solid var(--term-accent);
   border-radius: var(--r-sm);
   background: var(--term-accent);
-  color: var(--solid-ink);
+  color: var(--term-deep);
   font-family: inherit;
   font-size: 14px;
   cursor: pointer;
@@ -3068,9 +3064,6 @@ html:not(.js) .look-switch {
   }
   .code-block {
     break-inside: avoid;
-  }
-  .tl-meta {
-    position: static;
   }
   /* the archive is a <details> collapsed by default — force its 9 cards into
      the printout. Two mechanisms: older engines hide the slot with display,

@@ -11,6 +11,8 @@
  * Fadhlillah's domain.
  */
 
+import { MAX_BODY_BYTES, MAX_TURNS } from '../../scripts/chat-core.ts';
+
 const PROD_ENDPOINT = 'https://bio-chat.fadhlillah2.workers.dev';
 const DEV_ENDPOINT = 'http://127.0.0.1:4317';
 const PROBE_TIMEOUT_MS = 2000;
@@ -57,6 +59,15 @@ export async function probe(endpoint) {
  * and the daily cap instead — and a token, if one is used, belongs in the proxy in front, not here.
  */
 export async function ask(endpoint, messages, signal) {
+  const recent = messages.slice(-MAX_TURNS);
+  const encoder = new TextEncoder();
+  let payload = JSON.stringify({ messages: recent });
+  while (encoder.encode(payload).byteLength > MAX_BODY_BYTES) {
+    if (recent.length <= 1) throw new Error('Your question is too long. Please shorten it.');
+    recent.shift();
+    payload = JSON.stringify({ messages: recent });
+  }
+
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), ASK_TIMEOUT_MS);
   if (signal) signal.addEventListener('abort', () => ctrl.abort(), { once: true });
@@ -64,7 +75,7 @@ export async function ask(endpoint, messages, signal) {
     const res = await fetch(endpoint + '/chat', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ messages }),
+      body: payload,
       signal: ctrl.signal
     });
     const body = await res.json().catch(() => ({}));

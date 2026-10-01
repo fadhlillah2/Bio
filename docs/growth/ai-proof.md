@@ -2,9 +2,10 @@
 
 Status updated 17 September 2026: documentation repair committed and pushed as `609c0a07f0828c2dbf691fa15d898ff7ab2a8691`; no new retrieval, OCR, or answer-quality result. No GitHub Actions run was found for that commit, and the repository has no checked-in workflow.
 
+Documentation cleanup 1 October 2026: no tests rerun; the historical checks below concern the repair published in that commit.
+
 - Repository: https://github.com/fadhlillah2/llama-docs-auditor
 - Reviewed base: `f47b6c47cda07bd76b7461f6d6788d5c0cb1f12c`.
-- Local checkout: `/home/finskor017/Documents/PROJECTS/llama-docs-auditor`.
 - Changed file: `docs/EVALUATION_USAGE.md`; [published repaired guide](https://github.com/fadhlillah2/llama-docs-auditor/blob/609c0a07f0828c2dbf691fa15d898ff7ab2a8691/docs/EVALUATION_USAGE.md).
 - [Guide at the reviewed base](https://github.com/fadhlillah2/llama-docs-auditor/blob/f47b6c47cda07bd76b7461f6d6788d5c0cb1f12c/docs/EVALUATION_USAGE.md) preserves the pre-repair version for comparison.
 

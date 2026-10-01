@@ -514,10 +514,12 @@ assert(
   usesRefs.length >= 3 && usesRefs.every((ref) => /^[\w.-]+\/[\w.-]+@[0-9a-f]{40}$/.test(ref)),
   "the worker deploy workflow pins every third-party action by commit sha, not a mutable tag"
 );
+const contentGate = deployWorkflow.indexOf("bun scripts/chat-worker-build.ts --check");
+const guardGate = deployWorkflow.indexOf("bun scripts/chat-proxy-selftest.ts");
+const deployAction = deployWorkflow.indexOf("cloudflare/wrangler-action@");
 assert(
-  deployWorkflow.indexOf("bun scripts/chat-worker-build.ts --check") <
-    deployWorkflow.indexOf("cloudflare/wrangler-action@") &&
-    deployWorkflow.indexOf("bun scripts/chat-proxy-selftest.ts") < deployWorkflow.indexOf("cloudflare/wrangler-action@"),
+  contentGate >= 0 && guardGate >= 0 && deployAction >= 0 &&
+    contentGate < guardGate && guardGate < deployAction,
   "the worker deploy workflow gates on the content check and the guard selftest before deploying"
 );
 assert(

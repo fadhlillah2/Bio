@@ -21,7 +21,17 @@ bun-*.log
 # staged by `bun run cv` so SvelteKit publishes only current distributable CV files
 static/cv/
 
-# spec/plan lokal (keputusan user 2026-09-05)
+# Local memory and Superpowers plans
 docs/superpowers
-docs/sdlc
 memory/
+
+# Track the six SDLC chain artifacts; keep probes and drafts local
+/docs/sdlc/*
+!/docs/sdlc/*/
+/docs/sdlc/*/*
+!/docs/sdlc/*/intent.md
+!/docs/sdlc/*/spec.md
+!/docs/sdlc/*/plan.md
+!/docs/sdlc/*/test.md
+!/docs/sdlc/*/review.md
+!/docs/sdlc/*/release.md
