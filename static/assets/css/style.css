@@ -45,6 +45,8 @@
   --ink-3: #161d29;
   --line: #1e2632;
   --line-2: #2b3648;
+  /* form-control edge: the one border that identifies an input, so it clears 3:1 (WCAG 1.4.11) */
+  --field-edge: #5d6c84;
 
   /* text */
   --head: #eef2f8;
@@ -116,6 +118,7 @@
     --muted: #9caabb;
     --line: #33415a;
     --line-2: #4a5c78;
+    --field-edge: #8394ae;
   }
 }
 
@@ -133,6 +136,7 @@
   --ink-3: #e4dccd;
   --line: #d9cfbf;
   --line-2: #bfb29d;
+  --field-edge: #85785f;
   --head: #1c1915;
   --bright: #2b2620;
   --text: #4a4338;
@@ -172,6 +176,7 @@
   --ink-3: #35263e;
   --line: #402f4c;
   --line-2: #574260;
+  --field-edge: #846f8f;
   --head: #f8f0ea;
   --bright: #e8dbd3;
   --text: #c6b6b1;
@@ -204,7 +209,10 @@
     --muted: #c6b6b1;
     --line: #574260;
     --line-2: #8a7699;
+    --field-edge: #a38eb3;
   }
+  /* morning keeps its base --field-edge: the chat panel stays dark in every look, so a darker
+     edge would drop below 3:1 against it */
   :root[data-look="morning"] {
     --text: #2b2620;
     --muted: #4a4338;
@@ -238,6 +246,8 @@ html.is-switching .nav-link,
 html.is-switching .brand-mark,
 html.is-switching .fab,
 html.is-switching .look-switch,
+html.is-switching .nav-look,
+html.is-switching .nav-look-label,
 html.is-switching .chat-fab,
 html.is-switching .chat-panel,
 html.is-switching .chat-bar,
@@ -246,6 +256,12 @@ html.is-switching .chat-send,
 html.is-switching .site-footer,
 html.is-switching .code-block {
   transition: background-color 0.45s ease, border-color 0.45s ease, color 0.45s ease;
+}
+
+/* the drawer is open while its own buttons switch the look: keep its open/close transition and add the colours */
+html.is-switching .site-nav {
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s,
+    background-color 0.45s ease, border-color 0.45s ease, color 0.45s ease;
 }
 
 /*--------------------------------------------------------------
@@ -598,6 +614,11 @@ html.js [data-reveal-children].is-in > :nth-child(n + 9) { transition-delay: 440
   .site-nav {
     position: fixed;
     inset: var(--bar) 0 auto 0;
+    /* a landscape phone is shorter than the drawer: scroll inside it so the last row stays reachable */
+    max-height: calc(100vh - var(--bar));
+    max-height: calc(100dvh - var(--bar));
+    overflow-y: auto;
+    overscroll-behavior: contain;
     background: var(--ink-1);
     border-bottom: 1px solid var(--line);
     padding: 10px var(--gut) 20px;
@@ -636,6 +657,8 @@ html.js [data-reveal-children].is-in > :nth-child(n + 9) { transition-delay: 440
   }
   html:not(.js) .site-nav {
     position: static;
+    max-height: none;
+    overflow: visible;
     order: 1;
     width: 100%;
     padding: 0 0 12px;
@@ -2354,7 +2377,7 @@ a.channel:hover {
   width: 100%;
   padding: 11px 14px;
   background: var(--ink-0);
-  border: 1px solid var(--line-2);
+  border: 1px solid var(--field-edge);
   border-radius: var(--r-sm);
   color: var(--head);
   font-size: 14.5px;
@@ -2633,7 +2656,7 @@ html:not(.js) .look-switch {
 }
 
 .look-btn[aria-pressed="true"] {
-  box-shadow: 0 0 0 2px var(--ink-2), 0 0 0 4px var(--accent);
+  box-shadow: 0 0 0 2px var(--look-gap, var(--ink-2)), 0 0 0 4px var(--accent);
   transform: scale(1.06);
 }
 
@@ -2652,6 +2675,55 @@ html:not(.js) .look-switch {
   .look-btn[aria-pressed="true"] {
     transition: none;
     transform: none;
+  }
+}
+
+/* Narrow screens: the pill would sit on the hero buttons, so the same three buttons move
+   into the menu drawer (Topbar.svelte) and the pill steps aside. Same breakpoint as the drawer.
+   Only pages that actually have the drawer give the pill up: the writeups have no menu. */
+.nav-look {
+  display: none;
+}
+
+@media (max-width: 920px) {
+  body:has(.nav-look) .look-switch {
+    display: none;
+  }
+
+  html.js .nav-look {
+    --look-gap: var(--ink-1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    padding: 14px 14px 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .nav-look-label {
+    margin-right: auto;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+}
+
+/* the global focus rule rounds every button to 4px, which squares off the round swatches */
+.look-btn:focus-visible {
+  border-radius: 50%;
+}
+
+/* forced colors drop the gradient and the box-shadow ring, so the pressed swatch needs a real outline */
+@media (forced-colors: active) {
+  .look-btn {
+    border: 1px solid ButtonText;
+  }
+
+  .look-btn[aria-pressed="true"] {
+    outline: 3px solid Highlight;
+    outline-offset: 2px;
   }
 }
 
@@ -2983,7 +3055,7 @@ html:not(.js) .look-switch {
   flex: 1;
   min-width: 0;
   padding: 8px 10px;
-  border: 1px solid var(--term-line);
+  border: 1px solid var(--field-edge);
   border-radius: var(--r-sm);
   background: var(--term-deep);
   color: var(--term-fg);

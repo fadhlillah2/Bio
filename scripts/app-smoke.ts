@@ -159,6 +159,8 @@ try {
   await send("Page.navigate", { url: origin + "/Bio/writeups/fox-asset-project-management.html" });
   await wait("!!document.querySelector('.article h1')");
   await check("document.documentElement.scrollWidth <= innerWidth", "FOX case direct static route fits mobile viewport");
+  await wait("document.readyState === 'complete'");
+  await check("getComputedStyle(document.querySelector('.look-switch')).display === 'flex'", "FOX case has no menu drawer, so the look pill stays visible at 390px");
   const caseLinks: string[] = await js("[...new Set([...document.querySelectorAll('a[href]')].map(a=>a.href).filter(h=>new URL(h).origin === location.origin))]");
   assert(caseLinks.length, "FOX case has internal navigation");
   for (const url of caseLinks) assert((await fetch(url)).ok, `FOX case link unavailable: ${url}`);
@@ -173,9 +175,57 @@ try {
   await send("Page.navigate", { url: origin + "/Bio/writeups/hybrid-retrieval.html" });
   await wait("!!document.querySelector('.read-progress')");
   console.log("OK direct .html article route served");
+  await wait("document.readyState === 'complete'"); // styles must be applied before reading a computed display
+  await check("getComputedStyle(document.querySelector('.look-switch')).display === 'flex'", "retrieval article has no menu drawer, so the look pill stays visible at 390px");
   await send("Page.navigate", { url: origin + "/Bio/" });
   await wait("!!document.querySelector('.hero[data-sky]')");
   await check("innerWidth === 390 && scrollY === 0", "home hydrates at mobile viewport before scroll");
+  // Floating controls must not sit on the hero buttons at first paint; the look buttons move into the drawer.
+  const heroCovered = `(() => { const fixed = [...document.querySelectorAll('.look-switch, .fab, .chat-fab')]
+      .filter(e => { const s = getComputedStyle(e); return s.display !== 'none' && s.visibility === 'visible' && +s.opacity > 0; })
+      .map(e => e.getBoundingClientRect());
+    return [...document.querySelectorAll('.hero a, .hero button')].filter(c => { const r = c.getBoundingClientRect();
+      return r.width > 0 && r.bottom > 0 && r.top < innerHeight
+        && fixed.some(f => Math.min(r.right, f.right) > Math.max(r.left, f.left) && Math.min(r.bottom, f.bottom) > Math.max(r.top, f.top)); }).length; })()`;
+  await check(`${heroCovered} === 0`, "no floating control covers a hero link or button at load (390px)");
+  await viewport(360);
+  await check(`${heroCovered} === 0`, "no floating control covers a hero link or button at load (360px)");
+  await viewport(390);
+  await check("getComputedStyle(document.querySelector('.look-switch')).display === 'none' && getComputedStyle(document.querySelector('.nav-look')).visibility === 'hidden'",
+    "narrow screens hide the floating look pill and keep the closed drawer group out of reach");
+  const lookBefore = await js("document.documentElement.getAttribute('data-look')");
+  await openMenu();
+  await wait("document.body.classList.contains('nav-open') && getComputedStyle(document.querySelector('.nav-look')).visibility === 'visible'");
+  await check(`(() => { const g = document.querySelector('.nav-look'), r = g.getBoundingClientRect(), b = [...g.querySelectorAll('.look-btn')];
+      return g.getAttribute('role') === 'group' && g.getAttribute('aria-label') === 'Time of day' && b.length === 3
+        && r.width > 0 && r.top >= 0 && r.bottom <= innerHeight && b.every(x => { const q = x.getBoundingClientRect(); return q.width >= 36 && q.height >= 36; }); })()`,
+    "menu drawer shows the three look buttons inside the viewport");
+  // The boot script picks the look from the clock, so aim at a look that differs from the current one.
+  const lookTarget = lookBefore === "morning" ? "dusk" : "morning";
+  await js(`document.querySelector('.nav-look .look-btn-${lookTarget}').click()`);
+  await check(`document.documentElement.getAttribute('data-look') === '${lookTarget}'
+      && document.querySelector('.nav-look .look-btn-${lookTarget}').getAttribute('aria-pressed') === 'true'
+      && document.querySelector('.nav-look .look-btn-${lookBefore}').getAttribute('aria-pressed') === 'false'
+      && document.body.classList.contains('nav-open')`,
+    "drawer look button switches the look and keeps the menu open");
+  await js(`document.querySelector('.nav-look .look-btn-${lookBefore}').click()`);
+  await js("document.querySelector('.nav-toggle').click()");
+  await wait("!document.body.classList.contains('nav-open')");
+  // A landscape phone is shorter than the drawer: it must scroll so the last row stays reachable.
+  await send("Emulation.setDeviceMetricsOverride", { width: 667, height: 375, deviceScaleFactor: 1, mobile: false });
+  await js("document.querySelector('.nav-toggle').click()");
+  await wait("document.body.classList.contains('nav-open') && getComputedStyle(document.querySelector('.nav-look')).visibility === 'visible'");
+  await check(`(() => { const n = document.querySelector('#site-nav'); n.scrollTop = n.scrollHeight;
+      const b = [...document.querySelectorAll('.nav-look .look-btn')].pop().getBoundingClientRect();
+      return n.scrollHeight > n.clientHeight && n.getBoundingClientRect().bottom <= innerHeight + 1
+        && b.top >= 0 && b.bottom <= innerHeight; })()`,
+    "short landscape screens scroll the open drawer down to the look buttons");
+  await js("document.querySelector('.nav-toggle').click()");
+  await wait("!document.body.classList.contains('nav-open')");
+  await viewport(1280);
+  await check("getComputedStyle(document.querySelector('.look-switch')).display === 'flex' && getComputedStyle(document.querySelector('.nav-look')).display === 'none'",
+    "wide screens keep the floating pill and hide the drawer group");
+  await viewport(390);
   await check("document.querySelectorAll('#resume .tl-role details').length === 6 && document.querySelectorAll('#resume details[open]').length === 0 && !document.querySelector('.cred-card details')", "six experience cards start closed; credentials stay expanded");
   await check("['resume','services'].every(id=>{const a=document.querySelector('.hero a[href=\"#'+id+'\"]'); return a && document.getElementById(id) && a.getBoundingClientRect().width>0;})", "both audience links have visible controls and existing destinations");
   const gridlockTitle = "Gridlock — a hand-written WebGL2 traffic simulation";
@@ -209,13 +259,15 @@ try {
     const tokens = [];
     for (const value of ['no-preference', 'more']) {
       await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-contrast', value }] });
-      tokens.push(await js("Object.fromEntries(['text','muted','line','line-2','ink-0','ink-1','ink-2'].map(k=>[k,getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()]))"));
+      tokens.push(await js("Object.fromEntries(['text','muted','line','line-2','field-edge','ink-0','ink-1','ink-2'].map(k=>[k,getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()]))"));
     }
     for (const fg of ['text', 'muted']) for (const bg of ['ink-0', 'ink-1', 'ink-2']) {
       const before = contrast(tokens[0][fg], tokens[0][bg]), after = contrast(tokens[1][fg], tokens[1][bg]);
       assert(after > before && after >= 4.5, `${look} increased contrast: ${fg}/${bg}`);
     }
     for (const border of ['line', 'line-2']) assert(contrast(tokens[1][border], tokens[1]['ink-0']) > contrast(tokens[0][border], tokens[0]['ink-0']), `${look} increased border contrast`);
+    // Morning keeps its base edge (the chat panel is dark in every look), so the field edge may stay level but never weaken.
+    assert(contrast(tokens[1]['field-edge'], tokens[1]['ink-0']) >= Math.max(3, contrast(tokens[0]['field-edge'], tokens[0]['ink-0'])), `${look} field edge holds under increased contrast`);
     console.log(`OK ${look} increased-contrast text and borders improve`);
   }
   await js(`document.documentElement.setAttribute('data-look', ${JSON.stringify(originalLook)})`);
@@ -267,9 +319,14 @@ try {
   await check("document.activeElement.matches('.nav-toggle')", "real Shift Tab returns from first link to toggle");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, modifiers: 8 });
   await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, modifiers: 8 });
-  await check("document.activeElement === document.querySelector('#site-nav li:last-child a')", "real Shift Tab wraps to last mobile link");
+  // The drawer's last stop is the last look button, after the section links.
+  await check("document.activeElement === [...document.querySelectorAll('#site-nav a, #site-nav button')].pop() && document.activeElement.matches('.nav-look .look-btn')", "real Shift Tab wraps to the last drawer button");
   await js("document.querySelector('#site-nav li:last-child a').focus()");
   await check("document.activeElement === document.querySelector('#site-nav li:last-child a')", "last mobile link receives focus");
+  await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+  await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+  await check("document.activeElement === document.querySelector('.nav-look .look-btn')", "real Tab moves from the last link into the drawer look buttons");
+  await js("[...document.querySelectorAll('#site-nav button')].pop().focus()");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   await check("document.activeElement.matches('.nav-toggle')", "real keyboard Tab wraps in mobile menu");

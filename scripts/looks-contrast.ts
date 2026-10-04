@@ -1,6 +1,7 @@
 /**
- * Contrast floor for the three looks: 4.5:1 for tested pairs, except the accepted
- * night terminal-title baseline, which must not regress.
+ * Contrast floor for the three looks: 4.5:1 for tested text pairs, except the accepted
+ * night terminal-title baseline, which must not regress; 3:1 for the --field-edge border of
+ * the contact-form fields and the chat input (WCAG 1.4.11), against the surfaces they sit on.
  * Run: bun scripts/looks-contrast.ts
  */
 const css = await Bun.file(new URL("../static/assets/css/style.css", import.meta.url)).text();
@@ -54,6 +55,18 @@ const chatToken = (property: string): string => {
 };
 pairs.push([chatToken("color"), chatToken("background")]);
 
+// WCAG 1.4.11: the edge that identifies a text field must clear 3:1 on every surface it touches.
+// Read the rules so pointing a field back at a fainter token cannot bypass the floor.
+const edgeBorder = /border:\s*1px solid var\(--field-edge\);/;
+const fieldRule = /\.field input,\s*\.field textarea\s*\{([^}]+)\}/.exec(css)?.[1] || "";
+if (!edgeBorder.test(fieldRule)) throw new Error("missing .field border: var(--field-edge)");
+const chatInputRule = /\.chat-form input\s*\{([^}]+)\}/.exec(css)?.[1] || "";
+if (!edgeBorder.test(chatInputRule)) throw new Error("missing .chat-form input border: var(--field-edge)");
+const EDGE_FLOOR = 3;
+// contact form: input fill on the form card; chat: input fill on the panel (the terminal tokens)
+const edgePairs: [string, string][] = [["field-edge", "ink-0"], ["field-edge", "ink-2"],
+  ["field-edge", "term-deep"], ["field-edge", "term-bg"]];
+
 // Accepted .term-title baseline (~4.41): compare at full precision, not the rounded display.
 const ALLOWED = "night muted/ink-3";
 const BASELINE = ratio("#788394", "#161d29");
@@ -67,8 +80,14 @@ for (const look of Object.keys(looks)) {
     if (!ok) failed++;
     console.log(`${ok ? "ok  " : "FAIL"}  ${look.padEnd(8)} ${`${fg}/${bg}`.padEnd(19)} ${r.toFixed(2)}`);
   }
+  for (const [fg, bg] of edgePairs) {
+    const r = ratio(hex(looks[look], fg), hex(looks[look], bg));
+    const ok = r >= EDGE_FLOOR;
+    if (!ok) failed++;
+    console.log(`${ok ? "ok  " : "FAIL"}  ${look.padEnd(8)} ${`${fg}/${bg}`.padEnd(19)} ${r.toFixed(2)}  (edge, ${EDGE_FLOOR}:1)`);
+  }
 }
 
 console.log(failed ? `\n${failed} pair(s) below their contrast floor` :
-  `\nall tested pairs meet their floor (4.5:1; ${ALLOWED}: accepted baseline ${BASELINE.toFixed(2)}:1)`);
+  `\nall tested pairs meet their floor (4.5:1 text, ${EDGE_FLOOR}:1 field edge; ${ALLOWED}: accepted baseline ${BASELINE.toFixed(2)}:1)`);
 process.exit(failed ? 1 : 0);

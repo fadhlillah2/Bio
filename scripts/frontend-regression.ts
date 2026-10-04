@@ -47,6 +47,18 @@ try {
     check(key('Tab', true) && document.activeElement === lastLink, 'Shift Tab wraps to last link');
     check(key('Tab', true) && document.activeElement === link, 'Shift Tab reverses through menu');
     check(key('Tab', true) && document.activeElement === toggle, 'Shift Tab returns to toggle');
+    // The drawer also hosts the look buttons: the trap must treat a button after the last link as a stop.
+    const lookBtn = document.createElement('button'); lookBtn.type = 'button';
+    document.querySelector('#site-nav').append(lookBtn);
+    toggle.focus(); key('Tab'); key('Tab');
+    check(key('Tab') && document.activeElement === lookBtn, 'Tab reaches a button after the last link');
+    check(key('Tab') && document.activeElement === toggle, 'Tab wraps from the last button to toggle');
+    check(key('Tab', true) && document.activeElement === lookBtn, 'Shift Tab from toggle lands on the last button');
+    // A disabled button can never take focus, so counting it as a stop would swallow Tab and trap the user.
+    const offBtn = document.createElement('button'); offBtn.type = 'button'; offBtn.disabled = true;
+    document.querySelector('#site-nav').append(offBtn);
+    check(key('Tab') && document.activeElement === toggle, 'Tab skips a disabled button after the last button');
+    offBtn.remove(); lookBtn.remove();
     key('Escape'); check(!open() && document.activeElement === toggle, 'Escape closes menu');
     toggle.click(); link.click(); check(!open(), 'section link closes menu');
     toggle.click(); mobile.matches = false;
