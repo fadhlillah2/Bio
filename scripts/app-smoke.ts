@@ -181,6 +181,15 @@ try {
   await check(`(() => { const d = parseFloat(getComputedStyle(document.querySelector('.article-deck')).fontSize), m = parseFloat(getComputedStyle(document.querySelector('.article-meta')).fontSize);
       return d >= 17 && d <= 19.5 && m <= 13; })()`, "article header keeps its designed deck and meta sizes instead of body size");
   await check("document.querySelectorAll('.site-footer .footer-links a').length === 4 && !!document.querySelector('.fab-contact')", "retrieval article shares the site footer and its contact shortcut");
+  // Two header buttons and no menu toggle: unwrapped, they overran the gutter between 380px and ~408px.
+  for (const w of [380, 390, 400, 430]) {
+    await viewport(w);
+    await check(`document.documentElement.scrollWidth <= innerWidth && [...document.querySelectorAll('.topbar-actions .btn')]
+        .every(b => getComputedStyle(b).display === 'none' || innerWidth - b.getBoundingClientRect().right >= 16)`,
+      `retrieval article header keeps its buttons inside the gutter at ${w}px`);
+  }
+  await check("[...document.querySelectorAll('.topbar-actions .btn-quiet')].some(b => getComputedStyle(b).display !== 'none')", "the way back to the portfolio stays visible in the retrieval header");
+  await viewport(390);
   await send("Page.navigate", { url: origin + "/Bio/" });
   await wait("!!document.querySelector('.hero[data-sky]')");
   await check("innerWidth === 390 && scrollY === 0", "home hydrates at mobile viewport before scroll");
@@ -239,10 +248,25 @@ try {
   await js("window.scrollTo(0, 600)");
   await wait("getComputedStyle(document.querySelector('.look-switch')).visibility === 'visible'");
   console.log("OK the pill fades in once the visitor has scrolled");
-  await js("window.scrollTo(0, 0)");
   await send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
-  await check("document.querySelector('.proof-strip').getBoundingClientRect().bottom <= innerHeight && document.querySelector('.hero-claim').getClientRects().length > 0 && document.querySelector('.hero-cta .btn').getBoundingClientRect().bottom <= innerHeight",
+  // scrollTo is smooth here: measuring before it lands reads the strip shifted upward and passes spuriously.
+  await js("document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, 0)");
+  await wait("scrollY === 0");
+  await check("document.querySelector('.proof-strip').getBoundingClientRect().bottom <= innerHeight && document.querySelector('.hero-cta .btn').getBoundingClientRect().bottom <= innerHeight",
     "primary CTA and the proof strip both fit the first screen at 1440x900");
+  await check("(() => { const h = document.querySelector('.hero-h1'); return h.getBoundingClientRect().height < 3.5 * parseFloat(getComputedStyle(h).lineHeight); })()",
+    "the hero headline takes two lines at 1440x900 (three would push the proof strip below the fold)");
+  // The back-to-top button parks on the last line of the page: it must not cover the footer's links or colophon.
+  for (const w of [390, 1024, 1200, 1239, 1440]) {
+    await viewport(w);
+    await js("document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, document.documentElement.scrollHeight)");
+    await wait("getComputedStyle(document.querySelector('.fab')).visibility === 'visible' && +getComputedStyle(document.querySelector('.fab')).opacity === 1");
+    await check(`(() => { const fabs = [...document.querySelectorAll('.fab, .chat-fab')].map(e => e.getBoundingClientRect()).filter(r => r.width > 0);
+        return fabs.length > 0 && ![...document.querySelectorAll('.site-footer a, .site-footer p, .site-footer span')].some(e => { const r = e.getBoundingClientRect();
+          return r.width > 0 && fabs.some(f => Math.min(r.right, f.right) > Math.max(r.left, f.left) && Math.min(r.bottom, f.bottom) > Math.max(r.top, f.top)); }); })()`,
+      `floating buttons stay clear of the footer text at ${w}px`);
+  }
+  await js("window.scrollTo(0, 0)");
   // The sun and moon are drawn by the sky shader just above the terminal; without this offset their lower
   // edge ends within a few pixels of the terminal's top edge at every desktop width.
   await check("getComputedStyle(document.querySelector('.hero .term')).top === '28px'", "hero terminal sits 28px below its grid slot so the sun or moon clears its top edge");

@@ -707,6 +707,14 @@ html.js [data-reveal-children].is-in > :nth-child(n + 9) { transition-delay: 440
   }
 }
 
+/* two unwrapped buttons plus the brand overrun the gutter between 380px and ~408px (a scrollbar-less
+   page then scrolls sideways), so the secondary download gives way before the link back does */
+@media (max-width: 429px) {
+  .topbar-actions:not(:has(.nav-toggle)) .btn-solid {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .topbar,
   .site-nav,
@@ -859,6 +867,7 @@ summary:focus-visible,
 /* the rule above rounds the focused element itself, which reshapes controls that have their own radius */
 .btn:focus-visible,
 .nav-link:focus-visible,
+.nav-toggle:focus-visible,
 .code-block:focus-visible {
   border-radius: var(--r-sm);
 }
@@ -1252,7 +1261,7 @@ section {
   }
 }
 
-/* the gutter is 4vw, so up to ~720px the 16px hang leaves the dot under 12px from the screen edge */
+/* the gutter is clamp(20px, 4vw, 48px), so up to ~720px a 16px hang leaves the dot under 12px from the screen edge */
 @media (max-width: 720px) {
   .status-dot {
     left: -12px;
@@ -2565,8 +2574,9 @@ a.channel:hover {
   background: var(--ink-0);
 }
 
-/* the back-to-top button parks on the last line of the page, over the "Email" link and the colophon */
-@media (max-width: 1180px) {
+/* the back-to-top button parks on the last line of the page, over the "Email" link and the colophon;
+   measured: it still covers them at 1200px and clears them from 1240px up */
+@media (max-width: 1239px) {
   .site-footer {
     padding-bottom: 120px;
   }
@@ -2840,8 +2850,9 @@ html:not(.js) .look-switch {
   }
 }
 
-/* 921-1439px: the floating pill lands on the hero buttons (the content's left edge is 88-131px,
-   the pill ends at 144px), so on the home page it fades in like the fabs, once the visitor has scrolled */
+/* 921-1439px: the hero's left edge sits closer to the viewport edge than the pill is wide (it ends at
+   144px), so the pill lands on the hero buttons; on the home page it fades in like the fabs, once the
+   visitor has scrolled */
 @media (min-width: 921px) and (max-width: 1439px) {
   html.js body:has(#hero) .look-switch:not(.is-on) {
     opacity: 0;
