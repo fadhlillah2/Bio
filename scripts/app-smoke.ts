@@ -159,6 +159,9 @@ try {
   await send("Page.navigate", { url: origin + "/Bio/writeups/fox-asset-project-management.html" });
   await wait("!!document.querySelector('.article h1')");
   await check("document.documentElement.scrollWidth <= innerWidth", "FOX case direct static route fits mobile viewport");
+  await wait("document.readyState === 'complete'");
+  await check("getComputedStyle(document.querySelector('.look-switch')).display === 'flex'", "FOX case has no menu drawer, so the look pill stays visible at 390px");
+  await check("getComputedStyle(document.querySelector('.look-switch')).position === 'static'", "FOX case pill rests in the page flow instead of floating over the article");
   const caseLinks: string[] = await js("[...new Set([...document.querySelectorAll('a[href]')].map(a=>a.href).filter(h=>new URL(h).origin === location.origin))]");
   assert(caseLinks.length, "FOX case has internal navigation");
   for (const url of caseLinks) assert((await fetch(url)).ok, `FOX case link unavailable: ${url}`);
@@ -173,10 +176,114 @@ try {
   await send("Page.navigate", { url: origin + "/Bio/writeups/hybrid-retrieval.html" });
   await wait("!!document.querySelector('.read-progress')");
   console.log("OK direct .html article route served");
+  await wait("document.readyState === 'complete'"); // styles must be applied before reading a computed display
+  await check("getComputedStyle(document.querySelector('.look-switch')).display === 'flex'", "retrieval article has no menu drawer, so the look pill stays visible at 390px");
+  await check(`(() => { const d = parseFloat(getComputedStyle(document.querySelector('.article-deck')).fontSize), m = parseFloat(getComputedStyle(document.querySelector('.article-meta')).fontSize);
+      return d >= 17 && d <= 19.5 && m <= 13; })()`, "article header keeps its designed deck and meta sizes instead of body size");
+  await check("document.querySelectorAll('.site-footer .footer-links a').length === 4 && !!document.querySelector('.fab-contact')", "retrieval article shares the site footer and its contact shortcut");
+  // Two header buttons and no menu toggle: unwrapped, they overran the gutter between 380px and ~408px.
+  for (const w of [380, 390, 400, 430]) {
+    await viewport(w);
+    await check(`document.documentElement.scrollWidth <= innerWidth && [...document.querySelectorAll('.topbar-actions .btn')]
+        .every(b => getComputedStyle(b).display === 'none' || innerWidth - b.getBoundingClientRect().right >= 16)`,
+      `retrieval article header keeps its buttons inside the gutter at ${w}px`);
+  }
+  await check("[...document.querySelectorAll('.topbar-actions .btn-quiet')].some(b => getComputedStyle(b).display !== 'none')", "the way back to the portfolio stays visible in the retrieval header");
+  await viewport(390);
   await send("Page.navigate", { url: origin + "/Bio/" });
   await wait("!!document.querySelector('.hero[data-sky]')");
   await check("innerWidth === 390 && scrollY === 0", "home hydrates at mobile viewport before scroll");
+  // Floating controls must not sit on the hero buttons at first paint; the look buttons move into the drawer.
+  const heroCovered = `(() => { const fixed = [...document.querySelectorAll('.look-switch, .fab, .chat-fab')]
+      .filter(e => { const s = getComputedStyle(e); return s.display !== 'none' && s.visibility === 'visible' && +s.opacity > 0; })
+      .map(e => e.getBoundingClientRect());
+    return [...document.querySelectorAll('.hero a, .hero button')].filter(c => { const r = c.getBoundingClientRect();
+      return r.width > 0 && r.bottom > 0 && r.top < innerHeight
+        && fixed.some(f => Math.min(r.right, f.right) > Math.max(r.left, f.left) && Math.min(r.bottom, f.bottom) > Math.max(r.top, f.top)); }).length; })()`;
+  await check(`${heroCovered} === 0`, "no floating control covers a hero link or button at load (390px)");
+  await viewport(360);
+  await check(`${heroCovered} === 0`, "no floating control covers a hero link or button at load (360px)");
+  await viewport(390);
+  await check("getComputedStyle(document.querySelector('.look-switch')).display === 'none' && getComputedStyle(document.querySelector('.nav-look')).visibility === 'hidden'",
+    "narrow screens hide the floating look pill and keep the closed drawer group out of reach");
+  const lookBefore = await js("document.documentElement.getAttribute('data-look')");
+  await openMenu();
+  await wait("document.body.classList.contains('nav-open') && getComputedStyle(document.querySelector('.nav-look')).visibility === 'visible'");
+  await check(`(() => { const g = document.querySelector('.nav-look'), r = g.getBoundingClientRect(), b = [...g.querySelectorAll('.look-btn')];
+      return g.getAttribute('role') === 'group' && g.getAttribute('aria-label') === 'Time of day' && b.length === 3
+        && r.width > 0 && r.top >= 0 && r.bottom <= innerHeight && b.every(x => { const q = x.getBoundingClientRect(); return q.width >= 36 && q.height >= 36; }); })()`,
+    "menu drawer shows the three look buttons inside the viewport");
+  // The boot script picks the look from the clock, so aim at a look that differs from the current one.
+  const lookTarget = lookBefore === "morning" ? "dusk" : "morning";
+  await js(`document.querySelector('.nav-look .look-btn-${lookTarget}').click()`);
+  await check(`document.documentElement.getAttribute('data-look') === '${lookTarget}'
+      && document.querySelector('.nav-look .look-btn-${lookTarget}').getAttribute('aria-pressed') === 'true'
+      && document.querySelector('.nav-look .look-btn-${lookBefore}').getAttribute('aria-pressed') === 'false'
+      && document.body.classList.contains('nav-open')`,
+    "drawer look button switches the look and keeps the menu open");
+  await js(`document.querySelector('.nav-look .look-btn-${lookBefore}').click()`);
+  await js("document.querySelector('.nav-toggle').click()");
+  await wait("!document.body.classList.contains('nav-open')");
+  // A landscape phone is shorter than the drawer: it must scroll so the last row stays reachable.
+  await send("Emulation.setDeviceMetricsOverride", { width: 667, height: 375, deviceScaleFactor: 1, mobile: false });
+  await js("document.querySelector('.nav-toggle').click()");
+  await wait("document.body.classList.contains('nav-open') && getComputedStyle(document.querySelector('.nav-look')).visibility === 'visible'");
+  await check(`(() => { const n = document.querySelector('#site-nav'); n.scrollTop = n.scrollHeight;
+      const b = [...document.querySelectorAll('.nav-look .look-btn')].pop().getBoundingClientRect();
+      return n.scrollHeight > n.clientHeight && n.getBoundingClientRect().bottom <= innerHeight + 1
+        && b.top >= 0 && b.bottom <= innerHeight; })()`,
+    "short landscape screens scroll the open drawer down to the look buttons");
+  await js("document.querySelector('.nav-toggle').click()");
+  await wait("!document.body.classList.contains('nav-open')");
+  await viewport(1280);
+  await check("getComputedStyle(document.querySelector('.look-switch')).display === 'flex' && getComputedStyle(document.querySelector('.nav-look')).display === 'none'",
+    "wide screens keep the floating pill and hide the drawer group");
+  // Common laptop viewports: nothing floats over the hero buttons at first paint, the pill fades in on scroll.
+  for (const [w, h] of [[1366, 768], [1280, 720]]) {
+    await send("Emulation.setDeviceMetricsOverride", { width: w, height: h, deviceScaleFactor: 1, mobile: false });
+    await js("window.scrollTo(0, 0)");
+    await check(`scrollY === 0 && ${heroCovered} === 0`, `no floating control covers a hero link or button at load (${w}x${h})`);
+  }
+  await check("getComputedStyle(document.querySelector('.look-switch')).visibility === 'hidden'", "the pill stays out of the way at the top of the page on laptop widths");
+  await js("window.scrollTo(0, 600)");
+  await wait("getComputedStyle(document.querySelector('.look-switch')).visibility === 'visible'");
+  console.log("OK the pill fades in once the visitor has scrolled");
+  await send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
+  // scrollTo is smooth here: measuring before it lands reads the strip shifted upward and passes spuriously.
+  await js("document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, 0)");
+  await wait("scrollY === 0");
+  await check("document.querySelector('.proof-strip').getBoundingClientRect().bottom <= innerHeight && document.querySelector('.hero-cta .btn').getBoundingClientRect().bottom <= innerHeight",
+    "primary CTA and the proof strip both fit the first screen at 1440x900");
+  await check("(() => { const h = document.querySelector('.hero-h1'); return h.getBoundingClientRect().height < 3.5 * parseFloat(getComputedStyle(h).lineHeight); })()",
+    "the hero headline takes two lines at 1440x900 (three would push the proof strip below the fold)");
+  // The floating buttons (back-to-top, chat, and the look pill where it floats) park on the last line of the page:
+  // they must not cover the footer's links or colophon.
+  for (const w of [390, 1024, 1200, 1239, 1310, 1380, 1439, 1440]) {
+    await viewport(w);
+    await js("document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, document.documentElement.scrollHeight)");
+    // The pill and the fabs fade in on separate frames after the scroll: measure only once both have settled,
+    // otherwise a pill that is still at opacity 0 is skipped and the check passes without looking at it.
+    await wait("getComputedStyle(document.querySelector('.fab')).visibility === 'visible' && +getComputedStyle(document.querySelector('.fab')).opacity === 1"
+      + " && (() => { const s = getComputedStyle(document.querySelector('.look-switch')); return s.display === 'none' || (s.visibility === 'visible' && +s.opacity === 1); })()");
+    await check(`(() => { const shown = e => { const s = getComputedStyle(e); return s.display !== 'none' && s.visibility === 'visible'; };
+        const floats = [...document.querySelectorAll('.fab, .chat-fab, .look-switch')].filter(e => shown(e) && getComputedStyle(e).position === 'fixed').map(e => e.getBoundingClientRect());
+        // from 921px the pill floats, so it must be one of the measured boxes (a pill that is not there makes this check vacuous)
+        if (${w >= 921} && !shown(document.querySelector('.look-switch'))) return false;
+        return floats.length > 0 && ![...document.querySelectorAll('.site-footer a, .site-footer p, .site-footer span')].some(e => { const r = e.getBoundingClientRect();
+          return r.width > 0 && floats.some(f => Math.min(r.right, f.right) > Math.max(r.left, f.left) && Math.min(r.bottom, f.bottom) > Math.max(r.top, f.top)); }); })()`,
+      `floating buttons stay clear of the footer text at ${w}px`);
+  }
+  await js("window.scrollTo(0, 0)");
+  // The sun and moon are drawn by the sky shader just above the terminal; without this offset their lower
+  // edge ends within a few pixels of the terminal's top edge at every desktop width.
+  await check("getComputedStyle(document.querySelector('.hero .term')).top === '28px'", "hero terminal sits 28px below its grid slot so the sun or moon clears its top edge");
+  await check("(() => { const a = document.querySelectorAll('.hero-buyer a'); return a.length === 2 && a[0].getBoundingClientRect().top === a[1].getBoundingClientRect().top; })()",
+    "the two buyer links share one line, so the separator between them is not left at a line end");
+  await viewport(390);
+  await check("getComputedStyle(document.querySelector('.hero .term')).top === '0px' && getComputedStyle(document.querySelector('.status-dot')).left === '-12px'",
+    "single-column hero has no terminal offset and the status dot keeps clear of the screen edge");
   await check("document.querySelectorAll('#resume .tl-role details').length === 6 && document.querySelectorAll('#resume details[open]').length === 0 && !document.querySelector('.cred-card details')", "six experience cards start closed; credentials stay expanded");
+  await check("getComputedStyle(document.querySelector('#resume .experience-card > summary'), '::after').width === '28px'", "experience rows carry a ringed +/− control, not a bare glyph");
   await check("['resume','services'].every(id=>{const a=document.querySelector('.hero a[href=\"#'+id+'\"]'); return a && document.getElementById(id) && a.getBoundingClientRect().width>0;})", "both audience links have visible controls and existing destinations");
   const gridlockTitle = "Gridlock — a hand-written WebGL2 traffic simulation";
   await check(`(() => { const titles = [...document.querySelectorAll('#portfolio .flagship-title')].map(e => e.textContent.trim());
@@ -209,13 +316,15 @@ try {
     const tokens = [];
     for (const value of ['no-preference', 'more']) {
       await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-contrast', value }] });
-      tokens.push(await js("Object.fromEntries(['text','muted','line','line-2','ink-0','ink-1','ink-2'].map(k=>[k,getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()]))"));
+      tokens.push(await js("Object.fromEntries(['text','muted','line','line-2','field-edge','ink-0','ink-1','ink-2'].map(k=>[k,getComputedStyle(document.documentElement).getPropertyValue('--'+k).trim()]))"));
     }
     for (const fg of ['text', 'muted']) for (const bg of ['ink-0', 'ink-1', 'ink-2']) {
       const before = contrast(tokens[0][fg], tokens[0][bg]), after = contrast(tokens[1][fg], tokens[1][bg]);
       assert(after > before && after >= 4.5, `${look} increased contrast: ${fg}/${bg}`);
     }
     for (const border of ['line', 'line-2']) assert(contrast(tokens[1][border], tokens[1]['ink-0']) > contrast(tokens[0][border], tokens[0]['ink-0']), `${look} increased border contrast`);
+    // Morning keeps its base edge (the chat panel is dark in every look), so the field edge may stay level but never weaken.
+    assert(contrast(tokens[1]['field-edge'], tokens[1]['ink-0']) >= Math.max(3, contrast(tokens[0]['field-edge'], tokens[0]['ink-0'])), `${look} field edge holds under increased contrast`);
     console.log(`OK ${look} increased-contrast text and borders improve`);
   }
   await js(`document.documentElement.setAttribute('data-look', ${JSON.stringify(originalLook)})`);
@@ -267,9 +376,14 @@ try {
   await check("document.activeElement.matches('.nav-toggle')", "real Shift Tab returns from first link to toggle");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, modifiers: 8 });
   await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9, modifiers: 8 });
-  await check("document.activeElement === document.querySelector('#site-nav li:last-child a')", "real Shift Tab wraps to last mobile link");
+  // The drawer's last stop is the last look button, after the section links.
+  await check("document.activeElement === [...document.querySelectorAll('#site-nav a, #site-nav button')].pop() && document.activeElement.matches('.nav-look .look-btn')", "real Shift Tab wraps to the last drawer button");
   await js("document.querySelector('#site-nav li:last-child a').focus()");
   await check("document.activeElement === document.querySelector('#site-nav li:last-child a')", "last mobile link receives focus");
+  await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+  await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
+  await check("document.activeElement === document.querySelector('.nav-look .look-btn')", "real Tab moves from the last link into the drawer look buttons");
+  await js("[...document.querySelectorAll('#site-nav button')].pop().focus()");
   await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Tab", code: "Tab", windowsVirtualKeyCode: 9 });
   await check("document.activeElement.matches('.nav-toggle')", "real keyboard Tab wraps in mobile menu");
@@ -352,7 +466,9 @@ try {
   await check("[...document.querySelectorAll('.article-nav .btn')].every(a=>!getComputedStyle(a).textDecorationLine.includes('underline'))", "article CTA styling preserved");
   await send("Emulation.setScriptExecutionDisabled", { value: true });
   await send("Page.navigate", { url: origin + "/Bio/" });
-  await wait("!!document.querySelector('#site-nav') && !document.documentElement.classList.contains('js')");
+  // Without scripts nothing else marks the page as styled: measuring as soon as #site-nav exists read an unstyled
+  // document (scrollWidth 3194, menu toggle visible) about one run in five, so wait for the stylesheet to land.
+  await wait("!!document.querySelector('#site-nav') && !document.documentElement.classList.contains('js') && document.readyState === 'complete'");
   for (const width of [320, 390, 920]) {
     await viewport(width);
     await wait("document.documentElement.clientWidth <= innerWidth && getComputedStyle(document.querySelector('#site-nav')).visibility === 'visible'");

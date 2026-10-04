@@ -3,7 +3,7 @@
 
         <header class="section-head">
           <p class="section-index">08 &mdash; Contact</p>
-          <h2>Let's Discuss Your Project or Role</h2>
+          <h2>Let&rsquo;s Discuss Your Project or Role</h2>
           <p class="section-deck">Reach me directly via <a href="https://wa.me/6285157043131?text=Hi%20Fadhlillah%2C%20I%20saw%20your%20portfolio" target="_blank" rel="noopener">WhatsApp</a> or <a href="mailto:fadhlillah949699@gmail.com">email</a>, or use the form below.</p>
           <div class="contact-prompts">
             <details>

@@ -67,7 +67,7 @@ export function enhance() {
 
     // Cycle in menu order: the toggle follows the links in the document.
     if (e.key === 'Tab' && nav) {
-      var stops = [toggle].concat(Array.prototype.slice.call(nav.querySelectorAll('a')));
+      var stops = [toggle].concat(Array.prototype.slice.call(nav.querySelectorAll('a, button:not(:disabled)')));
       var index = stops.indexOf(document.activeElement);
       if (index !== -1) {
         e.preventDefault();
@@ -109,7 +109,7 @@ export function enhance() {
 
   /* ---------- Scroll state: sticky bar, back-to-top, section spy ---------- */
   var topbar = document.getElementById('topbar');
-  var fabs = Array.prototype.slice.call(document.querySelectorAll('.fab'));
+  var fabs = Array.prototype.slice.call(document.querySelectorAll('.fab, .look-switch'));
   var links = Array.prototype.slice.call(document.querySelectorAll('.nav-link'));
   var targets = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
   var queued = false;
@@ -237,7 +237,7 @@ export function enhance() {
 
   var form = document.querySelector('.contact-form');
   var lookSwitch = document.querySelector('.look-switch');
-  // with the phone keyboard up, a fixed pill lands right on the field being typed in
+  // only matters above 920px: below that the pill is hidden on this page (its buttons live in the menu drawer)
   if (form && lookSwitch) {
     form.addEventListener('focusin', function () { lookSwitch.classList.add('is-off'); });
     form.addEventListener('focusout', function () { lookSwitch.classList.remove('is-off'); });

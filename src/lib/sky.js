@@ -76,7 +76,7 @@ void main() {
   // each layer by its depth (stars 0.15, light 0.45, far deck 0.7, near deck 1.4)
   vec2 cam = uPointer * vec2(0.06, 0.045) + vec2(0.0, uScroll * 0.25);
   // the light — morning sun high, dusk sun on the horizon, night moon
-  vec2 lightPos = vec2(0.80, 0.90) * wM + vec2(0.93, 0.30) * wD + vec2(0.80, 0.91) * wN - cam * 0.45;
+  vec2 lightPos = vec2(0.80, 0.915) * wM + vec2(0.93, 0.30) * wD + vec2(0.80, 0.915) * wN - cam * 0.45;
   vec2 rel = (uv - lightPos) * ar;
   float dl = length(rel);
   vec3 sun = vec3(1.0, 0.94, 0.78) * (1.0 - smoothstep(0.036, 0.050, dl)) * 1.3

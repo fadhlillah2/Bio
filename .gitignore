@@ -6,7 +6,9 @@ __pycache__/
 Thumbs.db
 *.print.html
 .playwright-mcp/
-.claude/
+# Third-party agent skills are tracked; the rest of .claude/ stays local
+.claude/*
+!.claude/skills/
 CLAUDE.md
 *.tmp.pdf
 cv/drafts/

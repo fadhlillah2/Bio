@@ -1,5 +1,6 @@
 <script>
   import { base } from "$app/paths";
+  import LookButtons from "./LookButtons.svelte";
 </script>
 
 <!-- ======= Top bar ======= -->
@@ -22,6 +23,10 @@
         <li><a href="#services" class="nav-link">Services</a></li>
         <li><a href="#contact" class="nav-link">Contact</a></li>
       </ul>
+      <div class="nav-look" role="group" aria-label="Time of day">
+        <span class="nav-look-label" aria-hidden="true">Time of day</span>
+        <LookButtons />
+      </div>
     </nav>
 
     <div class="topbar-actions">

@@ -5,10 +5,13 @@
 [![Portfolio](https://img.shields.io/badge/Portfolio-fadhlillah2.github.io%2FBio-5ce1c6?style=for-the-badge&labelColor=0b0f17)](https://fadhlillah2.github.io/Bio/)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0077B5?style=for-the-badge&labelColor=0b0f17)](https://www.linkedin.com/in/fadhlillah2)
 [![Email](https://img.shields.io/badge/Email-Contact-D14836?style=for-the-badge&labelColor=0b0f17)](mailto:fadhlillah949699@gmail.com)
+[![Build and deploy](https://img.shields.io/github/actions/workflow/status/fadhlillah2/Bio/deploy.yml?branch=master&style=for-the-badge&label=Build%20%26%20deploy&labelColor=0b0f17)](https://github.com/fadhlillah2/Bio/actions/workflows/deploy.yml)
 
 </div>
 
 <h3 align="center">Java/Spring Boot microservices at 2M+ requests/day · LLM-integrated products end to end</h3>
+
+<p align="center"><img src="docs/readme/looks.webp" alt="The portfolio hero in its three looks: morning, dusk and night" width="900"></p>
 
 ---
 
@@ -63,6 +66,18 @@ bun run validate:ci  # all checks, including browser acceptance; requires native
 bun run chat         # local dev backend for the chat widget (needs the opencode CLI; CHAT_MODEL overrides the model)
 bun run chat:worker  # the deployable backend (worker/chat.ts) run locally; needs CHAT_API_KEY + CHAT_SIGNING_KEY; the per-caller daily quota applies here too (all local requests are one caller, 127.0.0.1) — override with CHAT_DAILY_PER_CALLER
 ```
+
+## Quality Gates
+
+`bun run validate:ci` is the gate for the site. It covers:
+
+- **Browser tests in real Chrome:** print output, mobile-menu keyboard behavior, and the no-JavaScript paths, plus a smoke test of the built site.
+- **Contrast floors:** 4.5:1 for text in all three looks (one documented exception: the night terminal title, held at its accepted 4.41:1) and 3:1 for the border of the contact-form fields and the chat input.
+- **CV integrity:** each committed PDF is checked against its `.txt` source for identical wording, clickable links, and page fit.
+- **Code health:** Svelte diagnostics, self-tests for the checkers and the chat guard, a freshness check on the chat worker bundle, and the production build.
+- **Sky rendering:** the hero sky is drawn with WebGL in headless Chrome.
+
+Pushes to `master` run the gate before deploying ([`deploy.yml`](.github/workflows/deploy.yml)). Pull requests run the same gate through [`ci.yml`](.github/workflows/ci.yml), which deploys nothing and reads no secret. The chat worker deploy has its own, narrower gate (see Deployment below).
 
 ## Deployment
 
