@@ -161,6 +161,7 @@ try {
   await check("document.documentElement.scrollWidth <= innerWidth", "FOX case direct static route fits mobile viewport");
   await wait("document.readyState === 'complete'");
   await check("getComputedStyle(document.querySelector('.look-switch')).display === 'flex'", "FOX case has no menu drawer, so the look pill stays visible at 390px");
+  await check("getComputedStyle(document.querySelector('.look-switch')).position === 'static'", "FOX case pill rests in the page flow instead of floating over the article");
   const caseLinks: string[] = await js("[...new Set([...document.querySelectorAll('a[href]')].map(a=>a.href).filter(h=>new URL(h).origin === location.origin))]");
   assert(caseLinks.length, "FOX case has internal navigation");
   for (const url of caseLinks) assert((await fetch(url)).ok, `FOX case link unavailable: ${url}`);
@@ -177,6 +178,9 @@ try {
   console.log("OK direct .html article route served");
   await wait("document.readyState === 'complete'"); // styles must be applied before reading a computed display
   await check("getComputedStyle(document.querySelector('.look-switch')).display === 'flex'", "retrieval article has no menu drawer, so the look pill stays visible at 390px");
+  await check(`(() => { const d = parseFloat(getComputedStyle(document.querySelector('.article-deck')).fontSize), m = parseFloat(getComputedStyle(document.querySelector('.article-meta')).fontSize);
+      return d >= 17 && d <= 19.5 && m <= 13; })()`, "article header keeps its designed deck and meta sizes instead of body size");
+  await check("document.querySelectorAll('.site-footer .footer-links a').length === 4 && !!document.querySelector('.fab-contact')", "retrieval article shares the site footer and its contact shortcut");
   await send("Page.navigate", { url: origin + "/Bio/" });
   await wait("!!document.querySelector('.hero[data-sky]')");
   await check("innerWidth === 390 && scrollY === 0", "home hydrates at mobile viewport before scroll");
@@ -225,8 +229,30 @@ try {
   await viewport(1280);
   await check("getComputedStyle(document.querySelector('.look-switch')).display === 'flex' && getComputedStyle(document.querySelector('.nav-look')).display === 'none'",
     "wide screens keep the floating pill and hide the drawer group");
+  // Common laptop viewports: nothing floats over the hero buttons at first paint, the pill fades in on scroll.
+  for (const [w, h] of [[1366, 768], [1280, 720]]) {
+    await send("Emulation.setDeviceMetricsOverride", { width: w, height: h, deviceScaleFactor: 1, mobile: false });
+    await js("window.scrollTo(0, 0)");
+    await check(`scrollY === 0 && ${heroCovered} === 0`, `no floating control covers a hero link or button at load (${w}x${h})`);
+  }
+  await check("getComputedStyle(document.querySelector('.look-switch')).visibility === 'hidden'", "the pill stays out of the way at the top of the page on laptop widths");
+  await js("window.scrollTo(0, 600)");
+  await wait("getComputedStyle(document.querySelector('.look-switch')).visibility === 'visible'");
+  console.log("OK the pill fades in once the visitor has scrolled");
+  await js("window.scrollTo(0, 0)");
+  await send("Emulation.setDeviceMetricsOverride", { width: 1440, height: 900, deviceScaleFactor: 1, mobile: false });
+  await check("document.querySelector('.proof-strip').getBoundingClientRect().bottom <= innerHeight && document.querySelector('.hero-claim').getClientRects().length > 0 && document.querySelector('.hero-cta .btn').getBoundingClientRect().bottom <= innerHeight",
+    "primary CTA and the proof strip both fit the first screen at 1440x900");
+  // The sun and moon are drawn by the sky shader just above the terminal; without this offset their lower
+  // edge ends within a few pixels of the terminal's top edge at every desktop width.
+  await check("getComputedStyle(document.querySelector('.hero .term')).top === '28px'", "hero terminal sits 28px below its grid slot so the sun or moon clears its top edge");
+  await check("(() => { const a = document.querySelectorAll('.hero-buyer a'); return a.length === 2 && a[0].getBoundingClientRect().top === a[1].getBoundingClientRect().top; })()",
+    "the two buyer links share one line, so the separator between them is not left at a line end");
   await viewport(390);
+  await check("getComputedStyle(document.querySelector('.hero .term')).top === '0px' && getComputedStyle(document.querySelector('.status-dot')).left === '-12px'",
+    "single-column hero has no terminal offset and the status dot keeps clear of the screen edge");
   await check("document.querySelectorAll('#resume .tl-role details').length === 6 && document.querySelectorAll('#resume details[open]').length === 0 && !document.querySelector('.cred-card details')", "six experience cards start closed; credentials stay expanded");
+  await check("getComputedStyle(document.querySelector('#resume .experience-card > summary'), '::after').width === '28px'", "experience rows carry a ringed +/− control, not a bare glyph");
   await check("['resume','services'].every(id=>{const a=document.querySelector('.hero a[href=\"#'+id+'\"]'); return a && document.getElementById(id) && a.getBoundingClientRect().width>0;})", "both audience links have visible controls and existing destinations");
   const gridlockTitle = "Gridlock — a hand-written WebGL2 traffic simulation";
   await check(`(() => { const titles = [...document.querySelectorAll('#portfolio .flagship-title')].map(e => e.textContent.trim());

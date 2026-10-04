@@ -109,7 +109,7 @@ export function enhance() {
 
   /* ---------- Scroll state: sticky bar, back-to-top, section spy ---------- */
   var topbar = document.getElementById('topbar');
-  var fabs = Array.prototype.slice.call(document.querySelectorAll('.fab'));
+  var fabs = Array.prototype.slice.call(document.querySelectorAll('.fab, .look-switch'));
   var links = Array.prototype.slice.call(document.querySelectorAll('.nav-link'));
   var targets = links.map(function (a) { return document.querySelector(a.getAttribute('href')); });
   var queued = false;
