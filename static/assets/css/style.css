@@ -853,6 +853,14 @@ html.js [data-reveal-children].is-in > :nth-child(n + 9) { transition-delay: 440
   color: var(--solid-ink);
 }
 
+/* it sits in the top-left corner, so the global outset ring would be clipped by the window edge:
+   draw it inside the box, in the text colour (the accent ring would vanish against the accent fill) */
+.skip-link:focus-visible {
+  outline-color: var(--solid-ink);
+  outline-offset: -4px;
+  border-radius: 0 0 var(--r-sm) 0;
+}
+
 a:focus-visible,
 button:focus-visible,
 input:focus-visible,
@@ -2574,9 +2582,9 @@ a.channel:hover {
   background: var(--ink-0);
 }
 
-/* the back-to-top button parks on the last line of the page, over the "Email" link and the colophon;
-   measured: it still covers them at 1200px and clears them from 1240px up */
-@media (max-width: 1239px) {
+/* the floating buttons park on the last line of the page: the back-to-top button covers the "Email" link and
+   the colophon up to ~1239px, the look pill (floating from 921px, 144px wide) the colophon up to ~1390px */
+@media (max-width: 1439px) {
   .site-footer {
     padding-bottom: 120px;
   }
@@ -2868,6 +2876,14 @@ html:not(.js) .look-switch {
 
 /* forced colors drop the gradient and the box-shadow ring, so the pressed swatch needs a real outline */
 @media (forced-colors: active) {
+  /* the menu icon is three painted bars: forced colours would repaint them as the page background */
+  .nav-toggle-bars,
+  .nav-toggle-bars::before,
+  .nav-toggle-bars::after {
+    forced-color-adjust: none;
+    background-color: ButtonText;
+  }
+
   .look-btn {
     border: 1px solid ButtonText;
   }
@@ -2906,6 +2922,9 @@ html:not(.js) .look-switch {
   color: var(--accent);
 }
 .contact-prompts details[open] > summary::after { content: "\2212"; }
+@media print {
+  .contact-prompts summary::after { display: none; }
+}
 .contact-prompts p {
   margin-top: 10px;
 }

@@ -256,14 +256,21 @@ try {
     "primary CTA and the proof strip both fit the first screen at 1440x900");
   await check("(() => { const h = document.querySelector('.hero-h1'); return h.getBoundingClientRect().height < 3.5 * parseFloat(getComputedStyle(h).lineHeight); })()",
     "the hero headline takes two lines at 1440x900 (three would push the proof strip below the fold)");
-  // The back-to-top button parks on the last line of the page: it must not cover the footer's links or colophon.
-  for (const w of [390, 1024, 1200, 1239, 1440]) {
+  // The floating buttons (back-to-top, chat, and the look pill where it floats) park on the last line of the page:
+  // they must not cover the footer's links or colophon.
+  for (const w of [390, 1024, 1200, 1239, 1310, 1380, 1439, 1440]) {
     await viewport(w);
     await js("document.documentElement.style.scrollBehavior = 'auto'; window.scrollTo(0, document.documentElement.scrollHeight)");
-    await wait("getComputedStyle(document.querySelector('.fab')).visibility === 'visible' && +getComputedStyle(document.querySelector('.fab')).opacity === 1");
-    await check(`(() => { const fabs = [...document.querySelectorAll('.fab, .chat-fab')].map(e => e.getBoundingClientRect()).filter(r => r.width > 0);
-        return fabs.length > 0 && ![...document.querySelectorAll('.site-footer a, .site-footer p, .site-footer span')].some(e => { const r = e.getBoundingClientRect();
-          return r.width > 0 && fabs.some(f => Math.min(r.right, f.right) > Math.max(r.left, f.left) && Math.min(r.bottom, f.bottom) > Math.max(r.top, f.top)); }); })()`,
+    // The pill and the fabs fade in on separate frames after the scroll: measure only once both have settled,
+    // otherwise a pill that is still at opacity 0 is skipped and the check passes without looking at it.
+    await wait("getComputedStyle(document.querySelector('.fab')).visibility === 'visible' && +getComputedStyle(document.querySelector('.fab')).opacity === 1"
+      + " && (() => { const s = getComputedStyle(document.querySelector('.look-switch')); return s.display === 'none' || (s.visibility === 'visible' && +s.opacity === 1); })()");
+    await check(`(() => { const shown = e => { const s = getComputedStyle(e); return s.display !== 'none' && s.visibility === 'visible'; };
+        const floats = [...document.querySelectorAll('.fab, .chat-fab, .look-switch')].filter(e => shown(e) && getComputedStyle(e).position === 'fixed').map(e => e.getBoundingClientRect());
+        // from 921px the pill floats, so it must be one of the measured boxes (a pill that is not there makes this check vacuous)
+        if (${w >= 921} && !shown(document.querySelector('.look-switch'))) return false;
+        return floats.length > 0 && ![...document.querySelectorAll('.site-footer a, .site-footer p, .site-footer span')].some(e => { const r = e.getBoundingClientRect();
+          return r.width > 0 && floats.some(f => Math.min(r.right, f.right) > Math.max(r.left, f.left) && Math.min(r.bottom, f.bottom) > Math.max(r.top, f.top)); }); })()`,
       `floating buttons stay clear of the footer text at ${w}px`);
   }
   await js("window.scrollTo(0, 0)");
@@ -459,7 +466,9 @@ try {
   await check("[...document.querySelectorAll('.article-nav .btn')].every(a=>!getComputedStyle(a).textDecorationLine.includes('underline'))", "article CTA styling preserved");
   await send("Emulation.setScriptExecutionDisabled", { value: true });
   await send("Page.navigate", { url: origin + "/Bio/" });
-  await wait("!!document.querySelector('#site-nav') && !document.documentElement.classList.contains('js')");
+  // Without scripts nothing else marks the page as styled: measuring as soon as #site-nav exists read an unstyled
+  // document (scrollWidth 3194, menu toggle visible) about one run in five, so wait for the stylesheet to land.
+  await wait("!!document.querySelector('#site-nav') && !document.documentElement.classList.contains('js') && document.readyState === 'complete'");
   for (const width of [320, 390, 920]) {
     await viewport(width);
     await wait("document.documentElement.clientWidth <= innerWidth && getComputedStyle(document.querySelector('#site-nav')).visibility === 'visible'");
