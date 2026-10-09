@@ -19,6 +19,7 @@ const pause = () => Bun.sleep(50);
 try {
   server = Bun.serve({ hostname: "127.0.0.1", port: 0, async fetch(req) {
     let path = decodeURIComponent(new URL(req.url).pathname).replace(/^\/Bio(?=\/|$)/, "") || "/";
+    if (path === "/__smoke-chat/health") return Response.json({ ok: true, model: "smoke" });
     if (path.endsWith("/")) path += "index.html";
     const file = resolve(build, "." + path);
     if (!file.startsWith(build + "/")) return new Response(null, { status: 403 });
@@ -515,6 +516,56 @@ try {
   await send("Page.navigate", { url: origin + "/Bio/writeups/fox-asset-project-management.html" });
   await wait("!!document.querySelector('.article h1') && !document.documentElement.classList.contains('js')");
   await check("document.querySelector('.article h1').getBoundingClientRect().width > 0 && getComputedStyle(document.querySelector('.article-head')).opacity === '1' && document.documentElement.scrollWidth <= innerWidth", "FOX case readable without JavaScript on mobile");
+  // Mount real chat only after the other layout checks; all requests still stay on the local origin.
+  await send("Emulation.setScriptExecutionDisabled", { value: false });
+  await js(`localStorage.setItem('chat-endpoint', ${JSON.stringify(origin + "/__smoke-chat")})`);
+  const clickChatControl = async (selector: string) => {
+    const point = await js(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();
+      return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
+    await send("Input.dispatchMouseEvent", { type: "mousePressed", ...point, button: "left", clickCount: 1 });
+    await send("Input.dispatchMouseEvent", { type: "mouseReleased", ...point, button: "left", clickCount: 1 });
+  };
+  const chatFailures = [];
+  for (const [width, height] of [[1280, 800], [621, 800], [390, 800], [620, 800], [320, 480]]) {
+    await send("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile: false });
+    const search = `?smokeChat=${width}x${height}`;
+    await send("Page.navigate", { url: origin + "/Bio/" + search });
+    await wait(`location.search === ${JSON.stringify(search)} && document.readyState === 'complete'
+      && document.fonts.status === 'loaded' && document.querySelector('.chat-model') === null && !!document.querySelector('.chat-fab')`);
+    await clickChatControl(".chat-fab");
+    await wait("!!document.querySelector('#chat-panel') && document.activeElement === document.querySelector('#chat-input')");
+    await clickChatControl("#chat-input");
+    await send("Input.insertText", { text: "Local smoke question" });
+    const layout = await js(`(()=>{
+      const panel=document.querySelector('#chat-panel'), launcher=document.querySelector('.chat-fab'), input=document.querySelector('#chat-input');
+      const bounds=e=>{const r=e.getBoundingClientRect();return {left:r.left,top:r.top,right:r.right,bottom:r.bottom,width:r.width,height:r.height};};
+      const fits=r=>r.width>0 && r.height>0 && r.left>=0 && r.top>=0 && r.right<=innerWidth && r.bottom<=innerHeight;
+      const hit=e=>{const r=e.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);};
+      const launcherHit=hit(launcher), header=panel.querySelector('.chat-bar');
+      return {panel:bounds(panel),launcher:bounds(launcher),panelFits:fits(bounds(panel)),headerVisible:header.contains(hit(header)),
+        inputUsable:fits(bounds(input)) && hit(input)===input && !input.disabled && input.value==='Local smoke question',
+        launcherReachable:launcher.contains(launcherHit),launcherHit:launcherHit?.className,
+        disclosure:!!document.querySelector('.chat-msg-note')};
+    })()`);
+    await js("document.querySelector('#chat-input').select()");
+    await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Backspace", code: "Backspace", windowsVirtualKeyCode: 8 });
+    await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Backspace", code: "Backspace", windowsVirtualKeyCode: 8 });
+    await clickChatControl(".chat-fab");
+    const closesByPointer = await js("!document.querySelector('#chat-panel') && document.querySelector('.chat-fab').getAttribute('aria-expanded') === 'false'");
+    if (closesByPointer) {
+      await clickChatControl(".chat-fab");
+      await wait("!!document.querySelector('#chat-panel') && document.activeElement === document.querySelector('#chat-input')");
+    }
+    await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+    await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
+    const escapeReturnsFocus = await js("!document.querySelector('#chat-panel') && document.activeElement === document.querySelector('.chat-fab') && document.activeElement.getAttribute('aria-expanded') === 'false'");
+    const result = { viewport: `${width}x${height}`, ...layout, closesByPointer, escapeReturnsFocus };
+    const passed = layout.panelFits && layout.headerVisible && layout.inputUsable && layout.launcherReachable && layout.disclosure && closesByPointer && escapeReturnsFocus;
+    console.log(`${passed ? "OK" : "FAIL"} chat panel keeps its input and close launcher usable: ${JSON.stringify(result)}`);
+    if (!passed) chatFailures.push(result);
+  }
+  await js("localStorage.removeItem('chat-endpoint')");
+  assert.deepEqual(chatFailures, [], "chat panel must fit the viewport and leave its launcher reachable for pointer closure");
   const closed = new Promise<void>(ok => socket!.addEventListener("close", () => ok(), { once: true }));
   socket.close(); await closed;
   const closedResult = await Promise.race([

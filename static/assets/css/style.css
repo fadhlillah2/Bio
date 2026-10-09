@@ -3271,14 +3271,13 @@ html:not(.js) .look-switch {
   cursor: default;
 }
 
-/* the panel is taller than the phone gap between the fab stack and the keyboard */
+/* Keep the panel between the topbar and launcher on short screens. */
 @media (max-width: 620px) {
   .chat-panel {
     right: 12px;
     left: 12px;
-    bottom: 122px;
     width: auto;
-    max-height: min(70vh, 460px);
+    max-height: min(70vh, 460px, calc(100dvh - var(--bar) - 186px));
   }
 
   .chat-fab {
