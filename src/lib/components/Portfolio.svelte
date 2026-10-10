@@ -89,6 +89,25 @@
           </div>
         </article>
 
+        <article class="flagship" data-reveal>
+          <div class="flagship-body">
+            <p class="flagship-badge">Original game &middot; Canvas 2D</p>
+            <h3 class="flagship-title">Luma Run — an original 2D platformer</h3>
+            <p class="flagship-desc">An original pixel-art platformer: guide a courier across three relaxed levels to light a beacon, with parallax scenery, responsive jumps, optional energy, and frequent checkpoints. Keyboard and touch controls; Canvas 2D, Web Audio, and native JavaScript with no runtime dependencies.</p>
+            <p class="flagship-result">The repo ships unit tests and automated keyboard and touch checks in real Chrome.</p>
+            <ul class="tag-row">
+              <li>Canvas 2D</li><li>Vanilla JS</li><li>Pixel art</li><li>Keyboard + touch</li>
+            </ul>
+            <div class="flagship-cta">
+              <a href="https://fadhlillah2.github.io/luma-run/" class="btn btn-solid btn-sm" target="_blank" rel="noopener" aria-label="Play the Luma Run demo (opens in new tab)">Play the demo</a>
+              <a href="https://github.com/fadhlillah2/luma-run" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" aria-label="View the Luma Run source on GitHub (opens in new tab)">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
+            </div>
+          </div>
+          <div class="flagship-shot" aria-hidden="true">
+            <img src={base + "/assets/img/luma-run.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
+          </div>
+        </article>
+
         <!-- Interactive experiment: deterministic WebGL2 traffic simulation; live build and source are linked -->
         <article class="flagship" data-reveal>
           <div class="flagship-body">
