@@ -15,11 +15,18 @@ let server: ReturnType<typeof Bun.serve> | undefined;
 let chrome: ReturnType<typeof Bun.spawn> | undefined;
 let socket: WebSocket | undefined;
 let deadline: ReturnType<typeof setTimeout> | undefined;
+let releaseChatReply: (() => void) | undefined;
+let chatRequests = 0;
 const pause = () => Bun.sleep(50);
 try {
   server = Bun.serve({ hostname: "127.0.0.1", port: 0, async fetch(req) {
     let path = decodeURIComponent(new URL(req.url).pathname).replace(/^\/Bio(?=\/|$)/, "") || "/";
     if (path === "/__smoke-chat/health") return Response.json({ ok: true, model: "smoke" });
+    if (path === "/__smoke-chat/chat" && req.method === "POST") {
+      chatRequests++;
+      await new Promise<void>(ok => { releaseChatReply = ok; });
+      return Response.json({ reply: "Local smoke answer", sig: "smoke-signature" });
+    }
     if (path.endsWith("/")) path += "index.html";
     const file = resolve(build, "." + path);
     if (!file.startsWith(build + "/")) return new Response(null, { status: 403 });
@@ -531,9 +538,9 @@ try {
     const search = `?smokeChat=${width}x${height}`;
     await send("Page.navigate", { url: origin + "/Bio/" + search });
     await wait(`location.search === ${JSON.stringify(search)} && document.readyState === 'complete'
-      && document.fonts.status === 'loaded' && document.querySelector('.chat-model') === null && !!document.querySelector('.chat-fab')`);
+      && document.fonts.status === 'loaded' && document.querySelector('.chat-model')?.textContent === 'smoke' && !!document.querySelector('.chat-fab')`);
     await clickChatControl(".chat-fab");
-    await wait("!!document.querySelector('#chat-panel') && document.activeElement === document.querySelector('#chat-input')");
+    await wait("document.querySelector('#chat-panel')?.classList.contains('is-open') && document.activeElement === document.querySelector('#chat-input') && getComputedStyle(document.querySelector('#chat-panel')).transform === 'none'");
     await clickChatControl("#chat-input");
     await send("Input.insertText", { text: "Local smoke question" });
     const layout = await js(`(()=>{
@@ -551,21 +558,229 @@ try {
     await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Backspace", code: "Backspace", windowsVirtualKeyCode: 8 });
     await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Backspace", code: "Backspace", windowsVirtualKeyCode: 8 });
     await clickChatControl(".chat-fab");
-    const closesByPointer = await js("!document.querySelector('#chat-panel') && document.querySelector('.chat-fab').getAttribute('aria-expanded') === 'false'");
+    const closesByPointer = await js("document.querySelector('#chat-panel')?.inert && document.querySelector('#chat-panel').getAttribute('aria-hidden') === 'true' && getComputedStyle(document.querySelector('#chat-panel')).pointerEvents === 'none' && document.querySelector('.chat-fab').getAttribute('aria-expanded') === 'false'");
     if (closesByPointer) {
       await clickChatControl(".chat-fab");
-      await wait("!!document.querySelector('#chat-panel') && document.activeElement === document.querySelector('#chat-input')");
+      await wait("document.querySelector('#chat-panel')?.classList.contains('is-open') && document.activeElement === document.querySelector('#chat-input') && getComputedStyle(document.querySelector('#chat-panel')).transform === 'none'");
     }
     await send("Input.dispatchKeyEvent", { type: "keyDown", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
     await send("Input.dispatchKeyEvent", { type: "keyUp", key: "Escape", code: "Escape", windowsVirtualKeyCode: 27 });
-    const escapeReturnsFocus = await js("!document.querySelector('#chat-panel') && document.activeElement === document.querySelector('.chat-fab') && document.activeElement.getAttribute('aria-expanded') === 'false'");
+    const escapeReturnsFocus = await js("document.querySelector('#chat-panel')?.inert && getComputedStyle(document.querySelector('#chat-panel')).visibility === 'hidden' && document.activeElement === document.querySelector('.chat-fab') && document.activeElement.getAttribute('aria-expanded') === 'false'");
     const result = { viewport: `${width}x${height}`, ...layout, closesByPointer, escapeReturnsFocus };
     const passed = layout.panelFits && layout.headerVisible && layout.inputUsable && layout.launcherReachable && layout.disclosure && closesByPointer && escapeReturnsFocus;
     console.log(`${passed ? "OK" : "FAIL"} chat panel keeps its input and close launcher usable: ${JSON.stringify(result)}`);
     if (!passed) chatFailures.push(result);
   }
-  await js("localStorage.removeItem('chat-endpoint')");
   assert.deepEqual(chatFailures, [], "chat panel must fit the viewport and leave its launcher reachable for pointer closure");
+  await viewport(1280);
+  await send("Page.navigate", { url: origin + "/Bio/?smokeChat=motion" });
+  await wait("document.readyState === 'complete' && document.fonts.status === 'loaded' && !!document.querySelector('.chat-fab')");
+  await check(`(()=>{const p=document.querySelector('#chat-panel'),s=p&&getComputedStyle(p);return p?.inert
+    && p.getAttribute('aria-hidden')==='true' && s.visibility==='hidden' && s.opacity==='0' && !p.getAnimations().length;})()`,
+    "health mount keeps the closed chat hidden and inert without an entrance flash");
+  await js(`(()=>{
+    window.__chatPanel=document.querySelector('#chat-panel');
+    window.__chatObservers=[...document.querySelectorAll('#chat-panel,.chat-fab,.chat-send')].map(e=>{
+      const observer=new MutationObserver(()=>{void getComputedStyle(e).opacity;e.getAnimations().forEach(a=>{a.pause();a.currentTime=0;});});
+      observer.observe(e,{attributes:true,attributeFilter:['class']});return observer;
+    });
+    window.__chatSample=(selector,time)=>{
+      const e=document.querySelector(selector);
+      const animations=e.getAnimations();
+      if(time!==undefined) animations.forEach(a=>{a.pause();a.currentTime=time;});
+      const s=getComputedStyle(e),m=new DOMMatrix(s.transform),r=e.getBoundingClientRect();
+      return {opacity:+s.opacity,transform:s.transform,scale:m.a,y:m.f,visibility:s.visibility,pointer:s.pointerEvents,
+        inert:e.inert,hidden:e.getAttribute('aria-hidden'),pressed:e.classList.contains('is-pressed'),origin:s.transformOrigin,
+        animations:animations.map(a=>({property:a.transitionProperty,duration:a.effect.getTiming().duration,easing:a.effect.getTiming().easing})),
+        hit:e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)),focused:e.contains(document.activeElement)};
+    };
+  })()`);
+  const sampleChat = (selector = "#chat-panel", time?: number) => js(`window.__chatSample(${JSON.stringify(selector)},${time ?? "undefined"})`);
+  const finishChatMotion = () => js("[...document.querySelectorAll('#chat-panel,.chat-fab,.chat-send')].forEach(e=>e.getAnimations().forEach(a=>a.finish()))");
+  const chatKey = async (key: string, code: string, keyCode: number) => {
+    await send("Input.dispatchKeyEvent", { type: "keyDown", key, code, windowsVirtualKeyCode: keyCode, ...(["Enter", " "].includes(key) ? { text: key === "Enter" ? "\r" : " " } : {}) });
+    await send("Input.dispatchKeyEvent", { type: "keyUp", key, code, windowsVirtualKeyCode: keyCode });
+  };
+  const chatPoint = (selector: string) => js(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
+  const waitChatRequest = async (expected: number) => {
+    for (let n = 0; n < 100 && chatRequests < expected; n++) await pause();
+    assert.equal(chatRequests, expected, "only the expected local chat request arrives");
+  };
+  const assertChatMotion = (state: any, duration: number, transform: boolean) => {
+    const moving = state.animations.filter((a: any) => ["opacity", "transform"].includes(a.property));
+    assert.deepEqual(moving.map((a: any) => a.property).sort(), transform ? ["opacity", "transform"] : ["opacity"]);
+    assert(moving.every((a: any) => a.duration === duration && a.easing === (transform ? "cubic-bezier(0.23, 1, 0.32, 1)" : "ease")));
+  };
+  await clickChatControl(".chat-fab");
+  let state = await sampleChat();
+  assertChatMotion(state, 220, true);
+  assert.equal(state.opacity, 0);
+  assert.equal(state.scale, .97);
+  assert.equal(state.y, 8);
+  assert.equal(state.visibility, "visible");
+  assert.equal(state.inert, false);
+  await check("document.activeElement === document.querySelector('#chat-input')", "pointer opening focuses input before the 220ms transition ends");
+  state = await sampleChat("#chat-panel", 110);
+  assert(state.opacity > 0 && state.opacity < 1 && state.scale > .97 && state.scale < 1 && state.y > 0 && state.y < 8);
+  await finishChatMotion();
+  state = await sampleChat();
+  assert.equal(state.opacity, 1);
+  assert.equal(state.transform, "none");
+  const panelOrigin = await js("(()=>{const s=getComputedStyle(document.querySelector('#chat-panel'));return s.width+' '+s.height;})()");
+  assert.equal(state.origin, panelOrigin, "panel scales from its bottom-right corner");
+  await clickChatControl(".chat-fab");
+  state = await sampleChat();
+  assertChatMotion(state, 220, true);
+  assert(state.inert && state.hidden === "true" && state.pointer === "none" && !state.hit && !state.focused);
+  await js("document.querySelector('#chat-input').focus()");
+  await chatKey("Tab", "Tab", 9);
+  await check("!document.querySelector('#chat-panel').contains(document.activeElement)", "closed chat refuses focus and stays outside the Tab order during exit");
+  // Restart a pointer exit after the keyboard interruption so both halves are measured.
+  await clickChatControl(".chat-fab"); await finishChatMotion(); await clickChatControl(".chat-fab");
+  state = await sampleChat("#chat-panel", 110);
+  assert(state.opacity > 0 && state.opacity < 1 && state.scale > .97 && state.scale < 1 && state.y > 0 && state.y < 8 && state.visibility === "visible");
+  await finishChatMotion();
+  state = await sampleChat();
+  assert(state.opacity === 0 && state.scale === .97 && state.y === 8 && state.visibility === "hidden");
+  console.log("OK pointer chat enter/exit uses real 220ms opacity and transform with immediate closed isolation");
+
+  await clickChatControl(".chat-fab");
+  const partialEnter = await sampleChat("#chat-panel", 55);
+  await clickChatControl(".chat-fab");
+  const exitStart = await sampleChat();
+  assert(Math.abs(exitStart.opacity - partialEnter.opacity) < .001 && Math.abs(exitStart.scale - partialEnter.scale) < .001 && Math.abs(exitStart.y - partialEnter.y) < .001);
+  const partialExit = await sampleChat("#chat-panel", 20);
+  await clickChatControl(".chat-fab");
+  const reopenStart = await sampleChat();
+  assert(Math.abs(reopenStart.opacity - partialExit.opacity) < .001 && Math.abs(reopenStart.scale - partialExit.scale) < .001 && Math.abs(reopenStart.y - partialExit.y) < .001);
+  await finishChatMotion();
+  await check("document.querySelector('#chat-panel')===window.__chatPanel && !window.__chatPanel.inert && getComputedStyle(window.__chatPanel).opacity==='1' && getComputedStyle(window.__chatPanel).visibility==='visible'",
+    "rapid pointer open/close/reopen retargets continuously and preserves the mounted panel");
+
+  await clickChatControl(".chat-fab");
+  await sampleChat("#chat-panel", 55);
+  await js("document.querySelector('.chat-fab').focus()");
+  await chatKey("Enter", "Enter", 13);
+  state = await sampleChat();
+  assert(state.opacity === 1 && state.transform === "none" && !state.animations.length && state.focused, JSON.stringify(state));
+  await chatKey("Escape", "Escape", 27);
+  state = await sampleChat();
+  assert(state.opacity === 0 && state.visibility === "hidden" && state.inert && !state.animations.length);
+  await check("document.activeElement===document.querySelector('.chat-fab')", "Escape closes instantly and returns launcher focus");
+  await chatKey(" ", "Space", 32);
+  state = await sampleChat();
+  assert(state.opacity === 1 && state.transform === "none" && !state.animations.length && state.focused, JSON.stringify(state));
+  await js("document.querySelector('.chat-fab').focus()");
+  await chatKey("Enter", "Enter", 13);
+  state = await sampleChat();
+  assert(state.inert && state.visibility === "hidden" && !state.animations.length);
+  console.log("OK native Enter/Space/Escape and keyboard-interrupted chat motion settle instantly");
+
+  for (const reduced of [false, true]) {
+    await motion(reduced ? "reduce" : "no-preference");
+    await js("document.documentElement.classList.add('is-switching')");
+    await clickChatControl(".chat-fab");
+    state = await sampleChat();
+    assertChatMotion(state, reduced ? 100 : 220, !reduced);
+    state = await sampleChat("#chat-panel", reduced ? 50 : 110);
+    assert(state.opacity > 0 && state.opacity < 1);
+    if (reduced) assert.equal(state.transform, "none");
+    await finishChatMotion();
+    await clickChatControl("#chat-input");
+    await send("Input.insertText", { text: "Local motion question" });
+    for (const selector of [".chat-fab", ".chat-send"]) {
+      const point = await chatPoint(selector);
+      await send("Input.dispatchMouseEvent", { type: "mousePressed", ...point, button: "left", clickCount: 1 });
+      const pressStart = await sampleChat(selector);
+      const pressAnimation = pressStart.animations.find((a: any) => a.property === (reduced ? "opacity" : "transform"));
+      assert(pressStart.pressed && pressAnimation?.duration === (reduced ? 100 : 160));
+      assert.equal(pressAnimation.easing, reduced ? "ease" : "cubic-bezier(0.23, 1, 0.32, 1)");
+      state = await sampleChat(selector, reduced ? 100 : 160);
+      assert.equal(reduced ? state.opacity : state.scale, reduced ? .92 : .97);
+      if (reduced) assert.equal(state.transform, "none");
+      for (const event of ["pointerup", "pointerleave", "pointercancel", "blur"]) {
+        if (event !== "pointerup") {
+          await send("Input.dispatchMouseEvent", { type: "mousePressed", ...point, button: "left", clickCount: 1 });
+          await sampleChat(selector, reduced ? 100 : 160);
+        }
+        if (event === "pointerup") {
+          // Isolate release feedback from the click action, which is exercised with the local response below.
+          await js(`document.querySelector(${JSON.stringify(selector)}).addEventListener('click',e=>{e.preventDefault();e.stopImmediatePropagation();},{once:true,capture:true})`);
+          await send("Input.dispatchMouseEvent", { type: "mouseReleased", ...point, button: "left", clickCount: 1 });
+        } else {
+          if (event === "pointerleave") await send("Input.dispatchMouseEvent", { type: "mouseMoved", x: 5, y: 5, button: "left", buttons: 1 });
+          else await js(event === "blur" ? "window.dispatchEvent(new Event('blur'))" : `document.querySelector(${JSON.stringify(selector)}).dispatchEvent(new PointerEvent('pointercancel',{bubbles:true}))`);
+          assert.equal((await sampleChat(selector)).pressed, false, event);
+          await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: 5, y: 5, button: "left", clickCount: 1 });
+        }
+        state = await sampleChat(selector);
+        assert.equal(state.pressed, false, event);
+        const releaseAnimation = state.animations.find((a: any) => a.property === (reduced ? "opacity" : "transform"));
+        assert.equal(releaseAnimation?.duration, reduced ? 100 : 160, event);
+        await finishChatMotion();
+        state = await sampleChat(selector);
+        assert.equal(state.transform, "none");
+        assert.equal(state.opacity, 1);
+      }
+      await send("Input.dispatchMouseEvent", { type: "mousePressed", ...point, button: "left", clickCount: 1 });
+      await sampleChat(selector, 40);
+      await js(`document.querySelector(${JSON.stringify(selector)}).focus()`);
+      await send("Input.dispatchKeyEvent", { type: "keyDown", key: " ", code: "Space", windowsVirtualKeyCode: 32, text: " " });
+      state = await sampleChat(selector);
+      assert(!state.pressed && state.transform === "none" && state.opacity === 1 && !state.animations.length);
+      await js("document.querySelector('#chat-input').focus()");
+      await send("Input.dispatchKeyEvent", { type: "keyUp", key: " ", code: "Space", windowsVirtualKeyCode: 32 });
+      await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: 5, y: 5, button: "left", clickCount: 1 });
+    }
+    await clickChatControl(".chat-fab");
+    state = await sampleChat();
+    assertChatMotion(state, reduced ? 100 : 220, !reduced);
+    if (reduced) assert.equal((await sampleChat("#chat-panel", 50)).transform, "none");
+    await finishChatMotion();
+    assert.equal((await sampleChat()).visibility, "hidden");
+    await js("document.querySelector('.chat-fab').focus()");
+    await chatKey(" ", "Space", 32);
+    state = await sampleChat();
+    assert(state.opacity === 1 && state.transform === "none" && !state.animations.length);
+    await check("document.querySelector('#chat-input').value==='Local motion question'", "chat draft survives closing and keyboard reopening");
+    await chatKey("Escape", "Escape", 27);
+    await js("document.documentElement.classList.remove('is-switching')");
+    console.log(`OK ${reduced ? "reduced 100ms opacity-only" : "normal 160ms scale"} feedback resets on release/leave/cancel/blur and keyboard while switching looks`);
+    await js("document.querySelector('.chat-fab').click(); document.querySelector('#chat-input').value=''; document.querySelector('#chat-input').dispatchEvent(new Event('input',{bubbles:true}))");
+    await check("document.querySelector('.chat-send').disabled && getComputedStyle(document.querySelector('.chat-send')).opacity==='0.55'", "disabled Ask preserves its 55% opacity");
+    const disabledPoint = await chatPoint(".chat-send");
+    await send("Input.dispatchMouseEvent", { type: "mousePressed", ...disabledPoint, button: "left", clickCount: 1 });
+    state = await sampleChat(".chat-send");
+    assert(!state.pressed && state.transform === "none" && state.opacity === .55);
+    await send("Input.dispatchMouseEvent", { type: "mouseReleased", ...disabledPoint, button: "left", clickCount: 1 });
+    await chatKey("Escape", "Escape", 27);
+  }
+  await motion("no-preference");
+  await js("document.querySelector('.chat-fab').focus()");
+  await chatKey("Enter", "Enter", 13);
+  await send("Input.insertText", { text: "Local response question" });
+  await clickChatControl(".chat-send");
+  await check("document.querySelector('#chat-input').disabled", "pointer Ask submits immediately without waiting for press feedback");
+  await waitChatRequest(1);
+  await chatKey("Escape", "Escape", 27);
+  assert(releaseChatReply, "local response is pending before closure");
+  releaseChatReply(); releaseChatReply = undefined;
+  await wait("!document.querySelector('#chat-input').disabled && document.querySelectorAll('.chat-msg-assistant').length===1");
+  await check("document.activeElement===document.querySelector('.chat-fab') && window.__chatPanel.inert", "response completing while closed preserves focus outside the chat");
+  await chatKey("Enter", "Enter", 13);
+  await check("document.querySelectorAll('.chat-msg-user').length===1 && document.querySelector('.chat-msg-assistant p').textContent==='Local smoke answer'", "conversation survives closing and reopening");
+  await send("Input.insertText", { text: "Local keyboard question" });
+  await js("document.querySelector('.chat-send').focus()");
+  await chatKey("Enter", "Enter", 13);
+  state = await sampleChat(".chat-send");
+  assert(!state.pressed && state.transform === "none" && !state.animations.some((a: any)=>["opacity","transform"].includes(a.property)));
+  await waitChatRequest(2);
+  assert(releaseChatReply);
+  releaseChatReply(); releaseChatReply = undefined;
+  await wait("!document.querySelector('#chat-input').disabled && document.querySelectorAll('.chat-msg-assistant').length===2");
+  await chatKey("Escape", "Escape", 27);
+  await js("window.__chatObservers.forEach(o=>o.disconnect()); localStorage.removeItem('chat-endpoint')");
+  console.log("OK pointer and keyboard Ask submit only to the local mock; closed replies never steal focus");
   const closed = new Promise<void>(ok => socket!.addEventListener("close", () => ok(), { once: true }));
   socket.close(); await closed;
   const closedResult = await Promise.race([
