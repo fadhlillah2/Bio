@@ -73,6 +73,7 @@
   --r-sm: 8px;
   --r-md: 12px;
   --r-lg: 18px;
+  --ease-out-strong: cubic-bezier(0.23, 1, 0.32, 1);
 
   /* Everything below is a look token: the values here are night, which is also what
      no-JS gets (no [data-look] attribute). The two other looks override them. */
@@ -248,14 +249,15 @@ html.is-switching .fab,
 html.is-switching .look-switch,
 html.is-switching .nav-look,
 html.is-switching .nav-look-label,
-html.is-switching .chat-fab,
-html.is-switching .chat-panel,
 html.is-switching .chat-bar,
 html.is-switching .chat-form input,
-html.is-switching .chat-send,
 html.is-switching .site-footer,
 html.is-switching .code-block {
   transition: background-color 0.45s ease, border-color 0.45s ease, color 0.45s ease;
+}
+
+html.is-switching :is(.chat-fab, .chat-panel, .chat-send) {
+  --chat-colors: background-color 0.45s ease, border-color 0.45s ease, color 0.45s ease;
 }
 
 /* the drawer is open while its own buttons switch the look: keep its open/close transition and add the colours */
@@ -3130,7 +3132,7 @@ html:not(.js) .look-switch {
   color: var(--head);
   cursor: pointer;
   box-shadow: 0 10px 30px -12px var(--shadow-ink);
-  transition: border-color 0.2s ease, color 0.2s ease;
+  transition: transform 160ms var(--ease-out-strong), var(--chat-colors, border-color 0.2s ease, color 0.2s ease);
 }
 
 .chat-fab:hover,
@@ -3158,6 +3160,21 @@ html:not(.js) .look-switch {
   border-radius: var(--r-md);
   background: var(--term-bg);
   box-shadow: 0 24px 60px -20px var(--shadow-ink);
+  opacity: 0;
+  transform: translateY(8px) scale(0.97);
+  transform-origin: bottom right;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 220ms var(--ease-out-strong), transform 220ms var(--ease-out-strong),
+    visibility 0s linear 220ms, var(--chat-colors, border-color 0s);
+}
+
+.chat-panel.is-open {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
 }
 
 .chat-bar {
@@ -3263,6 +3280,14 @@ html:not(.js) .look-switch {
   font-family: inherit;
   font-size: 14px;
   cursor: pointer;
+  transition: transform 160ms var(--ease-out-strong), var(--chat-colors, color 0.2s ease);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .chat-fab.is-pressed,
+  .chat-send.is-pressed:not(:disabled) {
+    transform: scale(0.97);
+  }
 }
 
 .chat-send[disabled],
@@ -3286,9 +3311,30 @@ html:not(.js) .look-switch {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .chat-fab {
-    transition: none;
+  .chat-panel {
+    transform: none;
+    transition: opacity 100ms ease, visibility 0s linear 100ms, var(--chat-colors, border-color 0s);
   }
+
+  .chat-panel.is-open {
+    transition-delay: 0s;
+  }
+
+  .chat-fab,
+  .chat-send {
+    transition: opacity 100ms ease, var(--chat-colors, color 0.2s ease);
+  }
+
+  .chat-fab.is-pressed,
+  .chat-send.is-pressed:not(:disabled) {
+    opacity: 0.92;
+  }
+}
+
+.chat-panel.is-instant,
+.chat-fab.is-instant,
+.chat-send.is-instant {
+  transition: none;
 }
 
 /*--------------------------------------------------------------
