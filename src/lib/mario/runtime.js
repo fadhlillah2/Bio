@@ -3,7 +3,7 @@ import { renderGame } from "./graphics.js";
 import { createAudio } from "./audio.js";
 
 const keys = { ArrowLeft: "left", KeyA: "left", ArrowRight: "right", KeyD: "right",
-  ArrowDown: "down", KeyS: "down", Space: "jump", KeyZ: "jump",
+  ArrowDown: "down", KeyS: "down", ArrowUp: "up", KeyW: "up", Space: "jump", KeyZ: "jump",
   ShiftLeft: "run", ShiftRight: "run", KeyX: "run" };
 const tick = 1000 / 60;
 
@@ -31,21 +31,36 @@ export function mountMario(root, { onState = () => {} } = {}) {
   }
   function paint() {
     renderGame(ctx, game);
+    const finishMessage = ["message", "ending"].includes(game.finish?.phase) ? game.finish.message : [];
     const state = { status: game.status, paused, muted, score: game.score, coins: game.coins,
-      lives: game.lives, time: Math.ceil(game.time) };
+      lives: game.lives, time: Math.ceil(game.time), levelId: game.levelId, area: game.world.theme,
+      finish: game.finish ? { kind: game.finish.kind, phase: game.finish.phase, message: [...finishMessage] } : null };
     const serialized = JSON.stringify(state);
     if (serialized !== lastState) { lastState = serialized; onState(state); }
     root.dataset.status = game.status;
     root.dataset.paused = String(paused);
+    root.dataset.level = game.levelId;
+    root.dataset.area = game.world.theme;
+    canvas.setAttribute("aria-label", `World ${game.levelId} game screen`);
     const ended = game.status === "won" || game.status === "gameover";
-    const message = paused ? "Paused" : ({ ready: "Ready for World 1-1", playing: "World 1-1",
-      dying: "Try again", flag: "Course clear!", won: "World 1-1 complete!", gameover: "Game over" })[game.status];
+    const automatic = game.status === "clear" || (game.status === "flag" && finishMessage.length > 0);
+    const message = paused ? "Paused" : ({ ready: `Ready for World ${game.levelId}`, playing: `World ${game.levelId}`,
+      dying: "Try again", flag: game.finish?.phase === "ending" ? "The princess is safe!" : `World ${game.levelId} clear!`,
+      clear: `World ${game.levelId} clear!`, won: "Adventure complete!", gameover: "Game over" })[game.status];
     const overlay = root.querySelector("[data-overlay]");
-    if (overlay) overlay.hidden = !(paused || ended || game.status === "ready");
+    if (overlay) overlay.hidden = !(paused || ended || automatic || game.status === "ready");
     const title = root.querySelector("[data-overlay-title]");
     if (title) title.textContent = message;
-    for (const button of root.querySelectorAll("[data-action=start]"))
+    const detail = root.querySelector("[data-overlay-message]");
+    if (detail) {
+      const text = paused ? "" : finishMessage.join("\n");
+      if (detail.textContent !== text) detail.textContent = text;
+      detail.hidden = !text;
+    }
+    for (const button of root.querySelectorAll("[data-action=start]")) {
       button.textContent = paused ? "Resume" : ended ? "Play again" : "Start game";
+      button.hidden = automatic && !paused;
+    }
     for (const button of root.querySelectorAll("[data-action=pause]")) {
       button.textContent = paused ? "Resume" : "Pause";
       button.disabled = game.status === "ready" || ended;
@@ -55,10 +70,11 @@ export function mountMario(root, { onState = () => {} } = {}) {
       button.textContent = muted ? "Unmute" : "Mute";
       button.setAttribute("aria-pressed", String(muted));
     }
-    if (message !== lastAnnouncement) {
-      lastAnnouncement = message;
+    const announcement = [message, ...(!paused ? finishMessage : [])].join(" ");
+    if (announcement !== lastAnnouncement) {
+      lastAnnouncement = announcement;
       const live = root.querySelector("[data-announcement]");
-      if (live) live.textContent = message;
+      if (live) live.textContent = announcement;
     }
   }
   function resetClock() { previous = null; accumulator = 0; }
@@ -153,7 +169,7 @@ export function mountMario(root, { onState = () => {} } = {}) {
         for (const control of buttonKeys.values()) held.add(control);
         for (const pointer of pointers.values()) held.add(pointer.control);
         stepGame(game, { left: held.has("left"), right: held.has("right"), down: held.has("down"),
-          jump: held.has("jump"), run: held.has("run") });
+          up: held.has("up"), jump: held.has("jump"), run: held.has("run") });
         audio.sync(game); accumulator -= tick; count++;
       }
       if (count === 5) accumulator = 0;

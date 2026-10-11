@@ -1,4 +1,6 @@
 // Pixel patterns are redrawn in code; no DOM or image assets are needed at import.
+import { CAMPAIGN_ROWS, CAMPAIGN_PALETTE } from './campaign-sprites.js';
+
 const WIDTH = 256, HEIGHT = 240;
 const COLORS = {
   mario: { r: '#d82800', b: '#887000', s: '#fc9838', w: '#fcfcfc', k: '#000000' },
@@ -501,6 +503,24 @@ Object.assign(FONT, {
   ]),
 });
 
+const CAMPAIGN = Object.fromEntries(Object.entries(CAMPAIGN_ROWS).map(([name, rows]) => [name, pattern(rows)]));
+const FIRE_ORB = pattern(['..aaaa..','.arrrra.','arwwrraa','arwwwrra','arwwwrra','aarrwrra','.arrrra.','..aaaa..']);
+const CANNON = pattern(['kkkkkkkkkkkkkkkk','wwwwwwwwwwwwwwww','kllllllllllllllk','kllkkkkkkkkkkllk','kllkwwwwwwwwkllk','kllkwkkkkkkwkllk','kllkwkkkkkkwkllk','kllkwwwwwwwwkllk','kllkkkkkkkkkkllk','kllllllllllllllk','kkllkkllllkkllkk','kkllkkllllkkllkk','kkllkkllllkkllkk','kkllkkllllkkllkk','kkllkkkkkkllkkkk','kkkkkkkkkkkkkkkk']);
+const themeOf = game => game.world.theme ?? game.area;
+function terrainPalette(game) {
+  if (game.world.palette === 'gray' || themeOf(game) === 'castle')
+    return { k: '#000000', b: '#7c7c7c', s: '#fcfcfc', a: '#bcbcbc', w: '#fcfcfc' };
+  if (themeOf(game) === 'underground') return COLORS.underground;
+  if (themeOf(game) === 'underwater') return { k: '#000000', b: '#00a800', s: '#b8f818', a: '#fc9838', w: '#fcfcfc' };
+  if (game.world.palette === 'snow') return { ...COLORS.terrain, s: '#fcfcfc' };
+  return COLORS.terrain;
+}
+function sceneryPalette(game) {
+  if (game.world.palette === 'gray') return { ...COLORS.scenery, g: '#7c7c7c', l: '#fcfcfc' };
+  if (game.world.palette === 'snow') return { ...COLORS.scenery, g: '#fcfcfc', l: '#fcfcfc' };
+  return COLORS.scenery;
+}
+
 function draw(ctx, sprite, x, y, palette, flip = false, scale = 1) {
   x = Math.floor(x); y = Math.floor(y);
   for (const [sx, sy, width, key] of sprite.spans) {
@@ -517,12 +537,16 @@ function text(ctx, value, x, y) {
 }
 
 function scenery(ctx, game, camera) {
-  if (game.area !== 'overworld') return;
-  const palette = COLORS.scenery;
+  if (game.world.scenery) return;
+  const theme = themeOf(game);
+  if (theme !== 'overworld' && theme !== 'sky') return;
+  const palette = sceneryPalette(game);
   for (let section = Math.floor((camera - 192) / 768); section <= Math.floor((camera + WIDTH) / 768); section++) {
     const base = section * 768 - camera;
-    draw(ctx, SCENERY.hill, base, 160, palette);
-    draw(ctx, SCENERY.smallHill, base + 256, 176, palette);
+    if (theme === 'overworld') {
+      draw(ctx, SCENERY.hill, base, 160, palette);
+      draw(ctx, SCENERY.smallHill, base + 256, 176, palette);
+    }
     for (const [offset, y, count] of [[136, 48, 1], [312, 32, 1], [440, 48, 3], [584, 32, 2]]) {
       ctx.save(); ctx.beginPath(); ctx.rect(base + offset, y, 16, 24); ctx.clip();
       draw(ctx, SPRITES.cloud, base + offset, y, palette); ctx.restore();
@@ -530,7 +554,7 @@ function scenery(ctx, game, camera) {
       ctx.save(); ctx.beginPath(); ctx.rect(base + offset + count * 16, y, 16, 24); ctx.clip();
       draw(ctx, SPRITES.cloud, base + offset + (count - 1) * 16, y, palette); ctx.restore();
     }
-    for (const [offset, count] of [[184, 3], [376, 1], [664, 2]]) {
+    if (theme === 'overworld') for (const [offset, count] of [[184, 3], [376, 1], [664, 2]]) {
       draw(ctx, SCENERY.bushLeft, base + offset, 192, palette);
       for (let i = 1; i < count; i++) draw(ctx, SCENERY.bushMiddle, base + offset + i * 16, 192, palette);
       draw(ctx, SCENERY.bushRight, base + offset + count * 16, 192, palette);
@@ -538,17 +562,17 @@ function scenery(ctx, game, camera) {
   }
 }
 
-function pipe(ctx, tile, camera) {
+function pipe(ctx, tile, camera, palette = COLORS.scenery) {
   const x = Math.floor(tile.x - camera), y = Math.floor(tile.y);
-  const width = tile.direction === 'left' ? Math.max(tile.w, SCENERY.pipeLeft.w) : tile.w;
+  const width = tile.direction === 'left' && tile.w > 16 ? Math.max(tile.w, SCENERY.pipeLeft.w) : tile.w;
   ctx.save(); ctx.beginPath(); ctx.rect(x, y, width, tile.h); ctx.clip();
   if (tile.direction === 'left') {
-    draw(ctx, SCENERY.pipeLeft, x, y, COLORS.scenery);
+    draw(ctx, SCENERY.pipeLeft, x, y, palette);
   } else {
     const capped = tile.direction !== 'vertical';
-    if (capped) draw(ctx, SCENERY.pipeTop, x, y, COLORS.scenery);
+    if (capped) draw(ctx, SCENERY.pipeTop, x, y, palette);
     for (let row = capped ? 16 : 0; row < tile.h; row += 2)
-      draw(ctx, capped ? SCENERY.pipeBody : SCENERY.pipeVertical, x, y + row, COLORS.scenery);
+      draw(ctx, capped ? SCENERY.pipeBody : SCENERY.pipeVertical, x, y + row, palette);
   }
   ctx.restore();
 }
@@ -566,16 +590,29 @@ function castle(ctx, tile, camera, palette) {
 }
 
 function terrain(ctx, game, camera, foreground) {
-  const palette = game.area === 'underground' ? COLORS.underground : COLORS.terrain;
+  const palette = terrainPalette(game);
   for (const tile of game.world.tiles) {
     if (tile.hidden && !tile.used) continue;
     if (tile.x + tile.w < camera || tile.x > camera + WIDTH) continue;
     if ((tile.kind === 'pipe') !== foreground) continue;
     if (tile.kind === 'pipe') {
-      if (tile.direction !== 'left') pipe(ctx, tile, camera);
+      if (tile.direction !== 'left') pipe(ctx, tile, camera, game.world.palette === 'gray' || themeOf(game) === 'castle' ? { ...COLORS.scenery, g: '#7c7c7c', l: '#fcfcfc' } : COLORS.scenery);
       continue;
     }
     if (tile.kind === 'castle') { castle(ctx, tile, camera, palette); continue; }
+    if (tile.kind === 'spring') {
+      const compression = tile.compression ?? 0;
+      const height = Math.max(4, tile.h - compression), x = Math.floor(tile.x - camera), y = Math.floor(tile.y + compression);
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y, tile.w, height); ctx.clip();
+      draw(ctx, CAMPAIGN.bridge, x, y, CAMPAIGN_PALETTE);
+      ctx.fillStyle = '#fcfcfc';
+      for (let sy = 4; sy < height - 3; sy++) {
+        const dx = Math.abs((sy % 8) - 4);
+        ctx.fillRect(x + 3 + dx, y + sy, 2, 1); ctx.fillRect(x + 11 - dx, y + sy, 2, 1);
+      }
+      ctx.fillStyle = '#d82800'; ctx.fillRect(x, y + height - 3, tile.w, 3); ctx.restore();
+      continue;
+    }
     if (tile.kind === 'flagpole') {
       const x = Math.floor(tile.x - camera), y = Math.floor(tile.y);
       ctx.fillStyle = COLORS.scenery.l; ctx.fillRect(x + 7, y + 16, 2, Math.max(0, tile.h - 16));
@@ -584,20 +621,20 @@ function terrain(ctx, game, camera, foreground) {
       draw(ctx, SCENERY.flag, x - 8, fy, COLORS.scenery);
       continue;
     }
-    const name = tile.used ? 'used' : tile.kind;
-    const sprite = SPRITES[name === 'brick' && game.area === 'underground' ? 'undergroundBrick' : name];
+    const name = tile.used ? 'used' : tile.kind === 'platform' && tile.style ? tile.style : tile.kind;
+    const sprite = CAMPAIGN[name] || SPRITES[name === 'brick' && themeOf(game) === 'underground' ? 'undergroundBrick' : name];
     if (!sprite) continue;
     const y = Math.floor(tile.y - (tile.bump > 0 ? Math.sin((12 - tile.bump) * Math.PI / 12) * 4 : 0));
     ctx.save(); ctx.beginPath(); ctx.rect(Math.floor(tile.x - camera), y, tile.w, tile.h); ctx.clip();
     const first = Math.max(0, Math.floor((camera - tile.x) / 16) * 16);
-    let colors = palette;
+    let colors = CAMPAIGN[name] ? { ...CAMPAIGN_PALETTE, ...(game.world.palette === 'gray' ? { g: '#7c7c7c', r: '#bcbcbc', a: '#fcfcfc', b: '#7c7c7c', s: '#bcbcbc' } : game.world.palette === 'snow' ? { g: '#fcfcfc' } : {}) } : palette;
     if (name === 'question') {
       const shade = ['#fc9838', '#c84c0c', '#883000', '#c84c0c'][Math.floor(game.frame / 8) % 4];
       colors = { k: '#000000', b: '#c84c0c', a: shade };
     }
-    if (name === 'used') colors = game.area === 'underground' ? COLORS.underground : COLORS.terrain;
-    for (let ty = 0; ty < tile.h; ty += 16) {
-      for (let tx = first; tx < tile.w && tile.x + tx < camera + WIDTH; tx += 16)
+    if (name === 'used') colors = palette;
+    for (let ty = 0; ty < tile.h; ty += sprite.h) {
+      for (let tx = first; tx < tile.w && tile.x + tx < camera + WIDTH; tx += sprite.w)
         draw(ctx, sprite, tile.x + tx - camera, y + ty, colors);
     }
     ctx.restore();
@@ -605,7 +642,7 @@ function terrain(ctx, game, camera, foreground) {
   // The elbow overlaps the vertical pipe visually, without widening its collision box.
   if (foreground) for (const tile of game.world.tiles) {
     if (tile.kind === 'pipe' && tile.direction === 'left' && !(tile.hidden && !tile.used)
-      && tile.x + SCENERY.pipeLeft.w >= camera && tile.x <= camera + WIDTH) pipe(ctx, tile, camera);
+      && tile.x + SCENERY.pipeLeft.w >= camera && tile.x <= camera + WIDTH) pipe(ctx, tile, camera, game.world.palette === 'gray' || themeOf(game) === 'castle' ? { ...COLORS.scenery, g: '#7c7c7c', l: '#fcfcfc' } : COLORS.scenery);
   }
 }
 
@@ -615,12 +652,14 @@ function player(ctx, game, camera) {
   const power = game.transform ? (p.posePower ?? p.power) : p.power;
   let pose = 'idle';
   if (game.status === 'dying' || game.status === 'gameover') pose = 'death';
+  else if (p.climbing) pose = 'climb' + Math.floor(game.frame / 8) % 2;
+  else if (p.swimming) pose = 'swim' + Math.floor(game.frame / 8) % 2;
   else if (p.crouching || (power !== 'small' && p.h <= 24)) pose = 'crouch';
   else if (!p.grounded) pose = 'jump';
   else if (p.skidding || (Math.abs(p.vx) > 0.5 && Math.sign(p.vx) !== p.facing)) pose = 'skid';
   else if (Math.abs(p.vx) > 0.1) pose = 'run' + (Math.floor(game.frame / (Math.abs(p.vx) > 2 ? 4 : 7)) % 3);
   const sprites = power === 'small' || pose === 'death' ? MARIO_SMALL : MARIO_BIG;
-  const sprite = sprites[pose] || sprites.idle;
+  const sprite = CAMPAIGN[(power === 'small' ? 'small' : 'big') + pose] || sprites[pose] || sprites.idle;
   let palette = power === 'fire' ? COLORS.fire : COLORS.mario;
   if (game.transform?.kind === 'fire') {
     palette = [COLORS.mario, COLORS.fire, { r: '#00a800', b: '#008088', s: '#fcfcfc' }, { r: '#fc9838', b: '#d82800', s: '#fcfcfc' }][(p.palette ?? 0) % 4];
@@ -638,7 +677,7 @@ function actors(ctx, game, camera) {
     if (item.emergeState !== undefined && item.emergeState < 6) continue;
     const sprite = SPRITES[item.type];
     if (!sprite) continue;
-    let palette = { ...COLORS.actor, c: game.area === 'underground' ? '#008088' : '#000000' };
+    let palette = { ...COLORS.actor, c: themeOf(game) === 'underground' ? '#008088' : '#000000' };
     if (item.type === 'star') palette = { ...palette, a: ['#fc9838', '#fcfcfc', '#80d010'][Math.floor(game.frame / 4) % 3] };
     const x = item.x + (item.w - 16) / 2 - camera, y = item.y + item.h - 16;
     const emerging = item.emerge > 0 && Number.isFinite(item.originY);
@@ -651,25 +690,49 @@ function actors(ctx, game, camera) {
     if (emerging) ctx.restore();
   }
   for (const enemy of game.enemies) {
+    if (enemy.type === 'podoboo' && enemy.phase !== 'jump') continue;
     if (!enemy.alive && !enemy.squashed && !(enemy.squashTimer > 0)) continue;
     if (enemy.x + enemy.w < camera || enemy.x > camera + WIDTH) continue;
     const squashed = enemy.squashed || enemy.squashTimer > 0;
     const walking = enemy.alive && !squashed && Math.floor(game.frame / 8) % 2 === 1;
     const name = squashed ? 'squashed' : walking && ['goomba', 'koopa'].includes(enemy.type) ? enemy.type + 'Step' : enemy.type;
-    const sprite = SPRITES[name];
+    const sprite = enemy.type === 'shell' && enemy.shellType === 'beetle' ? CAMPAIGN.beetleShell
+      : CAMPAIGN[enemy.type + (walking ? 1 : 0)] || SPRITES[name];
     if (!sprite) continue;
-    const palette = enemy.type === 'goomba' ? COLORS.enemy : COLORS.actor;
+    let palette = CAMPAIGN[enemy.type + '0'] || enemy.shellType === 'beetle' ? CAMPAIGN_PALETTE : enemy.type === 'goomba' ? COLORS.enemy : COLORS.actor;
+    if (enemy.type === 'beetle' || enemy.shellType === 'beetle') {
+      if (themeOf(game) === 'castle' || game.world.palette === 'gray') palette = { ...palette, k: '#7c7c7c', b: '#bcbcbc', s: '#fcfcfc' };
+      else if (themeOf(game) === 'underground' || themeOf(game) === 'underwater') palette = { ...palette, k: '#004058', b: '#008088', s: '#3cbcfc' };
+    }
+    if (['red', 'redKoopa', 'redParatroopa'].includes(enemy.variant)) palette = { ...palette, g: '#d82800' };
+    if (enemy.type === 'cheepcheep') {
+      if (enemy.variant === 'green') palette = { ...palette, r: '#00a800' };
+      else if (enemy.variant === 'grayCheep') palette = { ...palette, r: '#bcbcbc' };
+    }
     const x = enemy.x + (enemy.w - sprite.w) / 2 - camera, y = enemy.y + enemy.h - sprite.h;
-    draw(ctx, sprite, x, y, palette, enemy.type !== 'goomba' && enemy.vx > 0);
+    const flip = enemy.type !== 'goomba' && (enemy.facing ?? Math.sign(enemy.vx)) > 0;
+    draw(ctx, sprite, x, y, palette, flip);
+    if (enemy.type === 'koopa' && (enemy.winged ?? (enemy.variant === 'paratroopa' || ['fly', 'flying', 'horizontal', 'vertical', 'hop'].includes(enemy.motion)))) {
+      draw(ctx, CAMPAIGN['wing' + (walking ? 1 : 0)], x + (flip ? -4 : 8), y + 2, CAMPAIGN_PALETTE, flip);
+    }
   }
   for (const ball of game.fireballs) draw(ctx, SPRITES.fireball, ball.x - camera, ball.y, COLORS.tile, Math.floor(game.frame / 3) % 2 === 1);
+  for (const projectile of game.projectiles || []) {
+    const sprite = CAMPAIGN[projectile.type];
+    if (!sprite || projectile.x + projectile.w < camera || projectile.x > camera + WIDTH) continue;
+    const x = projectile.x + projectile.w / 2 - camera, y = projectile.y + projectile.h / 2;
+    ctx.save(); ctx.translate(Math.floor(x), Math.floor(y));
+    if (projectile.type === 'hammer') ctx.rotate(projectile.angle ?? game.frame * .3);
+    draw(ctx, sprite, -sprite.w / 2, -sprite.h / 2, CAMPAIGN_PALETTE, projectile.vx > 0);
+    ctx.restore();
+  }
 }
 
 function effects(ctx, game, camera) {
   for (const effect of game.effects) {
     const x = Math.floor(effect.x - camera), y = Math.floor(effect.y);
     if (effect.type === 'score' || effect.type === 'text') text(ctx, effect.text ?? effect.value ?? '', x, y);
-    else if (effect.type === 'coin') draw(ctx, SPRITES.coin, x, y, { ...COLORS.actor, c: game.area === 'underground' ? '#008088' : '#000000' });
+    else if (effect.type === 'coin') draw(ctx, SPRITES.coin, x, y, { ...COLORS.actor, c: themeOf(game) === 'underground' ? '#008088' : '#000000' });
     else if (effect.type === 'brick' || effect.type === 'debris' || effect.type === 'break') {
       ctx.fillStyle = '#c84c0c'; ctx.fillRect(x, y, 6, 6);
       ctx.fillStyle = '#fca044'; ctx.fillRect(x, y, 5, 1);
@@ -691,25 +754,141 @@ function effects(ctx, game, camera) {
   }
 }
 
+function repeat(ctx, sprite, rect, camera, palette) {
+  const x = Math.floor(rect.x - camera), y = Math.floor(rect.y);
+  if (x + rect.w < 0 || x > WIDTH) return;
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, rect.w, rect.h); ctx.clip();
+  const first = Math.max(0, Math.floor(-x / sprite.w) * sprite.w);
+  for (let sy = 0; sy < rect.h; sy += sprite.h)
+    for (let sx = first; sx < rect.w && x + sx < WIDTH; sx += sprite.w)
+      draw(ctx, sprite, x + sx, y + sy, palette);
+  ctx.restore();
+}
+
+const DECOR = {
+  'tree-trunk': pattern(['abbbbbba','abbbbbba','abbbbbba','abbbbbba','abbabbaa','abbabbaa','abbabbaa','abbbbbba']),
+  'mushroom-stem': pattern(['wwwwwwwwwwwwwwww','wssssssssssssssw','wssssssssssssssw','wssssssssssssssw','wssssssssssssssw','wssssssssssssssw','wssssssssssssssw','wssssssssssssssw']),
+  'bridge-rail': pattern(['wwwwwwwwwwwwwwww','wwwwwwwwwwwwwwww','w...w...w...w...','w...w...w...w...','w...w...w...w...','w...w...w...w...','w...w...w...w...','w...w...w...w...','w...w...w...w...','w...w...w...w...','w...w...w...w...','w...w...w...w...','w...w...w...w...','w...w...w...w...','w...w...w...w...','w...w...w...w...']),
+  chain: pattern(['..ww....','.waaw...','w....w..','w....w..','.waaw...','..ww....','...ww...','..waaw..']),
+  endlessRope: CAMPAIGN.rope,
+  balanceRope: CAMPAIGN.rope,
+  pulleyRope: pattern(['wwwwwwww','aaaaaaaa'])
+};
+const BACKDROP_TREE = pattern([
+  '......gggg......','.....gggggg.....','....gggggggg....','...gggggggggg...',
+  '..gggggggggggg..','.gggggggggggggg.','gggggggggggggggg','gggggggggggggggg',
+  '.gggggggggggggg.','..gggggggggggg..','...gggggggggg...','....gggggggg....',
+  '.....gggggg.....','......gggg......','.......bb.......','.......bb.......',
+]);
+const BACKDROP_FENCE = pattern([
+  '..s......s......','.sss....sss.....','.sbs....sbs.....','.sbs....sbs.....',
+  'ssssssssssssssss','bbbbbbbbbbbbbbbb','.sbs....sbs.....','.sbs....sbs.....',
+  '.sbs....sbs.....','.sbs....sbs.....','ssssssssssssssss','bbbbbbbbbbbbbbbb',
+  '.sbs....sbs.....','.sbs....sbs.....','.sbs....sbs.....','.sbs....sbs.....',
+]);
+const HILL_EDGE = pattern(Array.from({ length: 48 }, (_, y) =>
+  Array.from({ length: 16 }, (_, x) => y < 16 - x ? '.' : y === 16 - x ? 'k' : 'g').join('')));
+const HILL_MIDDLE = pattern(Array.from({ length: 48 }, (_, y) =>
+  Array.from({ length: 16 }, (_, x) => {
+    const top = Math.max(0, 4 - Math.min(x, 15 - x));
+    return y < top ? '.' : y === top ? 'k' : (x === 5 || x === 10) && y > 14 && y < 18 ? 'k' : 'g';
+  }).join('')));
+function backdrop(ctx, piece, game, camera) {
+  const x = Math.floor(piece.x - camera), y = Math.floor(piece.y), palette = sceneryPalette(game);
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, piece.w, piece.h); ctx.clip();
+  if (piece.kind === 'cloud') {
+    draw(ctx, SPRITES.cloud, x + (piece.part === 'left' ? 8 : piece.part === 'right' ? -24 : -8), y, palette);
+  } else if (piece.kind === 'bush') {
+    draw(ctx, SCENERY[piece.part === 'left' ? 'bushLeft' : piece.part === 'right' ? 'bushRight' : 'bushMiddle'], x, y, palette);
+  } else if (piece.kind === 'hill') {
+    draw(ctx, piece.part === 'middle' ? HILL_MIDDLE : HILL_EDGE, x, y, palette, piece.part === 'right');
+  } else if (piece.kind === 'tree') {
+    const crownHeight = piece.part === 'short' ? 16 : 32;
+    const colors = { ...palette, b: game.world.palette === 'gray' ? '#7c7c7c' : '#c84c0c' };
+    draw(ctx, BACKDROP_TREE, x, y, colors);
+    if (crownHeight === 32) draw(ctx, BACKDROP_TREE, x, y + 12, colors);
+    ctx.fillStyle = colors.b; ctx.fillRect(x + 7, y + crownHeight, 2, piece.h - crownHeight);
+  } else draw(ctx, BACKDROP_FENCE, x, y, terrainPalette(game));
+  ctx.restore();
+}
+function decorations(ctx, game, camera) {
+  for (const decoration of game.world.scenery || []) {
+    if (decoration.x + decoration.w < camera || decoration.x > camera + WIDTH) continue;
+    if (['cloud', 'bush', 'hill', 'tree', 'fence'].includes(decoration.kind)) {
+      backdrop(ctx, decoration, game, camera);
+      continue;
+    }
+    const sprite = decoration.kind === 'wall' ? SPRITES.brick : DECOR[decoration.kind];
+    if (sprite) repeat(ctx, sprite, decoration, camera, decoration.kind === 'wall' ? terrainPalette(game) : game.world.palette === 'gray' ? { ...CAMPAIGN_PALETTE, a: '#fcfcfc', b: '#7c7c7c', s: '#bcbcbc' } : CAMPAIGN_PALETTE);
+  }
+}
+
+function mechanisms(ctx, game, camera) {
+  for (const platform of game.world.platforms || []) {
+    if (Number.isFinite(platform.ropeY)) repeat(ctx, CAMPAIGN.rope,
+      { x: platform.x + platform.w / 2 - 2, y: platform.ropeY, w: 4, h: Math.max(0, platform.y - platform.ropeY) }, camera, CAMPAIGN_PALETTE);
+    repeat(ctx, CAMPAIGN.platform, platform, camera, CAMPAIGN_PALETTE);
+  }
+  for (const vine of game.vines || []) repeat(ctx, CAMPAIGN.vine, vine, camera, CAMPAIGN_PALETTE);
+  for (const hazard of game.world.hazards || []) {
+    if (hazard.type === 'firebar') {
+      for (let i = 0; i < hazard.length; i++) {
+        const x = hazard.x + Math.cos(hazard.angle) * (hazard.spacing ?? 8) * i - camera;
+        const y = hazard.y + Math.sin(hazard.angle) * (hazard.spacing ?? 8) * i;
+        draw(ctx, FIRE_ORB, x - 4, y - 4, CAMPAIGN_PALETTE, Math.floor(game.frame / 4) % 2 === 1);
+      }
+    } else if (hazard.type === 'lava') {
+      const x = Math.floor(hazard.x - camera), y = Math.floor(hazard.y);
+      ctx.save(); ctx.beginPath(); ctx.rect(x, y, hazard.w, hazard.h); ctx.clip();
+      ctx.fillStyle = '#d82800'; ctx.fillRect(x, y + 4, hazard.w, hazard.h);
+      for (let dx = Math.max(0, Math.floor(-x / 8) * 8); dx < hazard.w && x + dx < WIDTH; dx += 8) {
+        ctx.fillStyle = '#fcfcfc';
+        const phase = Math.floor(game.frame / 8) % 2;
+        for (let p = 0; p < 8; p++) ctx.fillRect(x + dx + p, y + Math.abs(p - (phase ? 5 : 2)), 1, 2);
+      }
+      ctx.restore();
+    } else if (hazard.type === 'cannon') repeat(ctx, CANNON, hazard, camera, CAMPAIGN_PALETTE);
+  }
+}
+
+function goal(ctx, game, camera) {
+  const g = game.world.goal;
+  if (!g || !['axe', 'ending'].includes(g.kind)) return;
+  if (!game.finish) draw(ctx, CAMPAIGN.axe, g.x - camera, g.y, CAMPAIGN_PALETTE);
+  if (!Number.isFinite(g.npcX)) return;
+  const sprite = game.levelId === '8-4' ? CAMPAIGN.princess : CAMPAIGN.toad;
+  ctx.save(); ctx.beginPath(); ctx.rect(-camera, 0, game.world.width, game.world.height); ctx.clip();
+  draw(ctx, sprite, g.npcX - camera, (g.floorY ?? g.y + g.h) - sprite.h, CAMPAIGN_PALETTE);
+  ctx.restore();
+}
+
 export function renderGame(ctx, game) {
   ctx.save();
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.imageSmoothingEnabled = false;
   ctx.beginPath(); ctx.rect(0, 0, WIDTH, HEIGHT); ctx.clip();
-  ctx.fillStyle = game.area === 'underground' ? '#000000' : '#5c94fc';
+  const theme = themeOf(game);
+  ctx.fillStyle = ['underground', 'castle'].includes(theme) || ['night', 'gray'].includes(game.world.palette)
+    ? '#000000' : theme === 'underwater' ? '#2038ec' : '#5c94fc';
   ctx.fillRect(0, 0, WIDTH, HEIGHT);
   const camera = Math.floor(game.cameraX);
   scenery(ctx, game, camera);
+  decorations(ctx, game, camera);
   terrain(ctx, game, camera, false);
+  mechanisms(ctx, game, camera);
+  goal(ctx, game, camera);
   actors(ctx, game, camera);
   player(ctx, game, camera);
   terrain(ctx, game, camera, true);
   effects(ctx, game, camera);
+  if (game.frenzy?.warpActive) for (const exit of game.world.exits || []) {
+    if (exit.warp) text(ctx, exit.target.levelId.split('-')[0], exit.x + exit.w / 2 - 4 - camera, exit.y - 24);
+  }
   text(ctx, 'MARIO', 24, 16);
   text(ctx, String(Math.max(0, Math.floor(game.score))).padStart(6, '0').slice(-6), 24, 24);
   draw(ctx, SCENERY.hudCoin, 88, 24, COLORS.actor);
   text(ctx, 'X' + String(game.coins % 100).padStart(2, '0'), 96, 24);
-  text(ctx, 'WORLD', 144, 16); text(ctx, '1-1', 152, 24);
+  text(ctx, 'WORLD', 144, 16); text(ctx, game.levelId === undefined ? '1-1' : game.levelId, 152, 24);
   text(ctx, 'TIME', 200, 16);
   text(ctx, String(Math.max(0, Math.ceil(game.time))).padStart(3, '0'), 208, 24);
   ctx.restore();

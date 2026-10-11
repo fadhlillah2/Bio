@@ -11,7 +11,7 @@
     "check:regressions": "bun scripts/looks-contrast-selftest.ts && python3 -B scripts/cv-cleanup-check.py && bun scripts/sky-check-selftest.ts && bun scripts/cv-current-check.ts --selftest && bun scripts/chat-proxy-selftest.ts && bun scripts/chat-worker-build.ts --check",
     "check:browser-regressions": "bun scripts/frontend-regression.ts && bun scripts/og-render-selftest.ts",
     "check:app": "bun scripts/app-smoke.ts",
-    "check:mario": "bun scripts/mario-selftest.ts",
+    "check:mario": "bun scripts/mario-levels-selftest.ts && bun scripts/mario-selftest.ts && bun scripts/mario-campaign-selftest.ts && bun scripts/mario-campaign-replay.ts",
     "check:mario:browser": "bun scripts/mario-browser-check.ts",
     "check:cv": "bun scripts/cv-current-check.ts",
     "og": "bun scripts/og-render.ts",

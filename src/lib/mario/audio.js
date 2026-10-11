@@ -24,6 +24,13 @@ function song(lead, bass, beat, loop = true, harmony = '') {
 const GROUND = 'E5 E5 R E5 R C5 E5 R G5:2 R:2 G4:2 R:2 C5:2 R G4 R:2 E4:2 R A4 R B4 R Bb4 A4:2 G4:1.5 E5:1.5 G5 A5:2 F5 G5 R E5 R C5 D5 B4:2 R:2 C5:2 R G4 R:2 E4:2 R A4 R B4 R Bb4 A4:2 G4:1.5 E5:1.5 G5 A5:2 F5 G5 R E5 R C5 D5 B4:2 R:2 R:2 G5 F#5 F5 D#5:2 E5 R G#4 A4 C5 R A4 C5 D5 R:2 G5 F#5 F5 D#5:2 E5 R C6 R C6 C6 R:3 R:2 G5 F#5 F5 D#5:2 E5 R G#4 A4 C5 R A4 C5 D5 R:2 Eb5:2 R D5 R C5:3 R:3';
 const GROUND_BASS = 'D3 D3 R D3 R D3 D3 R G3:2 R:2 G2:2 R:2 G3:2 R E3 R:2 C3:2 R F3 R G3 R Gb3 F3:2 E3:1.5 C4:1.5 E4 F4:2 D4 E4 R C4 R A3 B3 G3:2 R:2 G3:2 R E3 R:2 C3:2 R F3 R G3 R Gb3 F3:2 E3:1.5 C4:1.5 E4 F4:2 D4 E4 R C4 R A3 B3 G3:2 R:2 C3:2 G3:2 C4:2 G3:2 F3:2 C4:2 F4:2 C4:2 C3:2 G3:2 C4:2 G3:2 G2:2 D3:2 G3:2 D3:2 C3:2 G3:2 C4:2 G3:2 F3:2 C4:2 F4:2 C4:2 Ab2:2 Eb3:2 Ab3:2 Bb3:2 C3:4 R:4';
 const TRACKS = {
+  // Named-note transcriptions of CastleMusData, WaterMusData and VictoryMusData.
+  castle: song('G4:5 A#4:5 G4:5 A4:5 G4:5 G#4:5 G4:5 A4:5 G4:5 A#4:5 G4:5 B4:5 G4:5 A#4:5 G4:5 A4:5 G4:5 A#4:5 G4:5 A4:5 G4:5 G#4:5 G4:5 A4:5 G4:5 A#4:5 G4:5 B4:5 G4:5 A#4:5 G4:5 A4:5 F#4:5 A4:5 F#4:5 G#4:5 F#4:5 A4:5 F#4:5 A#4:5 F#4:5 A4:5 F#4:5 A#4:5 F#4:5 A4:5 F#4:5 G#4:5 F#4:5 A4:5 F#4:5 G#4:5 F#4:5 A4:5 F#4:5 A#4:5 F#4:5 A4:5 F#4:5 A#4:5 F#4:5 A4:5 F#4:5 G#4:5 A#4:5 D5:5 A#4:5 D#5:5 A#4:5 D5:5 A#4:5 C#5:5 A#4:5 D5:5 A#4:5 C#5:5 A#4:5 C5:5 A#4:5 C#5:5 A#4:5 D5:5 A#4:5 D#5:5 A#4:5 D5:5 A#4:5 C#5:5 A#4:5 D5:5 A#4:5 C#5:5 A#4:5 C5:5 A#4:5 C#5:5',
+    'D#3:80 D3:40 F#3:40 F3:80 E3:40 A#3:40 A3:40 E3:40 D#3:40 E3:40', 1 / 60),
+  water: song('D4:16 E4:16 F#4:16 G4:16 A4:16 A#4:16 B4:8 B4:8 B4:8 R:8 B4:8 R:8 B4:32 G4:16 E5:48 D#5:48 E5:48 R:8 G4:8 A4:8 B4:8 C5:8 D5:8 E5:48 D#5:32 F5:16 E5:64 R:24 G4:8 D5:48 C#5:48 D5:48 R:8 G4:8 A4:8 B4:8 C5:8 C#5:8 D5:48 G4:32 F5:16 E5:64 R:24 G4:8 G5:48 G5:48 G5:48 G5:16 A5:8 R:16 G5:8 F5:48 F5:48 F5:48 F5:16 G5:8 R:16 F5:8 E5:48 A4:16 B4:16 F5:16 E5:8 E5:8 E5:24 B4:8 C5:48',
+    'R:64 R:64 G3:16 G3:48 C3:16 G3:16 C4:16 B2:16 G3:16 B3:16 C3:16 G3:16 C4:16 E3:16 G3:16 C4:16 C3:16 G3:16 C4:16 B2:16 G3:16 B3:16 C3:16 G3:16 C4:16 E3:16 G3:16 C4:16 D3:16 G3:16 B3:16 C#3:16 F#3:16 A#3:16 D3:16 G3:16 B3:16 B2:16 G3:16 B3:16 D3:16 G3:16 B3:16 B2:16 G3:16 B3:16 C3:16 G3:16 C4:16 G2:16 G3:16 C4:16 C3:16 G3:16 E4:16 B2:16 G3:16 D4:16 A#2:16 G3:16 C#4:16 C#3:16 G3:16 E4:16 D3:16 A3:16 F4:16 C#3:16 A3:16 F4:16 C3:16 A3:16 F4:16 B2:16 G3:16 F4:16 C2:16 G3:16 E4:16 G2:16 G3:16 G3:16 F3:8 F3:8 F3:24 B2:8 C3:48', 1 / 60),
+  ending: song('R:24 G3:48 A3:24 A#3:24 B3:48 E4:24 G4:24 F4:24 G4:24 A4:24 D4:24 F4:24 R:24 E4:24',
+    'B2:24 C3:24 R:24 D3:24 D#3:24 E3:24 C3:24 A3:24 G3:24 F3:24 E3:24 D3:24 F3:24 G3:24 G2:24 C3:24', 1 / 60, false),
   ground: song(GROUND, GROUND_BASS, 0.135),
   hurry: song(GROUND, GROUND_BASS, 0.103),
   underground: song('C3 C4 A2 A3 Bb2 Bb3 R:2 C3 C4 A2 A3 Bb2 Bb3 R:2 F2 F3 D2 D3 Eb2 Eb3 R:2 F2 F3 D2 D3 Eb2 Eb3 R:2 Eb3:.5 D3:.5 Db3:.5 C3:1.5 Eb3:1.5 D3:1.5 Ab2:1.5 G2:1.5 Db3:1.5 C3:1.5 B2:1.5 Bb2:1.5 R:4',
@@ -35,7 +42,15 @@ const TRACKS = {
   death: song('C5:.5 C5:.5 R:.5 C5:.5 R:.5 B4:.5 C5:1.5 R:.5 E4:1.5 A4:1.5 G4:1.5 E4:1.5 C4:1.5 F4:1.5 E4:1.5 D4:1.5 C4:3 R:2',
     'C3:2 R C3:2 R Ab2:3 G2:3 F2:3 E2:3 C2:3', 0.14, false),
 };
+for (const name of ['underground', 'castle', 'water', 'star']) {
+  const track = TRACKS[name], ratio = 0.103 / 0.135;
+  TRACKS[name + 'Hurry'] = { ...track, length: track.length * ratio,
+    events: track.events.map(note => ({ ...note, time: note.time * ratio, duration: note.duration * ratio })) };
+}
 const SFX = {
+  axe: [[523, 1047, .1, 'square']],
+  bridge: [[150, 40, .12, 'noise']],
+  blast: [[110, 35, .18, 'noise']],
   jump: [[330, 660, .13, 'square']],
   coin: [[988, 988, .07, 'square'], [1319, 1319, .22, 'square']],
   bump: [[150, 55, .09, 'triangle']],
@@ -118,18 +133,18 @@ export function createAudio() {
   function desired(game) {
     if (game.status === 'dying') return 'death';
     if (game.status === 'gameover') return trackName === 'death' ? 'death' : null;
-    if (game.status === 'flag' || game.status === 'won') return 'end';
+    if (game.status === 'won' || (game.status === 'flag' && game.finish?.kind === 'ending' && game.finish.phase === 'ending')) return 'ending';
+    if (game.status === 'flag' && ['castle', 'ending'].includes(game.finish?.kind) && game.finish.phase === 'bridge') return null;
+    if (game.status === 'flag' || game.status === 'clear') return 'end';
     if (game.status !== 'playing') return null;
     if (game.player.invincible > 0) return 'star';
-    if (game.area === 'underground') return 'underground';
-    return game.time <= 100 ? 'hurry' : 'ground';
+    const theme = game.world?.theme ?? game.area;
+    const biome = theme === 'underground' || theme === 'castle' ? theme
+      : theme === 'underwater' ? 'water' : theme === 'sky' ? 'star' : 'ground';
+    return game.time <= 100 ? biome === 'ground' ? 'hurry' : biome + 'Hurry' : biome;
   }
 
-  function music(game) {
-    const name = desired(game);
-    const cue = name && !TRACKS[name].loop ? name : null;
-    const newCue = cue && cue !== lastCue;
-    lastCue = cue;
+  function music(game, name, cue, newCue) {
     // Automatic respawn leaves the death melody intact until its final note finishes.
     if (trackName === 'death' && game.status === 'playing' && context.currentTime < origin + track.length) return;
     if (name !== trackName || newCue) {
@@ -170,12 +185,21 @@ export function createAudio() {
     if (destroyed) return;
     latest = game;
     const fresh = remember(game);
-    if (game.status === 'playing' || game.status === 'ready') lastCue = null;
+    const name = desired(game);
+    const cue = name && !TRACKS[name].loop ? name : null;
+    const newCue = cue && cue !== lastCue;
+    // Leaving a cue resets its identity even when playback is unavailable.
+    if (!cue) lastCue = null;
     if (!context || !unlocked || muted || context.state !== 'running') return;
-    music(game);
+    music(game, name, cue, newCue);
+    if (cue && trackName === name) lastCue = cue;
     if (!fresh) return;
+    if (game.status === 'flag' && game.finish?.phase === 'bridge') {
+      for (const event of game.events) if (event.type === 'axe' || event.type === 'bridge') effect(event.type);
+      return;
+    }
     // Death and completion own their full melody; later tick events must not interrupt it.
-    if (game.status === 'dying' || game.status === 'gameover' || game.status === 'flag' || game.status === 'won') return;
+    if (game.status === 'dying' || game.status === 'gameover' || game.status === 'flag' || game.status === 'clear' || game.status === 'won') return;
     for (const event of game.events) effect(event.type);
   }
 

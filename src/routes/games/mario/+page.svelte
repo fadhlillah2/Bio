@@ -4,7 +4,7 @@
 
   let root;
   let error = "";
-  let state = { status: "ready", paused: false, muted: false, score: 0, coins: 0, lives: 3, time: 400 };
+  let state = { status: "ready", paused: false, muted: false, score: 0, coins: 0, lives: 3, time: 400, levelId: "1-1", area: "overworld" };
   onMount(() => {
     let disposed = false, game;
     import("$lib/mario/runtime.js").then(({ mountMario }) => {
@@ -17,23 +17,24 @@
 </script>
 
 <svelte:head>
-  <title>Super Mario Bros. — World 1-1 | Fadhlillah</title>
-  <meta name="description" content="Play World 1-1 with keyboard or touch controls." />
+  <title>Super Mario Bros. | Fadhlillah</title>
+  <meta name="description" content="Play 32 Mario stages across eight worlds, from 1-1 through 8-4 and the princess ending, with keyboard or touch controls." />
 </svelte:head>
 
 <main class="mario-page">
   <header>
     <a href={base + "/#portfolio"}>Back to Bio</a>
     <p class="game-lives">Lives <span data-lives>{state.lives}</span></p>
-    <h1>Super Mario Bros. <span>World 1-1</span></h1>
+    <h1>Super Mario Bros. <span>World {state.levelId}</span></h1>
   </header>
   <section bind:this={root} data-mario aria-label="Super Mario Bros. game" aria-describedby="mario-instructions">
     <div class="game-stage">
-      <canvas width="256" height="240" tabindex="0" aria-label="World 1-1 game screen" aria-describedby="mario-instructions">
+      <canvas width="256" height="240" tabindex="0" aria-label={"World " + state.levelId + " game screen"} aria-describedby="mario-instructions">
         Mario needs JavaScript and a browser with Canvas support.
       </canvas>
       <div class="game-overlay" data-overlay>
-        <strong data-overlay-title>Ready for World 1-1</strong>
+        <strong data-overlay-title>Ready for World {state.levelId}</strong>
+        <p data-overlay-message hidden></p>
         <button type="button" data-action="start">Start game</button>
       </div>
     </div>
@@ -47,6 +48,7 @@
         <div class="directions">
           <button type="button" data-control="left" aria-label="Move left">←</button>
           <button type="button" data-control="down" aria-label="Crouch or enter pipe">↓</button>
+          <button type="button" data-control="up" aria-label="Climb or swim up">↑</button>
           <button type="button" data-control="right" aria-label="Move right">→</button>
         </div>
         <div class="abilities">
@@ -55,7 +57,7 @@
         </div>
       </div>
       <p id="mario-instructions">
-        ← → or A/D move · ↓ or S crouch/pipe · Space/Z jump · Shift/X run/fire.
+        ← → or A/D move · ↓/S crouch/pipe · ↑/W climb/swim · Space/Z jump · Shift/X run/fire.
         Enter starts/resumes · Esc/P pauses · M mutes.
       </p>
       <p class="game-score" aria-live="off">
@@ -81,7 +83,8 @@
   canvas { display: block; image-rendering: crisp-edges; image-rendering: pixelated; max-width: 100%; }
   .game-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 18px; align-items: center; justify-content: center; background: #0009; color: #fff; }
   .game-stage :global(.game-overlay[hidden]) { display: none; }
-  .game-overlay strong { font-size: 22px; text-shadow: 0 2px #000; }
+  .game-overlay strong { font-size: 22px; text-shadow: 0 2px #000; text-align: center; }
+  .game-overlay p { max-width: 100%; padding-inline: 12px; font-size: 14px; text-align: center; white-space: pre-line; }
   button { min-height: 44px; min-width: 44px; padding: 8px 14px; border: 1px solid var(--text); border-radius: 6px; color: var(--head); background: var(--ink-1); font: 600 14px var(--sans); cursor: pointer; }
   .game-overlay button { background: var(--accent); color: var(--ink-0); border-color: var(--accent); }
   button:disabled { opacity: .5; cursor: default; }
@@ -103,6 +106,9 @@
     .game-panel { gap: 6px; }
     .touch-controls { width: 100%; gap: 6px; }
     button { padding: 8px 10px; }
+  }
+  @media (max-width: 360px) {
+    .touch-controls { flex-wrap: wrap; justify-content: center; }
   }
   @media (max-height: 500px) and (min-width: 600px) {
     section { grid-template-columns: minmax(0, 1fr) 220px; grid-template-rows: minmax(0, 1fr); }
