@@ -147,6 +147,10 @@ try {
   await check("!!document.querySelector('[data-mario] canvas')", "Mario deep link serves the game canvas");
   await wait("document.querySelector('[data-mario]').dataset.status === 'ready'");
   await check("!document.querySelector('.chat-fab,.chat-panel')", "game has no chat widget");
+  if(process.env.MARIO_CAPTURE_DIR) {
+    const shot=await send("Page.captureScreenshot",{format:"png"});
+    await Bun.write(join(resolve(process.env.MARIO_CAPTURE_DIR),"ready.png"),Buffer.from(shot.data,"base64"));
+  }
   const click=async(selector:string)=>{
     const p=await js(`(()=>{const r=document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2};})()`);
     await send("Input.dispatchMouseEvent",{type:"mousePressed",...p,button:"left",clickCount:1});
@@ -177,18 +181,59 @@ try {
   console.log("OK start gesture unlocks audio");
   await js("__advance(1)");
   const resizeGame=async(width:number,height:number)=>{
-    await send("Emulation.setDeviceMetricsOverride",{width,height,deviceScaleFactor:1,mobile:true});
-    await wait(`(()=>{const c=document.querySelector('canvas'),r=c.getBoundingClientRect(),s=c.parentElement;
-      const scale=Math.min(s.clientWidth/256,s.clientHeight/240);
-      return innerWidth===${width} && innerHeight===${height}
-        && r.top>=0 && r.bottom<=innerHeight && r.left>=0 && r.right<=innerWidth
-        && Math.abs(r.width/256-(scale>=1?Math.floor(scale):scale))<.01
-        && document.documentElement.scrollWidth<=innerWidth;})()`);
+    await send("Emulation.setDeviceMetricsOverride",{width,height,deviceScaleFactor:1,mobile:width<900});
+    await wait(`innerWidth===${width} && innerHeight===${height}`);
+    await js("document.fonts.ready");
+    let previous="";
+    for(let n=0;n<100;n++) {
+      await Bun.sleep(50);
+      const bounds=await js("JSON.stringify([document.querySelector('canvas').getBoundingClientRect(),document.querySelector('.game-stage').getBoundingClientRect()])");
+      if(bounds===previous)return;
+      previous=bounds;
+    }
+    throw new Error("Canvas resize did not settle");
   };
-  for(const [width,height] of [[390,844],[844,390],[1280,900]]) {
+  await send("Input.dispatchKeyEvent",{type:"keyDown",code:"ArrowRight",key:"ArrowRight",windowsVirtualKeyCode:39});
+  await send("Input.dispatchKeyEvent",{type:"keyUp",code:"ArrowRight",key:"ArrowRight",windowsVirtualKeyCode:39});
+  const viewportReports=[];
+  for(const [width,height] of [[1536,707],[1920,1080],[1280,900],[390,844],[844,390]]) {
+    const before=await js("JSON.stringify([document.querySelector('[data-mario]').dataset,document.querySelector('.game-score').textContent,document.querySelector('canvas').toDataURL()])");
     await resizeGame(width,height);
-    console.log(`OK canvas visible with integer scaling at ${width}×${height}`);
-    await check("[...document.querySelectorAll('[data-control]')].every(e=>{const r=e.getBoundingClientRect();return r.width>=44&&r.height>=44})","touch targets at least 44px");
+    assert.equal(await js("JSON.stringify([document.querySelector('[data-mario]').dataset,document.querySelector('.game-score').textContent,document.querySelector('canvas').toDataURL()])"),before,"resize preserves simulation and pause state");
+    const report=await js(`(()=>{
+      const rect=s=>document.querySelector(s).getBoundingClientRect().toJSON();
+      const canvas=rect('canvas'),stage=rect('.game-stage'),root=rect('.mario-page');
+      const inside=r=>r.left>=0&&r.top>=0&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1;
+      const buttons=[...document.querySelectorAll('[data-control],.game-actions button')];
+      const fit=Math.min(stage.width*240/256,stage.height);
+      return {viewport:[innerWidth,innerHeight],canvas,stage,root,zoom:getComputedStyle(document.body).zoom,
+        lives:inside(rect('[data-lives]'))&&document.querySelector('[data-lives]').checkVisibility()&&rect('.game-lives').height>=14&&getComputedStyle(document.querySelector('.game-lives')).clipPath==='none',
+        focus:document.querySelector('canvas').matches(':focus-visible')&&getComputedStyle(document.querySelector('canvas')).outlineStyle==='solid'&&parseFloat(getComputedStyle(document.querySelector('canvas')).outlineOffset)<0,
+        optimal:Math.abs(canvas.height-fit)<1,
+        ratio:Math.abs(canvas.width*15/16-canvas.height)<.1,
+        pixels:document.querySelector('canvas').width===256&&document.querySelector('canvas').height===240,
+        viewportUsed:root.width>=innerWidth-24&&canvas.height>=Math.min((innerWidth-24)*15/16,innerHeight-(innerHeight<500?65:150)),
+        contained:inside(canvas)&&inside(root)&&document.documentElement.scrollWidth<=innerWidth&&document.documentElement.scrollHeight<=innerHeight+1,
+        controls:buttons.every(e=>{const r=e.getBoundingClientRect();return inside(r)&&r.width>=44&&r.height>=44&&(r.right<=canvas.left||r.left>=canvas.right||r.top>=canvas.bottom||r.bottom<=canvas.top);})};
+    })()`);
+    viewportReports.push(report);
+    console.log("VIEWPORT",JSON.stringify(report));
+    for(const phase of ["playing","paused"]) {
+      if(phase==="paused")await js("document.querySelector('[data-action=pause]').click()");
+      await check("[...document.querySelectorAll('.game-actions button,[data-control]')].every(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight&&r.width>=44&&r.height>=44})",`${phase} controls reachable at ${width}×${height}`);
+      if(process.env.MARIO_CAPTURE_DIR) {
+        const shot=await send("Page.captureScreenshot",{format:"png"});
+        await Bun.write(join(resolve(process.env.MARIO_CAPTURE_DIR),`${width}x${height}-${phase}.png`),Buffer.from(shot.data,"base64"));
+      }
+    }
+    await js("document.querySelector('[data-action=start]').click();__advance(1)");
+  }
+  if(process.env.MARIO_CAPTURE_DIR)
+    await Bun.write(join(resolve(process.env.MARIO_CAPTURE_DIR),"viewports.json"),JSON.stringify(viewportReports,null,2));
+  for(const report of viewportReports) {
+    for(const key of ["optimal","ratio","pixels","viewportUsed","contained","controls","lives","focus"])
+      assert(report[key],`${key} at ${report.viewport.join("×")}: ${JSON.stringify(report)}`);
+    console.log(`OK optimal canvas, viewport bounds and accessible controls at ${report.viewport.join("×")}`);
   }
   for(const [name,trace,score,coins] of [["main",mainTrace,19750,2],["pipe",pipeTrace,21700,19]] as const) {
     await js("document.querySelector('[data-action=restart]').click();__bits=0;__advance(1)");
@@ -237,6 +282,15 @@ try {
     window.__pointer=(control,type,id)=>document.querySelector('[data-control='+control+']').dispatchEvent(new PointerEvent(type,{pointerId:id,button:0,bubbles:true,cancelable:true}));
     window.__reset=()=>{__keys(0);__api.restart();__advance(1);};
   `);
+  await js("__reset();__key('ArrowRight');window.__snapshot=JSON.stringify(__game);document.querySelector('canvas').parentElement.style.cssText='width:613px;height:577px'");
+  await wait("Math.abs(document.querySelector('canvas').getBoundingClientRect().width-613)<.1");
+  await check("JSON.stringify(__game)===__snapshot && !__state.paused","resize alone does not advance or pause the simulation");
+  await js("__advance(8)");
+  await check("__game.player.x>40","held keyboard direction survives resize");
+  await js("__key('ArrowRight','keyup');__api.togglePause();window.__snapshot=JSON.stringify(__game);document.querySelector('canvas').parentElement.style.cssText='width:768px;height:720px'");
+  await wait("document.querySelector('canvas').getBoundingClientRect().width===768");
+  await js("__advance(30)");
+  await check("__state.paused && JSON.stringify(__game)===__snapshot","resize preserves paused game and timer");
   await js("__reset();__key('ArrowRight');__advance(10);window.__frame=__game.frame;__advance(1,5000)");
   await check("__game.frame-__frame===5","frame stall advances at most five ticks");
   await js("__reset();__key('KeyD');__advance(8);__key('KeyP');window.__frame=__game.frame;__advance(100)");
