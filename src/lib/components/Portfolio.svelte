@@ -92,13 +92,13 @@
         <article class="flagship" data-reveal>
           <div class="flagship-body">
             <p class="flagship-badge">Browser game &middot; Canvas 2D</p>
-            <h3 class="flagship-title">Super Mario Bros. — World 1-1</h3>
-            <p class="flagship-desc">Run, jump, find the underground bonus room, and reach the castle. A browser remake of World 1-1 with pixel sprites, synthesized audio, and keyboard or touch controls.</p>
+            <h3 class="flagship-title">Super Mario Bros.</h3>
+            <p class="flagship-desc">Play 32 stages across eight worlds, from 1-1 through 8-4 and the princess ending. Explore bonus rooms, warp zones, and castle mazes with pixel sprites, synthesized audio, and keyboard or touch controls.</p>
             <ul class="tag-row">
               <li>Canvas 2D</li><li>Vanilla JS</li><li>Web Audio</li><li>Keyboard + touch</li>
             </ul>
             <div class="flagship-cta">
-              <a href={base + "/games/mario/"} class="btn btn-solid btn-sm">Play World 1-1</a>
+              <a href={base + "/games/mario/"} class="btn btn-solid btn-sm">Play Mario</a>
             </div>
           </div>
           <div class="flagship-shot" aria-hidden="true">

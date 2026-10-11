@@ -77,8 +77,9 @@ test("world geometry, three pits, exact blocks, stairs and 19 underground coins"
   assert.equal(at(189,5)?.kind,"stone");
   assert.equal(at(198,3)?.kind,"flagpole");
   const other = createGame();
-  g.world.tiles[0].kind = "used";
-  assert.equal(other.world.tiles[0].kind,"ground");
+  const firstGround=g.world.tiles.find((t:any)=>t.x===0&&t.y===208&&t.kind==="ground");
+  firstGround.kind="used";
+  assert.equal(other.world.tiles.find((t:any)=>t.x===0&&t.y===208).kind,"ground");
 });
 test("walk/run accelerate to reference caps and opposite input skids", () => {
   const walk = arena(), run = arena();
@@ -248,16 +249,16 @@ test("pipe transitions take time; underground has 19 coins and returns through x
   assert.ok(g.player.x>=163*16 && g.player.x<165*16);
   noOverlap(g);
 });
-test("flag height points, slide, castle walk, time bonus and fireworks precede won", () => {
+test("flag height points, slide, castle walk, time bonus and fireworks precede clear", () => {
   const g=arena(); g.time=103;
   Object.assign(g.player,{x:198*16,y:30,vx:0,vy:1,grounded:false});
   tick(g); assert.equal(g.status,"flag"); assert.equal(g.score,5000);
   assert.ok(g.events.some((e: any)=>e.type==="flag"));
   let winEvents=0;
-  for(let i=0;i<1500&&g.status!=="won";i++) {
-    tick(g); winEvents+=g.events.filter((e: any)=>e.type==="win").length;
+  for(let i=0;i<1500&&g.status!=="clear";i++) {
+    tick(g); winEvents+=g.events.filter((e: any)=>e.type==="levelclear").length;
   }
-  assert.equal(g.status,"won"); assert.equal(g.time,0); assert.equal(g.score,5000+103*50+3*500);
+  assert.equal(g.status,"clear"); assert.equal(g.time,0); assert.equal(g.score,5000+103*50+3*500);
   assert.equal(winEvents,1); tick(g); assert.equal(g.events.length,0);
 });
 test("group spawns follow actual camera edge; no Piranha Plant", () => {
@@ -522,11 +523,12 @@ function playRoute(route: "main" | "pipe") {
   let jumping=false,lastJump=false,visited=false,returned=false;
   let target: any=null;
   let bonusCoins=0;
+  const awards={coin:0,stomp:0,flag:0,timebonus:0,firework:0};
   function steer(targetX: number) {
     const desired=Math.max(-1.5,Math.min(1.5,(targetX-g.player.x)*0.13));
     return {left:g.player.vx>desired+0.02,right:g.player.vx<desired-0.02};
   }
-  for(let f=0;f<10000&&g.status!=="won";f++) {
+  for(let f=0;f<10000&&g.status!=="clear";f++) {
     const p=g.player,feet=p.y+p.h,front=p.x+p.w;
     const walls=g.world.tiles.some((t: any)=>!t.hidden&&!["flagpole","castle"].includes(t.kind)&&
       t.x>front-1&&t.x<front+28&&t.y<feet&&t.y+t.h>p.y);
@@ -551,22 +553,30 @@ function playRoute(route: "main" | "pipe") {
         input.left=false; input.right=true; input.run=false; input.jump=false; jumping=false;
       }
     } else if(visited) returned=true;
+    const oldScore=g.score;
     stepGame(g,input); lastJump=input.jump;
+    if(g.score!==oldScore) {
+      const cue=g.events.find((e:any)=>["coin","stomp","flag","firework"].includes(e.type));
+      awards[(cue?.type??"timebonus") as keyof typeof awards]+=g.score-oldScore;
+    }
     if(g.area==="underground") bonusCoins+=g.events.filter((e: any)=>e.type==="coin").length;
     assert.notEqual(g.status,"dying","input-only route died at "+g.player.x);
     assert.equal(g.lives,3);
     if(g.status==="playing"&&!g.transition) noOverlap(g);
   }
-  assert.equal(g.status,"won"); assert.equal(g.time,0);
+  assert.equal(g.status,"clear"); assert.equal(g.time,0);
   if(route==="pipe") { assert.equal(visited,true); assert.equal(returned,true); assert.equal(bonusCoins,19); }
   else assert.equal(visited,false);
-  return {frame:g.frame,score:g.score,coins:g.coins,lives:g.lives,bonusCoins};
+  return {frame:g.frame,score:g.score,coins:g.coins,lives:g.lives,bonusCoins,awards};
 }
 test("continuous main route reaches castle using only ordinary controls", () => {
-  console.log("MAIN",JSON.stringify(playRoute("main")));
+  const result=playRoute("main"); assert.equal(result.score,19750); console.log("MAIN",JSON.stringify(result));
 });
 test("continuous pipe route collects all 19 coins, exits and reaches castle", () => {
-  console.log("PIPE",JSON.stringify(playRoute("pipe")));
+  const result=playRoute("pipe");
+  // Source entry x24/y48 and return page10 change encounters and final timer digit.
+  assert.deepEqual(result.awards,{coin:3800,stomp:400,flag:100,timebonus:17650,firework:1500});
+  assert.equal(result.score,23450); console.log("PIPE",JSON.stringify(result));
 });
 console.log(`Mario selftest: ${passed} passed, ${failed} failed`);
 if (failed) process.exitCode = 1;

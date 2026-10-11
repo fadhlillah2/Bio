@@ -26,7 +26,20 @@ const fixtureEntry = join(temp,"fixture-entry.js");
 await Bun.write(fixtureEntry, `
   import { mountMario } from ${JSON.stringify(resolve("src/lib/mario/runtime.js"))};
   import { createAudio } from ${JSON.stringify(resolve("src/lib/mario/audio.js"))};
+  import { createGame, startGame } from ${JSON.stringify(resolve("src/lib/mario/engine.js"))};
+  import { createWorld } from ${JSON.stringify(resolve("src/lib/mario/world.js"))};
   window.__createAudio = createAudio;
+  window.__scene=(id,body=true,area='main')=>{
+    const fresh=createGame(id);startGame(fresh);
+    if(body) {
+      fresh.world=createWorld(id,area);fresh.areaId=fresh.world.areaId;fresh.area=fresh.world.theme;
+      fresh.items=fresh.world.items;fresh.transition=null;
+      const entry=fresh.world.entries.start;
+      Object.assign(fresh.player,{x:entry.x,y:entry.y,vx:0,vy:0,grounded:false,swimming:fresh.world.physics==="water"});
+      fresh.cameraX=entry.cameraX;fresh.cameraRegion=fresh.world.cameraLock;
+    }
+    Object.assign(window.__liveGame,fresh);
+  };
   window.__mount=()=>window.__api=mountMario(document.querySelector('[data-mario]'),{onState:s=>window.__state=s});
   window.__mount();
 `);
@@ -42,9 +55,9 @@ assert(fixture.success, "runtime fixture bundle compiles");
 const fixtureCode = await fixture.outputs[0].text();
 const fixtureHTML = `<!doctype html><html><body><a href="/Bio/">Outside</a>
 <section data-mario><div style="width:768px;height:720px"><canvas tabindex="0"></canvas></div>
-<div data-overlay><b data-overlay-title></b><button data-action="start">Start game</button></div>
+<div data-overlay><b data-overlay-title></b><p data-overlay-message hidden></p><button data-action="start">Start game</button></div>
 <button data-action="pause">Pause</button><button data-action="mute">Mute</button><button data-action="restart">Restart</button>
-${["left","right","down","jump","run"].map(c=>'<button style="width:80px;height:50px;touch-action:none" data-control="'+c+'">'+c+'</button>').join("")}
+${["left","right","down","up","jump","run"].map(c=>'<button style="width:80px;height:50px;touch-action:none" data-control="'+c+'">'+c+'</button>').join("")}
 <input aria-label="test input"><div data-announcement role="status"></div></section>
 <script type="module" src="/fixture.js"></script></body></html>`;
 const origin = `http://127.0.0.1:${server.port}`;
@@ -91,7 +104,7 @@ const clock = `
     }
   };
   window.__keys = bits => {
-    const codes=['ArrowLeft','ArrowRight','ArrowDown','Space','KeyX'];
+    const codes=['ArrowLeft','ArrowRight','ArrowDown','Space','KeyX','ArrowUp'];
     const old=window.__bits||0;
     codes.forEach((code,i)=>{if((old&(1<<i))!==(bits&(1<<i))) document.querySelector('canvas').dispatchEvent(
       new KeyboardEvent(bits&(1<<i)?'keydown':'keyup',{code,bubbles:true,cancelable:true}));});
@@ -99,7 +112,7 @@ const clock = `
   };
 `;
 const mainTrace = [[115,18],[41,26],[63,18],[46,26],[48,18],[45,26],[31,18],[41,26],[65,18],[41,26],[71,18],[57,26],[52,18],[57,26],[1,18],[52,26],[9,18],[41,26],[30,18],[58,26],[28,18],[72,26],[6,18],[57,26],[1,18],[36,26],[56,18],[41,26],[1,18],[65,26],[47,18],[52,26],[1,18],[49,26],[3,18],[41,26],[1,18],[46,26],[52,18],[85,26],[522,18]];
-const pipeTrace = [[115,18],[41,26],[63,18],[46,26],[48,18],[45,26],[31,18],[41,26],[64,18],[1,1],[8,9],[8,8],[25,10],[4,2],[1,6],[1,4],[31,0],[53,2],[36,10],[6,9],[1,1],[5,9],[12,10],[1,8],[10,9],[1,8],[1,9],[1,10],[1,8],[1,9],[1,10],[2,8],[1,9],[1,10],[6,8],[1,9],[1,10],[1,9],[1,10],[1,9],[5,10],[13,2],[5,10],[9,9],[2,8],[19,10],[8,9],[1,8],[1,9],[1,8],[1,9],[3,8],[4,10],[12,2],[4,10],[10,9],[2,8],[20,10],[10,9],[1,10],[1,9],[1,10],[1,9],[4,10],[13,2],[5,10],[83,2],[92,18],[36,26],[9,18],[45,26],[1,18],[46,26],[1,18],[46,26],[1,18],[50,26],[42,18],[86,26],[451,18]];
+const pipeTrace = [[115,18],[41,26],[63,18],[46,26],[48,18],[45,26],[31,18],[41,26],[64,18],[1,1],[8,9],[8,8],[25,10],[4,2],[1,6],[1,4],[31,0],[49,2],[40,10],[1,8],[1,9],[1,1],[5,9],[8,10],[20,9],[1,8],[1,10],[1,9],[1,8],[1,10],[1,9],[1,8],[1,10],[1,9],[1,10],[1,9],[1,10],[1,9],[1,10],[1,9],[1,10],[6,8],[4,10],[14,2],[5,10],[9,9],[1,8],[1,9],[21,10],[10,9],[2,8],[1,9],[4,10],[13,2],[5,10],[10,9],[1,8],[20,10],[10,9],[1,10],[1,9],[1,10],[1,9],[4,10],[13,2],[4,10],[1,8],[79,2],[98,18],[52,26],[1,18],[46,26],[8,18],[41,26],[1,18],[46,26],[52,18],[85,26],[542,18]];
 try {
   chrome = Bun.spawn([findChrome(), "--headless=new", "--no-first-run", "--disable-background-networking",
     "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--remote-debugging-port=0",
@@ -147,6 +160,8 @@ try {
   await check("!!document.querySelector('[data-mario] canvas')", "Mario deep link serves the game canvas");
   await wait("document.querySelector('[data-mario]').dataset.status === 'ready'");
   await check("!document.querySelector('.chat-fab,.chat-panel')", "game has no chat widget");
+  await check("!window.__liveGame && !window.__game && !window.__api", "public route exposes no writable game globals");
+  await check("document.querySelectorAll('[data-control]').length===6 && !!document.querySelector('[data-control=up]')", "public route includes six touch controls");
   if(process.env.MARIO_CAPTURE_DIR) {
     const shot=await send("Page.captureScreenshot",{format:"png"});
     await Bun.write(join(resolve(process.env.MARIO_CAPTURE_DIR),"ready.png"),Buffer.from(shot.data,"base64"));
@@ -196,7 +211,7 @@ try {
   await send("Input.dispatchKeyEvent",{type:"keyDown",code:"ArrowRight",key:"ArrowRight",windowsVirtualKeyCode:39});
   await send("Input.dispatchKeyEvent",{type:"keyUp",code:"ArrowRight",key:"ArrowRight",windowsVirtualKeyCode:39});
   const viewportReports=[];
-  for(const [width,height] of [[1536,707],[1920,1080],[1280,900],[390,844],[844,390]]) {
+  for(const [width,height] of [[1536,707],[1920,1080],[1280,900],[390,844],[844,390],[320,568]]) {
     const before=await js("JSON.stringify([document.querySelector('[data-mario]').dataset,document.querySelector('.game-score').textContent,document.querySelector('canvas').toDataURL()])");
     await resizeGame(width,height);
     assert.equal(await js("JSON.stringify([document.querySelector('[data-mario]').dataset,document.querySelector('.game-score').textContent,document.querySelector('canvas').toDataURL()])"),before,"resize preserves simulation and pause state");
@@ -214,7 +229,7 @@ try {
         pixels:document.querySelector('canvas').width===256&&document.querySelector('canvas').height===240,
         viewportUsed:root.width>=innerWidth-24&&canvas.height>=Math.min((innerWidth-24)*15/16,innerHeight-(innerHeight<500?65:150)),
         contained:inside(canvas)&&inside(root)&&document.documentElement.scrollWidth<=innerWidth&&document.documentElement.scrollHeight<=innerHeight+1,
-        controls:buttons.every(e=>{const r=e.getBoundingClientRect();return inside(r)&&r.width>=44&&r.height>=44&&(r.right<=canvas.left||r.left>=canvas.right||r.top>=canvas.bottom||r.bottom<=canvas.top);})};
+        controls:buttons.length===9&&buttons.every(e=>{const r=e.getBoundingClientRect();return inside(r)&&r.width>=44&&r.height>=44&&(r.right<=canvas.left||r.left>=canvas.right||r.top>=canvas.bottom||r.bottom<=canvas.top);})};
     })()`);
     viewportReports.push(report);
     console.log("VIEWPORT",JSON.stringify(report));
@@ -235,16 +250,26 @@ try {
       assert(report[key],`${key} at ${report.viewport.join("×")}: ${JSON.stringify(report)}`);
     console.log(`OK optimal canvas, viewport bounds and accessible controls at ${report.viewport.join("×")}`);
   }
-  for(const [name,trace,score,coins] of [["main",mainTrace,19750,2],["pipe",pipeTrace,21700,19]] as const) {
+  for(const [name,trace,score,coins] of [["main",mainTrace,19750,2],["pipe",pipeTrace,23450,19]] as const) {
     await js("document.querySelector('[data-action=restart]').click();__bits=0;__advance(1)");
     let underground=false,returned=false;
     for(const [frames,bits] of trace) {
-      const area=await js(`__keys(${bits});__ticks(${frames});__clock.background==='#000000'`);
-      if(area)underground=true;else if(underground)returned=true;
+      const state=await js(`(()=>{
+        __keys(${bits});
+        __ticks(${frames});
+        const {status,area}=document.querySelector('[data-mario]').dataset;return {status,area};
+      })()`);
+      if(state.area==="underground")underground=true;else if(underground)returned=true;
     }
-    await check("document.querySelector('[data-mario]').dataset.status === 'won'",`${name} continuous real-route playthrough reaches won`);
-    await check(`+document.querySelector('[data-score]').textContent===${score} && +document.querySelector('[data-coins]').textContent===${coins} && +document.querySelector('[data-lives]').textContent===3`,`${name} fullplay score, coins and lives match input evidence`);
+    await check("document.querySelector('[data-mario]').dataset.status==='clear' && document.querySelector('[data-mario]').dataset.level==='1-1'",`${name} ordinary-control real-route playthrough reaches 1-1 clear`);
+    await check(`+document.querySelector('[data-score]').textContent===${score} && +document.querySelector('[data-coins]').textContent===${coins} && +document.querySelector('[data-lives]').textContent===3`,`${name} stage score, coins and lives match input evidence`);
     if(name==="pipe")assert(underground&&returned,"bonus room entered and exited");
+    await check("!document.querySelector('[data-overlay]').hidden && document.querySelector('[data-action=start]').hidden && document.activeElement===document.querySelector('canvas')","stage clear overlay preserves focus and has no start action");
+    await js("__keys(0);__ticks(89)");
+    await check("document.querySelector('[data-mario]').dataset.status==='clear'","clear remains for the first 89 ticks");
+    await js("__ticks(1)");
+    await check("document.querySelector('[data-mario]').dataset.status==='playing' && document.querySelector('h1 span').textContent==='World 1-2' && document.querySelector('canvas').getAttribute('aria-label')==='World 1-2 game screen'","90th tick automatically starts 1-2 with current stage UI");
+    await check(`+document.querySelector('[data-score]').textContent===${score} && +document.querySelector('[data-coins]').textContent===${coins} && +document.querySelector('[data-lives]').textContent===3`,"next stage preserves score, coins and lives");
   }
   if(process.env.MARIO_CAPTURE_DIR) {
     const directory=resolve(process.env.MARIO_CAPTURE_DIR);
@@ -282,6 +307,76 @@ try {
     window.__pointer=(control,type,id)=>document.querySelector('[data-control='+control+']').dispatchEvent(new PointerEvent(type,{pointerId:id,button:0,bubbles:true,cancelable:true}));
     window.__reset=()=>{__keys(0);__api.restart();__advance(1);};
   `);
+  const captureFixture=async(name:string)=>{
+    if(!process.env.MARIO_CAPTURE_DIR)return;
+    const png=await js("document.querySelector('canvas').toDataURL('image/png').split(',')[1]");
+    await Bun.write(join(resolve(process.env.MARIO_CAPTURE_DIR),`fixture-${name}.png`),Buffer.from(png,"base64"));
+  };
+  const checkCastleFraming=async(label:string)=>{
+    await check("(()=>{const p=__game.player,c=__game.cameraX,g=__game.world.goal;return !p.hidden&&p.x-c>=0&&p.x+p.w-c<=256&&p.y>=0&&p.y+p.h<=240&&g.npcX-c>=0&&g.npcX+16-c<=256})()",label+" keeps Mario and NPC inside the canvas");
+  };
+  for(const [id,area,theme] of [["1-1","main","overworld"],["1-2","main","underground"],["2-1","2b","sky"]]) {
+    await js(`__reset();__scene('${id}',true,'${area}');__advance(1)`);
+    await check(`__state.area==='${theme}'`,theme+" actual factory render fixture");
+    await captureFixture(theme);
+  }
+  await js("__reset()");
+  await check("__state.levelId===__game.levelId && __state.area===__game.world.theme","runtime publishes stage and world theme");
+  await js("__reset();__liveGame.status='clear';__api.toggleMute()");
+  await check("!document.querySelector('[data-overlay]').hidden && document.querySelector('[data-overlay-title]').textContent==='World 1-1 clear!' && document.querySelector('[data-action=start]').hidden","clear scene fixture exposes automatic interstitial");
+  await js("__reset();__liveGame.status='flag';__liveGame.finish={kind:'castle',phase:'message',message:['THANK YOU MARIO!','<b>Plain text only</b>']};__api.toggleMute()");
+  await check("!document.querySelector('[data-overlay]').hidden && document.querySelector('[data-overlay-message]').textContent==='THANK YOU MARIO!\\n<b>Plain text only</b>' && !document.querySelector('[data-overlay-message] b')","castle message scene fixture renders plain text");
+  await check("__state.finish.kind==='castle' && __state.finish.phase==='message' && __state.finish.message.length===2 && document.querySelector('[data-action=start]').hidden","runtime publishes finish message without an automatic-stage start action");
+  await js("__api.togglePause()");
+  await check("__state.paused && !document.querySelector('[data-action=start]').hidden && document.querySelector('[data-action=start]').textContent==='Resume'","message scene fixture remains pausable");
+  await js("__reset();__liveGame.levelId='8-4';__liveGame.status='flag';__liveGame.finish={kind:'ending',phase:'ending',message:['THANK YOU MARIO!']};__api.toggleMute()");
+  await check("!document.querySelector('[data-overlay]').hidden && document.querySelector('[data-action=start]').hidden && __state.levelId==='8-4'","ending scene fixture remains automatic");
+  await js("__liveGame.status='won';__api.toggleMute()");
+  await check("document.querySelector('[data-overlay-title]').textContent==='Adventure complete!' && !document.querySelector('[data-action=start]').hidden","final won scene fixture offers play again");
+  await js("__reset();__scene('2-2');Object.assign(__liveGame.player,{y:100,grounded:false});__advance(1)");
+  await captureFixture("underwater");
+  for(const code of ["ArrowUp","KeyW"]) {
+    await js(`__key('${code}');__advance(1)`);
+    await check("__game.player.swimming && __game.player.vy<0 && __state.area==='underwater'",code+" strokes in actual water-engine fixture");
+    await js(`__key('${code}','keyup');__advance(30)`);
+  }
+  await js("__reset();__scene('2-1');window.__vineBlock=__liveGame.world.tiles.find(t=>t.content==='vine');Object.assign(__liveGame.player,{x:__vineBlock.x+2,y:__vineBlock.y+17,vy:-4,grounded:false});__liveGame.cameraX=__vineBlock.x-96;__advance(1)");
+  await check("__game.vines.length===1","actual vine block fixture grows a vine");
+  await js("__ticks(220);window.__vine=__liveGame.vines[0];Object.assign(__liveGame.player,{x:__vine.x,y:__vine.y+20,vy:0,grounded:false});__key('ArrowUp');__advance(4);window.__climbY=__game.player.y");
+  await check("__game.player.climbing","ArrowUp attaches to actual vine fixture");
+  await js("__advance(4);__key('ArrowUp','keyup')");
+  await check("__game.player.y<__climbY","held Up climbs actual vine fixture");
+  await js("__key('Space');__advance(1);__key('Space','keyup')");
+  await check("!__game.player.climbing && __game.player.vy<0","jump detaches from vine fixture");
+  await js("__reset();__scene('1-2');window.__warp=__liveGame.world.exits.find(e=>e.warp&&e.target.levelId==='4-1');Object.assign(__liveGame.player,{x:__warp.x+8,y:__warp.y-16,grounded:true});__liveGame.cameraX=__warp.x-96;__key('ArrowDown');__advance(34);__key('ArrowDown','keyup')");
+  await check("__game.levelId==='4-1' && __state.levelId==='4-1' && __game.area==='overworld'","actual warp-pipe fixture changes stage and UI");
+  for(const id of ["1-4","8-4"]) {
+    await js(`__reset();__scene('${id}');window.__goal=__liveGame.world.goal;__liveGame.cameraX=__goal.x-176;for(const gate of __liveGame.world.loops)gate.checked=true;Object.assign(__liveGame.player,{x:__goal.x-32,y:__goal.y,grounded:false});__advance(1);Object.assign(__liveGame.player,{x:__goal.x-8,y:__goal.y,vy:0});__advance(1)`);
+    await check("__game.finish?.phase==='bridge' && __game.enemies.some(e=>e.type==='bowser')",id+" actual axe fixture enters Bowser bridge sequence");
+    await captureFixture(id+"-castle-bridge");
+    await js("window.__bridges=__game.world.tiles.filter(t=>__goal.bridgeIds.includes(t.id)).length;__ticks(4)");
+    await check("__game.world.tiles.filter(t=>__goal.bridgeIds.includes(t.id)).length<__bridges","axe fixture removes named bridge tiles");
+    await js("for(let n=0;n<600 && __liveGame.finish.phase!=='message';n++)__advance(1)");
+    await check("__game.finish.phase==='message' && !document.querySelector('[data-overlay]').hidden && document.querySelector('[data-overlay-message]').textContent.includes('THANK YOU MARIO!') && document.querySelector('[data-action=start]').hidden","actual castle message appears without stopping runtime");
+    await checkCastleFraming(id+" message");
+    await captureFixture(id+"-message");
+    await js("window.__frame=__game.frame;__api.togglePause();__ticks(20)");
+    await check("__game.frame===__frame && __state.paused","castle message pause freezes actual engine");
+    await js("__api.start();__advance(1);__ticks(180)");
+    if(id==="1-4") {
+      await check("__game.status==='clear'","ordinary castle fixture resolves message into clear");
+      await js("__ticks(90)");
+      await check("__game.levelId==='2-1' && __state.levelId==='2-1'","castle fixture automatically enters next world");
+    } else {
+      await check("__game.finish.phase==='ending' && __game.status==='flag' && document.querySelector('[data-action=start]').hidden","final castle fixture runs scenic ending before won");
+      await checkCastleFraming("8-4 ending");
+      await captureFixture("8-4-ending");
+      await js("__ticks(240)");
+      await check("__game.status==='won' && !document.querySelector('[data-action=start]').hidden","final castle fixture reaches terminal won");
+      await checkCastleFraming("8-4 won");
+    }
+  }
+  console.log("SCENE_FIXTURES water/vine/warp/castle/ending are focused setups, not campaign playthrough proof");
   await js("__reset();__key('ArrowRight');window.__snapshot=JSON.stringify(__game);document.querySelector('canvas').parentElement.style.cssText='width:613px;height:577px'");
   await wait("Math.abs(document.querySelector('canvas').getBoundingClientRect().width-613)<.1");
   await check("JSON.stringify(__game)===__snapshot && !__state.paused","resize alone does not advance or pause the simulation");
@@ -358,6 +453,23 @@ try {
   await js("__advance(20)");
   await check("__game.player.vx===0 && !document.querySelector('[data-held]')","lost capture clears control before physical release");
   await send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+  const up=await point("up");
+  await js("__reset();__scene('2-2');Object.assign(__liveGame.player,{y:100,grounded:false});__advance(1)");
+  await send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{...up,id:5}]});
+  await js("__advance(1)");
+  await check("__game.player.swimming && __game.player.vy<0 && __game.previousUp","native touch Up strokes in water fixture");
+  await js("__key('KeyW');__key('KeyW','keyup');__advance(1)");
+  await check("__game.previousUp","Up touch survives independent keyboard release");
+  await send("Input.dispatchTouchEvent",{type:"touchCancel",touchPoints:[]});
+  await js("__advance(1)");
+  await check("!__game.previousUp && !document.querySelector('[data-held]')","Up pointercancel releases water input");
+  await js("__key('KeyW')");
+  await send("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{...up,id:6}]});
+  await send("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[]});
+  await js("__advance(1)");
+  await check("__game.previousUp","Up keyboard survives independent touch release");
+  await js("window.dispatchEvent(new Event('blur'));__api.start();__advance(2)");
+  await check("!__game.previousUp","blur and resume clear held Up");
   await js("__reset();window.__announcements=0;window.__observer=new MutationObserver(()=>__announcements++);__observer.observe(document.querySelector('[data-announcement]'),{subtree:true,childList:true,characterData:true});__advance(120)");
   await check("__announcements===0","live region does not announce timer ticks");
   await js("__observer.disconnect();__reset();__keys(18);__advance(140);__keys(0)");

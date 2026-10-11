@@ -67,11 +67,15 @@ bun run chat         # local dev backend for the chat widget (needs the opencode
 bun run chat:worker  # the deployable backend (worker/chat.ts) run locally; needs CHAT_API_KEY + CHAT_SIGNING_KEY; the per-caller daily quota applies here too (all local requests are one caller, 127.0.0.1) — override with CHAT_DAILY_PER_CALLER
 ```
 
-## Super Mario Bros. — World 1-1
+## Super Mario Bros.
 
-Play locally at `/Bio/games/mario/` after `bun run dev`, or open the Mario card on the portfolio. Use ←/→ or A/D to move, ↓/S to crouch or enter a pipe, Space/Z to jump, and Shift/X to run or fire. Enter starts/resumes, Esc/P pauses, and M mutes. Touch controls, pause, mute, and restart are beside the game. Leaving the game or hiding the tab pauses play.
+Play all 32 stages across eight worlds, from 1-1 through 8-4 and the princess ending, with connected bonus areas, warp zones, and castle mazes.
 
-Run `bun run check:mario` for the simulation checks and `bun run check:mario:browser` after building for keyboard, touch, lifecycle, and full-course browser checks.
+Play locally at `/Bio/games/mario/` after `bun run dev`, or open the Mario card on the portfolio. Use ←/→ or A/D to move, ↓/S to crouch or enter a pipe, ↑/W to climb or swim, Space/Z to jump, and Shift/X to run or fire. Enter starts/resumes, Esc/P pauses, and M mutes. Touch controls, pause, mute, and restart are beside the game. Leaving the game or hiding the tab pauses play.
+
+Stage clears advance automatically; pause remains available during the transition and castle messages. The world and stage are shown above the game, and restarting begins a new run at 1-1.
+
+Run `bun run check:mario` for level-data checks, simulation regressions, and an ordinary-control replay through all 32 stages to the princess ending. The replay verifies source hashes, stage order, clear events, and recorded state at stage boundaries. Run `bun run check:mario:browser` after building for keyboard, touch, lifecycle, and browser gameplay checks. Focused scene fixtures are separate from ordinary-control playthrough evidence.
 
 ## Quality Gates
 
