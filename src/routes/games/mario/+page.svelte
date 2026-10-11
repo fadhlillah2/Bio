@@ -24,6 +24,7 @@
 <main class="mario-page">
   <header>
     <a href={base + "/#portfolio"}>Back to Bio</a>
+    <p class="game-lives">Lives <span data-lives>{state.lives}</span></p>
     <h1>Super Mario Bros. <span>World 1-1</span></h1>
   </header>
   <section bind:this={root} data-mario aria-label="Super Mario Bros. game" aria-describedby="mario-instructions">
@@ -59,7 +60,7 @@
       </p>
       <p class="game-score" aria-live="off">
         Score <span data-score>{state.score}</span> · Coins <span data-coins>{state.coins}</span> ·
-        Lives <span data-lives>{state.lives}</span> · Time <span data-time>{state.time}</span>
+        Time <span data-time>{state.time}</span>
       </p>
       <p class="game-status" data-announcement role="status" aria-live="polite" aria-atomic="true"></p>
     </div>
@@ -69,14 +70,15 @@
 </main>
 
 <style>
-  .mario-page { max-width: 1080px; margin: auto; padding: 18px 24px; }
-  header { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin-bottom: 14px; }
+  .mario-page { height: 100vh; height: 100dvh; padding: 8px; display: flex; flex-direction: column; gap: 8px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 32px; }
   header a { white-space: nowrap; }
-  h1 { margin: 0; font: 600 22px/1.2 var(--sans); text-align: right; }
-  h1 span { display: block; font-size: 14px; font-weight: 400; color: var(--text); margin-top: 4px; }
-  section { display: grid; gap: 14px; padding: 0; }
-  .game-stage { height: min(65dvh, 720px); min-height: 240px; position: relative; display: grid; place-items: center; background: #000; }
-  canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; max-width: 100%; }
+  .game-lives { font-size: 14px; white-space: nowrap; }
+  h1 { margin: 0; font: 600 18px/1.2 var(--sans); text-align: right; }
+  h1 span { font-size: 14px; font-weight: 400; color: var(--text); margin-left: 8px; }
+  section { flex: 1; min-height: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 8px; padding: 0; }
+  .game-stage { min-width: 0; min-height: 0; position: relative; display: grid; place-items: center; background: #000; overflow: hidden; }
+  canvas { display: block; image-rendering: crisp-edges; image-rendering: pixelated; max-width: 100%; }
   .game-overlay { position: absolute; inset: 0; display: flex; flex-direction: column; gap: 18px; align-items: center; justify-content: center; background: #0009; color: #fff; }
   .game-stage :global(.game-overlay[hidden]) { display: none; }
   .game-overlay strong { font-size: 22px; text-shadow: 0 2px #000; }
@@ -85,31 +87,27 @@
   button:disabled { opacity: .5; cursor: default; }
   .touch-controls :global(button[data-held]), button:active { background: var(--accent); color: var(--ink-0); }
   button:focus-visible, a:focus-visible, canvas:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-  .game-actions { display: flex; justify-content: center; gap: 10px; }
-  .touch-controls { display: flex; justify-content: space-between; gap: 12px; margin: 12px auto; max-width: 640px; }
+  canvas:focus-visible { outline-offset: -3px; }
+  .game-panel { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px 24px; }
+  .game-actions { display: flex; justify-content: center; gap: 6px; }
+  .touch-controls { display: flex; justify-content: space-between; gap: 24px; }
   .directions, .abilities { display: flex; gap: 6px; }
   .touch-controls button { touch-action: none; user-select: none; -webkit-user-select: none; }
-  .directions button { font-size: 22px; }
-  p { margin: 8px 0 0; }
-  #mario-instructions { max-width: 680px; margin: 10px auto 0; font-size: 13px; color: var(--text); text-align: center; line-height: 1.6; }
-  .game-score, .game-status { text-align: center; font-size: 13px; }
-  .game-status { min-height: 20px; color: var(--accent); }
+  .directions button { font-size: 22px; padding-block: 0; }
+  #mario-instructions { flex-basis: 100%; font-size: 12px; color: var(--text); text-align: center; line-height: 1.4; }
+  .game-score, .game-status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   .game-error { border: 1px solid var(--accent); padding: 16px; }
   @media (max-width: 600px) {
-    .mario-page { padding: 12px; }
-    header { margin-bottom: 10px; }
-    h1 { font-size: 18px; }
-    .game-stage { height: min(52dvh, 480px); }
-    .touch-controls { gap: 6px; }
+    h1 { font-size: 16px; }
+    h1 span { display: block; margin-left: 0; }
+    .game-panel { gap: 6px; }
+    .touch-controls { width: 100%; gap: 6px; }
     button { padding: 8px 10px; }
   }
   @media (max-height: 500px) and (min-width: 600px) {
-    .mario-page { padding: 8px 16px; }
-    header { margin-bottom: 8px; }
-    h1 { font-size: 18px; }
-    h1 span { display: inline; margin-left: 8px; }
-    section { grid-template-columns: minmax(256px, 1fr) minmax(280px, 1fr); align-items: center; }
-    .game-stage { height: calc(100dvh - 65px); min-height: 0; }
-    .touch-controls { flex-wrap: wrap; justify-content: center; }
+    section { grid-template-columns: minmax(0, 1fr) 220px; grid-template-rows: minmax(0, 1fr); }
+    .game-panel { align-content: center; gap: 12px; }
+    button { padding: 8px 10px; }
+    .touch-controls { flex-wrap: wrap; justify-content: center; gap: 12px; }
   }
 </style>

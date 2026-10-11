@@ -135,9 +135,8 @@ export function mountMario(root, { onState = () => {} } = {}) {
     if (action) listen(button, "click", () => { unlock(); action(); });
   }
   function resize() {
-    const stage = canvas.parentElement;
-    const available = Math.min(stage.clientWidth / VIEW_WIDTH, stage.clientHeight / VIEW_HEIGHT);
-    const scale = available >= 1 ? Math.floor(available) : available;
+    const { width, height } = canvas.parentElement.getBoundingClientRect();
+    const scale = Math.min(width / VIEW_WIDTH, height / VIEW_HEIGHT);
     canvas.style.width = VIEW_WIDTH * scale + "px";
     canvas.style.height = VIEW_HEIGHT * scale + "px";
   }
