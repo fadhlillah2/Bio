@@ -67,6 +67,12 @@ bun run chat         # local dev backend for the chat widget (needs the opencode
 bun run chat:worker  # the deployable backend (worker/chat.ts) run locally; needs CHAT_API_KEY + CHAT_SIGNING_KEY; the per-caller daily quota applies here too (all local requests are one caller, 127.0.0.1) — override with CHAT_DAILY_PER_CALLER
 ```
 
+## Super Mario Bros. — World 1-1
+
+Play locally at `/Bio/games/mario/` after `bun run dev`, or open the Mario card on the portfolio. Use ←/→ or A/D to move, ↓/S to crouch or enter a pipe, Space/Z to jump, and Shift/X to run or fire. Enter starts/resumes, Esc/P pauses, and M mutes. Touch controls, pause, mute, and restart are beside the game. Leaving the game or hiding the tab pauses play.
+
+Run `bun run check:mario` for the simulation checks and `bun run check:mario:browser` after building for keyboard, touch, lifecycle, and full-course browser checks.
+
 ## Quality Gates
 
 `bun run validate:ci` is the gate for the site. It covers:

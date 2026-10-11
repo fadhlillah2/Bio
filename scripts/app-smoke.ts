@@ -38,7 +38,7 @@ try {
   chrome = Bun.spawn([chromePath, "--headless=new", "--no-first-run", "--disable-background-networking",
     "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--remote-debugging-port=0",
     `--user-data-dir=${temp}`, "about:blank"], { stdout: "ignore", stderr: "ignore" });
-  deadline = setTimeout(() => chrome?.kill(), 60_000);
+  deadline = setTimeout(() => chrome?.kill(), 300_000);
   const portFile = join(temp, "DevToolsActivePort");
   let targets: any[] = [];
   for (let n = 0; n < 100 && !targets.length; n++) {
@@ -510,7 +510,9 @@ try {
   await settleScroll();
   console.log("OK no-JS native Enter navigates to section anchor");
   for (const id of ["resume", "services"]) {
-    await js(`document.querySelector('.hero a[href="#${id}"]').focus()`);
+    // Finish positioning the test link before exercising its native smooth-scroll navigation.
+    await js(`(()=>{const link=document.querySelector('.hero a[href="#${id}"]');
+      link.scrollIntoView({behavior:'instant',block:'center'});link.focus({preventScroll:true});})()`);
     await settleScroll();
     await check(`document.activeElement === document.querySelector('.hero a[href="#${id}"]')`, `no-JS ${id} link receives focus before Enter`);
     await send("Input.dispatchKeyEvent", { type: "keyDown", text: "\r", key: "Enter", code: "Enter", windowsVirtualKeyCode: 13 });

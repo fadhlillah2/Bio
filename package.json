@@ -11,6 +11,8 @@
     "check:regressions": "bun scripts/looks-contrast-selftest.ts && python3 -B scripts/cv-cleanup-check.py && bun scripts/sky-check-selftest.ts && bun scripts/cv-current-check.ts --selftest && bun scripts/chat-proxy-selftest.ts && bun scripts/chat-worker-build.ts --check",
     "check:browser-regressions": "bun scripts/frontend-regression.ts && bun scripts/og-render-selftest.ts",
     "check:app": "bun scripts/app-smoke.ts",
+    "check:mario": "bun scripts/mario-selftest.ts",
+    "check:mario:browser": "bun scripts/mario-browser-check.ts",
     "check:cv": "bun scripts/cv-current-check.ts",
     "og": "bun scripts/og-render.ts",
     "chat": "bun scripts/chat-proxy.ts",
@@ -20,8 +22,8 @@
     "build": "bun run cv && vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check",
-    "validate": "bun run check:looks && bun run cv:selftest && bun run check && bun run check:regressions && bun run build && bun run check:cv && bun run check:sky",
-    "validate:ci": "bun run check:browser-regressions && bun run validate && bun run check:app"
+    "validate": "bun run check:mario && bun run check:looks && bun run cv:selftest && bun run check && bun run check:regressions && bun run build && bun run check:cv && bun run check:sky",
+    "validate:ci": "bun run check:browser-regressions && bun run validate && bun run check:mario:browser && bun run check:app"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "3.0.10",

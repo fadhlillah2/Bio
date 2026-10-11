@@ -91,6 +91,23 @@
 
         <article class="flagship" data-reveal>
           <div class="flagship-body">
+            <p class="flagship-badge">Browser game &middot; Canvas 2D</p>
+            <h3 class="flagship-title">Super Mario Bros. — World 1-1</h3>
+            <p class="flagship-desc">Run, jump, find the underground bonus room, and reach the castle. A browser remake of World 1-1 with pixel sprites, synthesized audio, and keyboard or touch controls.</p>
+            <ul class="tag-row">
+              <li>Canvas 2D</li><li>Vanilla JS</li><li>Web Audio</li><li>Keyboard + touch</li>
+            </ul>
+            <div class="flagship-cta">
+              <a href={base + "/games/mario/"} class="btn btn-solid btn-sm">Play World 1-1</a>
+            </div>
+          </div>
+          <div class="flagship-shot" aria-hidden="true">
+            <img src={base + "/assets/img/mario.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
+          </div>
+        </article>
+
+        <article class="flagship" data-reveal>
+          <div class="flagship-body">
             <p class="flagship-badge">Original game &middot; Canvas 2D</p>
             <h3 class="flagship-title">Luma Run — an original 2D platformer</h3>
             <p class="flagship-desc">An original pixel-art platformer: guide a courier across three relaxed levels to light a beacon, with parallax scenery, responsive jumps, optional energy, and frequent checkpoints. Keyboard and touch controls; Canvas 2D, Web Audio, and native JavaScript with no runtime dependencies.</p>
