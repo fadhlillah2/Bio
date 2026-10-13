@@ -441,6 +441,7 @@ try {
   await js("__key('KeyD');__key('KeyD','keyup');__advance(8)");
   await check("__game.player.x>40","keyboard release preserves independent touch source");
   await send("Input.dispatchTouchEvent",{type:"touchCancel",touchPoints:[]});
+  await wait("!document.querySelector('[data-held]')");
   await js("__advance(30)");
   await check("__game.player.vx===0 && !document.querySelector('[data-held]')","pointercancel clears held touch");
   await js("window.__got=0;document.querySelector('[data-control=right]').addEventListener('gotpointercapture',()=>__got++);document.querySelector('[data-control=right]').addEventListener('pointerdown',e=>window.__captureId=e.pointerId,{once:true})");
@@ -461,6 +462,7 @@ try {
   await js("__key('KeyW');__key('KeyW','keyup');__advance(1)");
   await check("__game.previousUp","Up touch survives independent keyboard release");
   await send("Input.dispatchTouchEvent",{type:"touchCancel",touchPoints:[]});
+  await wait("!document.querySelector('[data-held]')");
   await js("__advance(1)");
   await check("!__game.previousUp && !document.querySelector('[data-held]')","Up pointercancel releases water input");
   await js("__key('KeyW')");
