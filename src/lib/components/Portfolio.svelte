@@ -89,101 +89,71 @@
           </div>
         </article>
 
-        <article class="flagship" data-reveal>
-          <div class="flagship-body">
-            <p class="flagship-badge">Browser game &middot; Canvas 2D</p>
-            <h3 class="flagship-title">Super Mario Bros.</h3>
-            <p class="flagship-desc">Play 32 stages across eight worlds, from 1-1 through 8-4 and the princess ending. Explore bonus rooms, warp zones, and castle mazes with pixel sprites, synthesized audio, and keyboard or touch controls.</p>
-            <ul class="tag-row">
-              <li>Canvas 2D</li><li>Vanilla JS</li><li>Web Audio</li><li>Keyboard + touch</li>
-            </ul>
-            <div class="flagship-cta">
-              <a href={base + "/games/mario/"} class="btn btn-solid btn-sm">Play Mario</a>
-            </div>
-          </div>
-          <div class="flagship-shot" aria-hidden="true">
-            <img src={base + "/assets/img/mario.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
-          </div>
-        </article>
-
-        <article class="flagship" data-reveal>
-          <div class="flagship-body">
-            <p class="flagship-badge">Original game &middot; Canvas 2D</p>
-            <h3 class="flagship-title">Luma Run — an original 2D platformer</h3>
-            <p class="flagship-desc">An original pixel-art platformer: guide a courier across three relaxed levels to light a beacon, with parallax scenery, responsive jumps, optional energy, and frequent checkpoints. Keyboard and touch controls; Canvas 2D, Web Audio, and native JavaScript with no runtime dependencies.</p>
-            <p class="flagship-result">The repo ships unit tests and automated keyboard and touch checks in real Chrome.</p>
-            <ul class="tag-row">
-              <li>Canvas 2D</li><li>Vanilla JS</li><li>Pixel art</li><li>Keyboard + touch</li>
-            </ul>
-            <div class="flagship-cta">
-              <a href="https://fadhlillah2.github.io/luma-run/" class="btn btn-solid btn-sm" target="_blank" rel="noopener" aria-label="Play the Luma Run demo (opens in new tab)">Play the demo</a>
-              <a href="https://github.com/fadhlillah2/luma-run" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" aria-label="View the Luma Run source on GitHub (opens in new tab)">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
-            </div>
-          </div>
-          <div class="flagship-shot" aria-hidden="true">
-            <img src={base + "/assets/img/luma-run.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
-          </div>
-        </article>
-
-        <!-- Interactive experiment: deterministic WebGL2 traffic simulation; live build and source are linked -->
-        <article class="flagship" data-reveal>
-          <div class="flagship-body">
-            <p class="flagship-badge">Interactive experiment &middot; WebGL2</p>
-            <h3 class="flagship-title">Gridlock — a hand-written WebGL2 traffic simulation</h3>
-            <p class="flagship-desc">A deterministic traffic simulation rendered by a small hand-written WebGL2 pipeline: a road grid generated procedurally from a seed, autonomous vehicles that route with hand-written A* and steering on a fixed timestep with fixed-point state, and input-logged runs that replay exactly while a state hash catches any desync. Close a road and watch the network reroute. No engine, no runtime dependencies.</p>
-            <p class="flagship-result">Vanilla JS + GLSL; the repo ships unit tests for determinism, replay, and desync detection, a Chrome-headless smoke test that cross-checks the browser against Node, and a screenshot gate that fails unless two captures of the same frame agree byte for byte.</p>
-            <ul class="tag-row">
-              <li>WebGL2</li><li>GLSL</li><li>Vanilla JS</li><li>A* + steering</li><li>Deterministic replay</li>
-            </ul>
-            <div class="flagship-cta">
-              <a href="https://fadhlillah2.github.io/gridlock-webgl/" class="btn btn-solid btn-sm" target="_blank" rel="noopener" aria-label="Play the Gridlock demo (opens in new tab)">Play the demo</a>
-              <a href="https://github.com/fadhlillah2/gridlock-webgl" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" aria-label="View the Gridlock source on GitHub (opens in new tab)">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
-            </div>
-          </div>
-          <div class="flagship-shot" aria-hidden="true">
-            <img src={base + "/assets/img/gridlock.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
-          </div>
-        </article>
-
-        <!-- Interactive experiment: real WebGL2 brick breaker; live build and source are linked -->
-        <article class="flagship" data-reveal>
-          <div class="flagship-body">
-            <p class="flagship-badge">Interactive experiment &middot; WebGL2</p>
-            <h3 class="flagship-title">Breakout 3D — a hand-written WebGL2 brick breaker</h3>
-            <p class="flagship-desc">A 3D brick breaker rendered by a small hand-written WebGL2 pipeline: adaptive sub-stepped physics with exact circle-vs-rect brick contact, ASCII-patterned levels whose multi-hit bricks and capsule drops are seeded so a replay never diverges, and a lit arena where the ball itself is the moving point light. No engine, no runtime dependencies.</p>
-            <p class="flagship-result">Vanilla JS + GLSL; the repo ships unit tests, a Chrome-headless smoke test that cross-checks the browser against Node, and a screenshot gate that fails unless two captures of the same frame agree byte for byte.</p>
-            <ul class="tag-row">
-              <li>WebGL2</li><li>GLSL</li><li>Vanilla JS</li><li>Canvas</li>
-            </ul>
-            <div class="flagship-cta">
-              <a href="https://fadhlillah2.github.io/breakout-3d-webgl/" class="btn btn-solid btn-sm" target="_blank" rel="noopener" aria-label="Play the Breakout 3D demo (opens in new tab)">Play the demo</a>
-              <a href="https://github.com/fadhlillah2/breakout-3d-webgl" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" aria-label="View the Breakout 3D source on GitHub (opens in new tab)">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
-            </div>
-          </div>
-          <div class="flagship-shot" aria-hidden="true">
-            <img src={base + "/assets/img/breakout-3d.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
-          </div>
-        </article>
-
-        <!-- Interactive experiment: real WebGL2 demo; live build and source are linked -->
-        <article class="flagship" data-reveal>
-          <div class="flagship-body">
-            <p class="flagship-badge">Interactive experiment &middot; WebGL2</p>
-            <h3 class="flagship-title">Tower Stack — a hand-written WebGL2 game</h3>
-            <p class="flagship-desc">A block-stacking game rendered by a small hand-written WebGL2 pipeline: one shader program, one cube mesh, fog and a floor grid in the fragment shader. No engine, no runtime dependencies.</p>
-            <p class="flagship-result">Vanilla JS + GLSL; the repo ships unit tests, a Chrome-headless smoke test, and a real screenshot of the live build.</p>
-            <ul class="tag-row">
-              <li>WebGL2</li><li>GLSL</li><li>Vanilla JS</li><li>Canvas</li>
-            </ul>
-            <div class="flagship-cta">
-              <a href="https://fadhlillah2.github.io/tower-stack-webgl/" class="btn btn-solid btn-sm" target="_blank" rel="noopener" aria-label="Play the Tower Stack demo (opens in new tab)">Play the demo</a>
-              <a href="https://github.com/fadhlillah2/tower-stack-webgl" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" aria-label="View the Tower Stack source on GitHub (opens in new tab)">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
-            </div>
-          </div>
-          <div class="flagship-shot" aria-hidden="true">
-            <img src={base + "/assets/img/tower-stack.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
-          </div>
-        </article>
+        <!-- Games and interactive experiments: compact grid; each card links its live build -->
+        <div class="games" data-reveal>
+          <h3 class="games-head">Games &amp; interactive experiments</h3>
+          <ul class="games-grid">
+            <li class="game-card">
+              <img src={base + "/assets/img/mario.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
+              <div class="game-body">
+                <p class="flagship-badge">Browser game &middot; Canvas 2D</p>
+                <h4 class="game-title">Super Mario Bros.</h4>
+                <p class="game-desc">Play 32 stages across eight worlds, from 1-1 through 8-4 and the princess ending.</p>
+                <div class="flagship-cta">
+                  <a href={base + "/games/mario/"} class="btn btn-solid btn-sm">Play Mario</a>
+                </div>
+              </div>
+            </li>
+            <li class="game-card">
+              <img src={base + "/assets/img/luma-run.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
+              <div class="game-body">
+                <p class="flagship-badge">Original game &middot; Canvas 2D</p>
+                <h4 class="game-title">Luma Run — an original 2D platformer</h4>
+                <p class="game-desc">An original pixel-art platformer: guide a courier across three relaxed levels to light a beacon.</p>
+                <div class="flagship-cta">
+                  <a href="https://fadhlillah2.github.io/luma-run/" class="btn btn-solid btn-sm" target="_blank" rel="noopener" aria-label="Play the Luma Run demo (opens in new tab)">Play the demo</a>
+                  <a href="https://github.com/fadhlillah2/luma-run" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" aria-label="View the Luma Run source on GitHub (opens in new tab)">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
+                </div>
+              </div>
+            </li>
+            <li class="game-card">
+              <img src={base + "/assets/img/gridlock.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
+              <div class="game-body">
+                <p class="flagship-badge">Interactive experiment &middot; WebGL2</p>
+                <h4 class="game-title">Gridlock — a hand-written WebGL2 traffic simulation</h4>
+                <p class="game-desc">A deterministic traffic simulation rendered by a small hand-written WebGL2 pipeline.</p>
+                <div class="flagship-cta">
+                  <a href="https://fadhlillah2.github.io/gridlock-webgl/" class="btn btn-solid btn-sm" target="_blank" rel="noopener" aria-label="Play the Gridlock demo (opens in new tab)">Play the demo</a>
+                  <a href="https://github.com/fadhlillah2/gridlock-webgl" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" aria-label="View the Gridlock source on GitHub (opens in new tab)">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
+                </div>
+              </div>
+            </li>
+            <li class="game-card">
+              <img src={base + "/assets/img/breakout-3d.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
+              <div class="game-body">
+                <p class="flagship-badge">Interactive experiment &middot; WebGL2</p>
+                <h4 class="game-title">Breakout 3D — a hand-written WebGL2 brick breaker</h4>
+                <p class="game-desc">A 3D brick breaker rendered by a small hand-written WebGL2 pipeline.</p>
+                <div class="flagship-cta">
+                  <a href="https://fadhlillah2.github.io/breakout-3d-webgl/" class="btn btn-solid btn-sm" target="_blank" rel="noopener" aria-label="Play the Breakout 3D demo (opens in new tab)">Play the demo</a>
+                  <a href="https://github.com/fadhlillah2/breakout-3d-webgl" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" aria-label="View the Breakout 3D source on GitHub (opens in new tab)">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
+                </div>
+              </div>
+            </li>
+            <li class="game-card">
+              <img src={base + "/assets/img/tower-stack.png"} alt="" loading="lazy" decoding="async" width="1200" height="675" />
+              <div class="game-body">
+                <p class="flagship-badge">Interactive experiment &middot; WebGL2</p>
+                <h4 class="game-title">Tower Stack — a hand-written WebGL2 game</h4>
+                <p class="game-desc">A block-stacking game rendered by a small hand-written WebGL2 pipeline.</p>
+                <div class="flagship-cta">
+                  <a href="https://fadhlillah2.github.io/tower-stack-webgl/" class="btn btn-solid btn-sm" target="_blank" rel="noopener" aria-label="Play the Tower Stack demo (opens in new tab)">Play the demo</a>
+                  <a href="https://github.com/fadhlillah2/tower-stack-webgl" class="btn btn-ghost btn-sm" target="_blank" rel="noopener" aria-label="View the Tower Stack source on GitHub (opens in new tab)">View source <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
 
         <!-- Early-practice archive: native <details>, collapsed by default so the
              2021 JS practice apps don't visually compete with the flagship work above -->

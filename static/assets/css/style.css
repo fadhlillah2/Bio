@@ -232,6 +232,7 @@ html.is-switching .term,
 html.is-switching .term-bar,
 html.is-switching .flagship,
 html.is-switching .flagship-term,
+html.is-switching .game-card,
 html.is-switching .metric,
 html.is-switching .service-card,
 html.is-switching .quote-card,
@@ -1759,20 +1760,6 @@ section {
   line-height: 2;
 }
 
-/* Screenshot panel for the interactive-experiment card (mirrors .flagship-term) */
-.flagship-shot {
-  border-left: 1px solid var(--line);
-  background: var(--ink-0);
-  overflow: hidden;
-}
-
-.flagship-shot img {
-  width: 100%;
-  height: 100%;
-  min-height: 240px;
-  object-fit: cover;
-}
-
 @media (max-width: 900px) {
   .flagship {
     grid-template-columns: minmax(0, 1fr);
@@ -1781,14 +1768,92 @@ section {
     border-left: 0;
     border-top: 1px solid var(--line);
   }
-  .flagship-shot {
-    border-left: 0;
-    border-top: 1px solid var(--line);
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .flagship {
+    transition: none;
+  }
+}
+
+/*--------------------------------------------------------------
+# Games & interactive experiments — compact card grid
+--------------------------------------------------------------*/
+.games {
+  margin-bottom: 24px;
+}
+
+.games-head {
+  font-size: clamp(19px, 2vw, 22px);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  color: var(--head);
+  margin: 8px 0 16px;
+}
+
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 20px;
+}
+
+.game-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  background: var(--ink-2);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  transition: border-color 0.25s ease;
+}
+
+.game-card:hover {
+  border-color: var(--line-2);
+}
+
+.game-card img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--ink-0);
+  border-bottom: 1px solid var(--line);
+}
+
+.game-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 20px 22px 22px;
+}
+
+.game-body .flagship-badge {
+  margin-bottom: 14px;
+}
+
+.game-title {
+  font-size: 17.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  color: var(--head);
+  margin-bottom: 8px;
+}
+
+.game-desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.game-body .flagship-cta {
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .game-card {
     transition: none;
   }
 }
@@ -3384,6 +3449,7 @@ html:not(.js) .look-switch {
   .how-we-work,
   .metric,
   .flagship,
+  .game-card,
   .cred-card,
   .quote-card,
   .ep-item {
