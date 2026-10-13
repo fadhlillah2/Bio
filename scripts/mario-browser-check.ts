@@ -289,7 +289,7 @@ try {
   await js("window.__oldAudio=__clock.audio[0];document.querySelector('header a').click()");
   await wait("location.pathname === '/Bio/' && !document.querySelector('[data-mario]')");
   await wait("__oldAudio.state === 'closed'");
-  await js(`document.querySelector('a[href="/Bio/games/mario/"]').closest(".flagship").scrollIntoView()`);
+  await js(`document.querySelector('a[href="/Bio/games/mario/"]').closest(".game-card").scrollIntoView()`);
   await wait(`document.querySelector('img[src="/Bio/assets/img/mario.png"]')?.naturalWidth === 1200`);
   await check(`document.querySelectorAll('a[href="/Bio/games/mario/"]').length === 1 && document.querySelector('img[src="/Bio/assets/img/mario.png"]').naturalHeight === 675`, "one Mario card with the gameplay screenshot");
   const oldDraws=await js("__clock.draws");

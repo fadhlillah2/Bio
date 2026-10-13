@@ -295,13 +295,13 @@ try {
   await check("['resume','services'].every(id=>{const a=document.querySelector('.hero a[href=\"#'+id+'\"]'); return a && document.getElementById(id) && a.getBoundingClientRect().width>0;})", "both audience links have visible controls and existing destinations");
   const gridlockTitle = "Gridlock — a hand-written WebGL2 traffic simulation";
   const lumaTitle = "Luma Run — an original 2D platformer";
-  await check(`(async () => { const titles = [...document.querySelectorAll('#portfolio .flagship-title')];
+  await check(`(async () => { const titles = [...document.querySelectorAll('#portfolio .game-title')];
       const matches = titles.filter(e => e.textContent.trim() === ${JSON.stringify(lumaTitle)});
       if (matches.length !== 1) return false;
-      const card = matches[0].closest('.flagship');
+      const card = matches[0].closest('.game-card');
       const hrefs = [...card.querySelectorAll('.flagship-cta a')].map(a => a.href);
-      const img = card.querySelector('.flagship-shot img');
-      if (card.nextElementSibling?.querySelector('.flagship-title')?.textContent.trim() !== ${JSON.stringify(gridlockTitle)}
+      const img = card.querySelector('img');
+      if (card.nextElementSibling?.querySelector('.game-title')?.textContent.trim() !== ${JSON.stringify(gridlockTitle)}
         || hrefs.length !== 2 || hrefs[0] !== 'https://fadhlillah2.github.io/luma-run/'
         || hrefs[1] !== 'https://github.com/fadhlillah2/luma-run'
         || !img || img.getAttribute('src') !== '/Bio/assets/img/luma-run.png'
@@ -309,19 +309,19 @@ try {
       img.scrollIntoView({ block: 'center', behavior: 'instant' });
       await img.decode();
       return img.complete && img.naturalWidth === 1200 && img.naturalHeight === 675; })()`,
-    "unique Luma Run card sits directly above Gridlock with exact demo and source links and a loaded 1200x675 screenshot");
+    "unique Luma Run card sits directly before Gridlock with exact demo and source links and a loaded 1200x675 screenshot");
   await js("window.scrollTo(0, 0)");
-  await check(`(() => { const titles = [...document.querySelectorAll('#portfolio .flagship-title')].map(e => e.textContent.trim());
+  await check(`(() => { const titles = [...document.querySelectorAll('#portfolio .game-title')].map(e => e.textContent.trim());
       return titles.includes(${JSON.stringify(gridlockTitle)})
         && titles.indexOf(${JSON.stringify(gridlockTitle)}) === titles.indexOf('Breakout 3D — a hand-written WebGL2 brick breaker') - 1; })()`,
-    "Gridlock card sits directly above the Breakout 3D card");
-  await check(`(() => { const titles = [...document.querySelectorAll('#portfolio .flagship-title')].map(e => e.textContent.trim());
-      const cards = document.querySelectorAll('#portfolio .flagship');
+    "Gridlock card sits directly before the Breakout 3D card");
+  await check(`(() => { const titles = [...document.querySelectorAll('#portfolio .game-title')].map(e => e.textContent.trim());
+      const cards = document.querySelectorAll('#portfolio .game-card');
       if (titles.length !== cards.length) return false; // review nit 8: judul dan kartu harus sejajar satu-satu
       const card = cards[titles.indexOf(${JSON.stringify(gridlockTitle)})];
       if (!card) return false;
       const hrefs = [...card.querySelectorAll('.flagship-cta a')].map(a => a.href);
-      const img = card.querySelector('.flagship-shot img');
+      const img = card.querySelector('img');
       return hrefs.includes('https://fadhlillah2.github.io/gridlock-webgl/') && hrefs.includes('https://github.com/fadhlillah2/gridlock-webgl')
         && !!img && img.getAttribute('src').endsWith('/assets/img/gridlock.png')
         && img.getAttribute('width') === '1200' && img.getAttribute('height') === '675'; })()`,
