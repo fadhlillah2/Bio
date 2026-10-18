@@ -35,8 +35,20 @@ jobs:
 
       - name: Validate
         timeout-minutes: 10
+        env:
+          FRONTEND_CHROME_DIAGNOSTICS_DIR: ${{ runner.temp }}/frontend-chrome-diagnostics
         run: |
           python3 --version
           pdftoppm -v
           bun -e 'import { findChrome } from "./cv/build-pdf.ts"; console.log(findChrome())'
+          bun scripts/frontend-chrome-diagnostics-selftest.ts
           bun run validate:ci
+
+      - name: Upload frontend Chrome diagnostics
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: frontend-chrome-diagnostics-ci
+          path: ${{ runner.temp }}/frontend-chrome-diagnostics
+          retention-days: 7
+          if-no-files-found: ignore
