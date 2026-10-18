@@ -18,8 +18,10 @@ const check = (ok: boolean, label: string) => {
 try {
   const flags = ["--headless=new", "--disable-gpu", "--no-first-run", "--disable-background-networking",
     `--user-data-dir=${join(temp, "profile")}`];
-  const run = (args: string[]) => execFileSync(chrome, [...flags, ...args], {
-    encoding: "utf8", timeout: 30_000, maxBuffer: 4 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"]
+  const run = (args: string[]) => execFileSync("python3", ["-I", "-B",
+    join(root, "scripts/frontend-chrome-diagnostics.py"), "30000",
+    process.env.FRONTEND_CHROME_DIAGNOSTICS_DIR || "", chrome, ...flags, ...args], {
+    encoding: "utf8", maxBuffer: 4 * 1024 * 1024, stdio: ["ignore", "pipe", "pipe"]
   });
   // Real enhance() and DOM; only the media-query boundary is controlled to simulate resizing.
   const entry = join(temp, "menu.js");
