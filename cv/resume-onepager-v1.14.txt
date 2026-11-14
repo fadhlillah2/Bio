@@ -1,0 +1,54 @@
+FADHLILLAH
+South Jakarta, Indonesia • email <fadhlillah949699@gmail.com> • phone <wa.me/6285157043131> • LinkedIn <linkedin.com/in/fadhlillah2> • GitHub <github.com/fadhlillah2>
+
+OBJECTIVE
+Targeting Senior Backend Engineer / Software Engineer roles in Java/Spring Boot, AI integration
+and agent tooling. 6+ years across banking, healthcare and fintech. International remote preferred;
+open to hybrid in Jakarta (UTC+7). Not available for fully on-site roles.
+
+EXPERIENCE
+FINEKSI                                                                                     Present
+Software Engineer
+- Contributed to document extraction, resumable uploads, cross-document checks and analyst review
+- Worked on financial-data pipelines and ratio analysis using Node.js, Express, MySQL and React
+
+FOX ASSET — INFINITY WAVE SDN BHD                                                MALAYSIA (REMOTE)
+Backend Software Engineer | Freelance                                           Dec 2025 – Present
+- Built multi-tenant Django REST Framework workflows for Safety Hub and Project Management
+- Implemented GitHub Actions/ECR release pipelines with migration guards, health checks and rollback
+
+BANK DANAMON                                                                             JAKARTA, ID
+Software Engineer                                                                Aug 2023 – Aug 2026
+- Built and operated 12 Spring Boot microservices serving 2M+ requests/day at sub-200ms
+- Built and maintained iRecon (Java/GWT, 660+ classes); batch reports incl. SWIFT MT940/942/950
+- Delivered an SFTP automation platform in 10 days against a 17-day plan using AI-assisted development
+- LLM-assisted workflows cut documentation turnaround from 40 hours to 4
+- Lifted core-module test coverage (JUnit 5, Mockito) to 95%
+
+IDSTAR                                                                             SOUTH JAKARTA, ID
+Backend Software Engineer | Remote                                               Mar 2023 – Jul 2023
+- Developed and optimized 40+ RESTful APIs for the OML Innovoice platform using Spring Boot
+- Implemented SSO (OAuth 2.0/JWT) and session tracking to enforce authenticated access
+
+ASSIST.ID                                                                    PEKANBARU CITY, RIAU, ID
+Backend Software Engineer                                                        Jul 2020 – Feb 2023
+- Built 100+ RESTful APIs for the IBBR healthcare system; integrated 40+ third-party services
+- Accelerated report generation 700% via query tuning and materialized views
+
+SKILLS
+Languages    : Java, Python, JavaScript/TypeScript, Go
+Backend      : Spring Boot, Django REST Framework, Node.js, Express.js, FastAPI
+Architecture : Microservices, REST, event-driven systems, hexagonal architecture
+Data         : PostgreSQL, MySQL, MongoDB, Redis, Kafka, RabbitMQ
+AI/Tooling   : Claude Code, Codex, agent orchestration, tool calling, prompt evaluation, RAG
+Delivery     : Docker, Kubernetes, GitHub Actions, AWS ECR, Azure, JUnit 5, Mockito
+Security     : OAuth 2.0, JWT, SSO, AES-256, OWASP Top 10
+
+PERSONAL PROJECTS
+- AI engineering tooling: multi-agent workflows, tool-calling/streaming adapters, prompt A/B evaluation
+- Contract Advisor RAG (LangChain, ChromaDB, Groq) — Top 50, Meta Llama Hackathon 2025
+- Distributed Go rate limiter with Redis Lua atomic operations and HTTP middleware
+
+EDUCATION
+UNIVERSITAS GADJAH MADA (UGM)                                                       YOGYAKARTA, ID
+Bachelor's degree in Mathematics and Computer Science                            Mar 2016 – May 2020

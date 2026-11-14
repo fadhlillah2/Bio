@@ -6,13 +6,11 @@ repo** since 2026-07-10 — see "Removed from the tree" below) → **resume mirr
 (user decision 2026-07-06: "mirror penuh" — the resume contains all LinkedIn content and nothing
 that is not on LinkedIn). Files at this level are **current**; `archive/` is the audit trail.
 
-> **Open (known SoT/publication gaps — reviewed 2026-09-20):**
-> (1) the FOX Asset role and the rewritten expert-advisor-mt-5 project block are not on LinkedIn
-> yet, so `resume-v8.10` runs ahead of the SoT; (2) the **Fineksi** role is user-confirmed and shown
-> on the site (Experience card, About "Current", JSON-LD `worksFor`) but is not on LinkedIn or in
-> any `cv/` artifact yet; (3) the site's FOX bullets (rewritten 2026-09-19 at the user's request,
-> commit `fbcc741`) are a repo-grounded variant that drops the resume metrics — the resume remains
-> the canonical full text. Clear each item as its source is updated.
+> **Source boundary (reviewed 2026-11-14):** live LinkedIn could not be read (HTTP 999).
+> The full CV stays byte-for-byte unchanged until live LinkedIn is confirmed. Its historical FOX
+> and expert-advisor publication gaps remain unresolved. The website and curated ATS editions may
+> independently include user-approved, repository-supported work, including Fineksi and personal
+> AI engineering tooling. They must not invent employment titles, ownership, metrics or runtime results.
 
 ## Layout & naming
 
@@ -22,19 +20,20 @@ cv/
 ├── build-pdf.ts                            ← Bun .txt → .pdf generator and verifier
 ├── build-pdf.py                            ← independent Python reference oracle
 ├── resume-vX.Y.txt / .pdf                  ← official full CV — LinkedIn mirror, 2 pages
-├── resume-onepager-vX.Y.txt / .pdf         ← recruiter/ATS edition, 1 page
+├── resume-onepager-vX.Y.txt / .pdf         ← English recruiter/ATS edition, 1 page
+├── resume-onepager-id-vX.Y.txt / .pdf      ← Bahasa Indonesia companion, same facts, 1 page
 ├── consulting-onepager-en-vX.Y.txt / .pdf  ← business-buyer one-pager, English
 ├── consulting-onepager-id-vX.Y.txt / .pdf  ← business-buyer one-pager, Bahasa Indonesia
 ├── drafts/                                 ← LinkedIn paste-ready drafts (gitignored, local-only)
-└── archive/                                ← 2 superseded versions per artifact — never distribute
+└── archive/                                ← superseded versions — never distribute
 ```
 
 The version numbers in play right now are listed once, under [Current](#current--which-file-do-i-send)
 — nowhere else in this file outside the Changelog.
 
 Naming convention: `<artifact>[-<lang>]-v<major.minor>.<ext>` — artifact ∈ {`resume`,
-`resume-onepager`, `consulting-onepager`}; `-en`/`-id` appears only where an artifact ships
-in two languages; every `.pdf` sits next to the same-named `.txt` it is generated from.
+`resume-onepager`, `consulting-onepager`}; `-en`/`-id` identifies language companions; the English recruiter edition keeps its existing
+unsuffixed name for compatibility; every `.pdf` sits next to the same-named `.txt` it is generated from.
 
 > Naming normalized 2026-07-19 (`resume-1pager-*` → `resume-onepager-*`, EN consulting gained its
 > `-en` suffix; content unchanged, no bump). Current PDFs carry Titles matching the new naming;
@@ -45,7 +44,8 @@ in two languages; every `.pdf` sits next to the same-named `.txt` it is generate
 | File                                                                 | Use it for                                                                                                        |
 |----------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------|
 | [`resume-v8.10.pdf`](resume-v8.10.pdf)                               | Official full CV — LinkedIn **full mirror**, 2 pages                                                              |
-| [`resume-onepager-v1.13.pdf`](resume-onepager-v1.13.pdf)             | Job application / recruiter — **ATS edition**, 1 page, curated (v8.2 lineage), NOT the mirror                     |
+| [`resume-onepager-v1.14.pdf`](resume-onepager-v1.14.pdf)             | Job application / recruiter — **English ATS edition**, 1 page; curated, not the LinkedIn mirror                   |
+| [`resume-onepager-id-v1.0.pdf`](resume-onepager-id-v1.0.pdf)         | Bahasa Indonesia companion for applications — same facts and target roles, 1 page                                 |
 | [`consulting-onepager-en-v1.9.pdf`](consulting-onepager-en-v1.9.pdf) | Business buyer / consulting lead (EN) — outcomes, services, proof links, process; linked from the site's Services |
 | [`consulting-onepager-id-v1.9.pdf`](consulting-onepager-id-v1.9.pdf) | Business buyer / consulting lead (Bahasa Indonesia) — faithful translation of EN, same claims verbatim            |
 
@@ -176,6 +176,19 @@ longer in the tree (see [Archive](#archive)).
 - **v7.1** — **stale, do not distribute**.
 
 ### resume-onepager — recruiter/ATS edition
+
+- **v1.14 EN / v1.0 ID** (2026-11-14, approved backend/AI profile refresh) — targets Senior Backend
+  Engineer / Software Engineer roles with Java/Spring Boot, AI integration and agent tooling;
+  international remote preferred, Jakarta hybrid accepted, fully on-site roles excluded. Historical
+  job titles are unchanged. Adds Fineksi without a start date, plus a separate personal-project
+  section for agent workflows, tool-calling/streaming adapters and prompt evaluation. Skills add
+  Claude Code/Codex and agent tooling. FOX is summarized without numerical claims or sole-ownership
+  language; Danamon's microservice, iRecon, SFTP, documentation and core-module test metrics remain
+  exact, as do retained IDstar/Assist.id metrics. To fit one page at the existing 11pt, drops the
+  FSC bullet, older authentication/uptime/Kafka metrics, trading project and certification list,
+  and condenses the stack. The ID edition translates the same claims (2M+ → 2 juta+), preserving
+  employment titles. Full mirror and consulting artifacts are unchanged. Both generators verify
+  one page for each new PDF. v1.13 archived; older archive files retained for audit.
 
 - **v1.13** (2026-09-20, FOX metrics refresh, lock-step with `resume-v8.10`) — "23 Django models" →
   "24 Django models" (same author-scoped recount). No other claim changed; 1 page verified by both
@@ -313,8 +326,8 @@ longer in the tree (see [Archive](#archive)).
 
 ## Archive
 
-Never distribute from here. `archive/` keeps the **two most recent superseded versions of each
-artifact**, plus **`resume-v8.2`** — the best curated 1-page edition, kept on purpose in case a
+Never distribute from here. `archive/` keeps superseded versions for audit (historically the
+**two most recent per artifact**; the 2026-11-14 refresh retains existing files), plus **`resume-v8.2`** — the best curated 1-page edition, kept on purpose in case a
 curated resume is ever wanted again (it was superseded by the full-mirror decision, not by `v8.3`
 being a newer edition of the same thing).
 
@@ -333,7 +346,7 @@ artifact.
 
 ## Rules
 
-- **Resume = full mirror of live LinkedIn** (user decision 2026-07-06). On any LinkedIn change:
+- **Full resume = full mirror of live LinkedIn** (user decision 2026-07-06). On any LinkedIn change:
   re-scrape → new `linkedin-profile-vN` snapshot kept **outside this repo** (snapshots carry
   internal delta notes and must never be committed) → regenerate the mirror resume from it.
   No content may appear in the resume that is not on the live profile (or its captured snapshot).
@@ -352,7 +365,7 @@ artifact.
 - **The current resume must always have a matching current PDF.** Regenerate via `build-pdf.ts`
   whenever the .txt changes.
 - **A generator change has the same status as a `.txt` change.** Any edit to `build-pdf.ts` /
-  `build-pdf.py` that can alter the render (CSS, layout, stamping) regenerates all four current
+  `build-pdf.py` that can alter the render (CSS, layout, stamping) regenerates all current
   PDFs in the same commit: the gates prove wording, metadata, links, page count, ink and scale —
   not layout — so a PDF left over from an older generator passes `validate:ci` unnoticed.
 - **A CV bump also travels to the chat worker.** Regenerate the bundle with
@@ -360,7 +373,7 @@ artifact.
   redeploys the worker automatically on the push; the `chat:worker:build --check` gate (part of
   `check:regressions`) fails the build on a stale bundle.
 - On version bump, also update ALL version-pinned links:
-  (a) in-repo — 15 references in total across the home components and writeup routes:
+  (a) in-repo — scan every home component and writeup route:
   `rg -o 'cv/(resume|consulting)[^"} ]+' src/lib/components src/routes | wc -l`.
   Each artifact is linked in more than one spot; update every one or the live site 404s:
   - `cv/resume-vX.Y.pdf` ×4 (hero **secondary** "Full CV" + both Experience-section CTA rows
@@ -369,29 +382,30 @@ artifact.
   - `cv/resume-onepager-vX.Y.pdf` ×5 (**top-bar** "Download CV" + hero **primary** "Download CV"
     + both Experience-section CTA rows + the **writeup top bar**) — bumps on its OWN `v1.x`
     scheme, not with the resume's `v8.x`;
+  - `cv/resume-onepager-id-vX.Y.pdf` ×2 (both Experience-section CTA rows);
   - `cv/consulting-onepager-en-vX.Y.pdf` ×2 (hero buyer line + Services) and
     `cv/consulting-onepager-id-vX.Y.pdf` ×2 (Services button + the Bahasa Indonesia line);
   (b) outside this repo — the **Resume badge in the GitHub profile README**
   (repo `fadhlillah2/fadhlillah2`) points to
-  `https://fadhlillah2.github.io/Bio/cv/resume-vX.Y.pdf` and will 404 if left stale.
+  `https://fadhlillah2.github.io/Bio/cv/resume-vX.Y.pdf` (the full CV). This refresh leaves that
+  target unchanged. Coordinate any future full-CV bump with the separate profile repository;
+  local edits here do not update its badge.
 - Version scheme: resume = `vX.Y`, LinkedIn profile = `vN`, 1-pagers = `v1.0`-style per artifact.
   Bump on any content change.
 - **Artifact roles:** `resume-vX.Y` = official CV (LinkedIn mirror);
-  `resume-onepager` = recruiter/ATS edition (curated; may use user-confirmed + archive-audited facts;
-  must never *contradict* LinkedIn); `consulting-onepager-{en,id}` = business-buyer artifact
+  `resume-onepager` / `resume-onepager-id` = EN/ID recruiter/ATS editions (curated; may use
+  user-approved, repository-supported facts independently of the full mirror; keep the same claims
+  across languages and never *contradict* verified LinkedIn facts); `consulting-onepager-{en,id}` = business-buyer artifact
   (site-Services wording; metrics must be resume-sourced or, for portfolio projects, verified
   against the project repo's README the same way the site's portfolio cards are; keep EN/ID in
   lock-step — same claims, translated wording only). Regenerate each PDF via `build-pdf.ts` on any change.
 - New version → add a **Changelog** entry, swap the file in **Current**, and move the superseded
-  files to `archive/`, then prune `archive/` back to the two newest per artifact (`resume-v8.2`
-  stays regardless). **Current** and the **Changelog** are the only two places a version number
+  files to `archive/`. Retain the existing audit trail unless archive cleanup is separately
+  authorized (`resume-v8.2` stays regardless). **Current** and the **Changelog** are the only two places a version number
   appears in this README — keep it that way.
-- The site (`src/lib/components/About.svelte` and `Resume.svelte`): About and the Experience
-  section (`#resume`) follow the mirror resume — same facts, wording may be compressed. Known,
-  deliberate exceptions (2026-09-20): the FOX block is a repo-grounded rewrite that drops the
-  resume metrics (see the Open note), and the Fineksi entry is site-only until it lands on
-  LinkedIn. Matched on facts, not verbatim strings.
-  The hero/meta headline was re-led for the recruiter scan (2026-07-11: "Backend Software Engineer
-  · 6+ yrs · AI Native Engineer") — a re-emphasis of the same facts, not a contradiction of the
-  LinkedIn headline. Site-only sections (Facts, Services, Portfolio, Skills grid) may add
-  repo-verifiable detail (e.g. the RAG stack) but must never *contradict* the live profile.
+- **Website and ATS policy (user-approved 2026-11-14):** the website and curated recruiter editions
+  may add repository-supported commercial work and personal projects independently of the full
+  LinkedIn mirror. Label personal AI tooling separately from employment. "Senior" is target
+  positioning, not a rewrite of historical job titles. Fineksi keeps "Present" without a displayed
+  start date. Source implementation is not proof of production operation or measured impact.
+  The full mirror remains frozen while live LinkedIn cannot be confirmed.

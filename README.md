@@ -1,4 +1,4 @@
-<h1 align="center">Fadhlillah — Backend Software Engineer · AI Native Engineer</h1>
+<h1 align="center">Fadhlillah — Senior Backend Engineer | Java &amp; Spring Boot | AI Integration &amp; Agent Tooling</h1>
 
 <div align="center">
 
@@ -9,15 +9,19 @@
 
 </div>
 
-<h3 align="center">Java/Spring Boot microservices at 2M+ requests/day · LLM-integrated products end to end</h3>
+<h3 align="center">Java/Spring Boot microservices at 2M+ requests/day · AI integration &amp; agent tooling</h3>
 
-<p align="center"><img src="docs/readme/looks.webp" alt="The portfolio hero in its three looks: morning, dusk and night" width="900"></p>
+<p align="center"><img src="static/assets/img/og-cover.png" alt="Senior Backend Engineer profile: Java/Spring Boot, AI integration and agent tooling" width="900"></p>
 
 ---
 
 ## Professional Profile
 
-Backend Software Engineer (6+ yrs) — deep in **Java/Spring Boot**, adaptable across the languages, domains and paradigms around it. Builds Spring Boot microservices serving **2M+ requests/day**, shipping in Python, Node, and Go across healthcare, F&B, and fintech as each problem demands. Adopted AI-augmented workflows early — a production SFTP platform delivered in **10 days against a 17-day plan** — and lifted reporting speed **700%** via query and data-model optimization on a healthcare platform. Builds LLM-integrated products end to end: **RAG systems, AI chatbots, internal automation**. **Top 50 at the LLaMA Hackathon** — equally at home in regulated enterprise systems and fast-moving AI builds.
+Software Engineer with **6+ years** across banking, healthcare and fintech, targeting **Senior Backend Engineer / Software Engineer** roles. Java/Spring Boot is my core: at Danamon, I built and operated microservices serving **2M+ requests/day**. Current work at Fineksi covers document extraction, cross-document checks and financial-data pipelines with Node.js, Express, MySQL and React. Freelance work at FOX Asset covers multi-tenant Django REST Framework backends and release safeguards.
+
+Alongside commercial work, I develop and maintain **AI-assisted engineering tooling**: multi-agent workflows, tool-calling and streaming adapters, and reproducible prompt evaluation for Claude Code and Codex. This is personal project work, separate from my employment history.
+
+International remote roles preferred; open to hybrid in Jakarta (UTC+7). Not available for fully on-site roles. Also open to consulting.
 
 **Highlights:**
 - **2M+ requests/day at sub-200ms** — 12 Spring Boot microservices (hexagonal architecture), 500k+ daily transactions
@@ -31,13 +35,13 @@ Backend Software Engineer (6+ yrs) — deep in **Java/Spring Boot**, adaptable a
 
 |                             |                                                                                                                     |
 |-----------------------------|---------------------------------------------------------------------------------------------------------------------|
-| **AI/LLM**                  | RAG (LangChain, ChromaDB), LLM integration (OpenAI, LLaMA, Groq), AI chatbots, AI-augmented engineering (Cursor AI) |
+| **AI/LLM**                  | RAG (LangChain, ChromaDB), LLM integration (OpenAI, LLaMA, Groq), AI chatbots, Claude Code / Codex, agent orchestration, tool calling, prompt evaluation, Cursor AI |
 | **Languages**               | Java, Python, JavaScript/TypeScript, Go                                                                             |
-| **Backend**                 | Spring Boot, Quarkus, FastAPI, Flask, Node.js, Express.js                                                           |
+| **Backend**                 | Spring Boot, Django REST Framework, Quarkus, FastAPI, Flask, Node.js, Express.js                                                           |
 | **Architecture**            | Microservices, REST, GraphQL, Event-driven architecture, Hexagonal Architecture                                     |
 | **Databases**               | PostgreSQL, MySQL, Microsoft SQL Server, MongoDB, Redis                                                             |
 | **Messaging & Integration** | Apache Kafka, RabbitMQ, gRPC, WebSocket                                                                             |
-| **DevOps/Cloud**            | Docker, Kubernetes, Jenkins, CI/CD, Flyway, Maven, Git, AWS (ECS, EC2, S3), Azure                                   |
+| **DevOps/Cloud**            | Docker, Kubernetes, Jenkins, CI/CD, GitHub Actions, Flyway, Maven, Git, AWS (ECS, ECR, EC2, S3), Azure                                   |
 | **Security**                | OAuth 2.0, JWT, SSO, AES-256, OWASP Top 10                                                                          |
 
 ---
@@ -49,7 +53,7 @@ Source of my portfolio site, live at **[fadhlillah2.github.io/Bio](https://fadhl
 - [`src/routes/`](src/routes/) contains the home page and technical writeup routes.
 - [`src/lib/components/`](src/lib/components/) contains the portfolio sections.
 - [`static/`](static/) contains the stylesheet, fonts, images, metadata, and generated CV copies served as-is.
-- [`cv/`](cv/) contains the canonical `.txt` sources and distributable PDFs for the full resume, recruiter/ATS one-pager, and consulting one-pagers in English and Bahasa Indonesia.
+- [`cv/`](cv/) contains the canonical `.txt` sources and distributable PDFs for the full LinkedIn-mirror resume, recruiter/ATS one-pagers in English and Bahasa Indonesia, and consulting one-pagers. Current application files: [`resume-onepager-v1.14.pdf`](cv/resume-onepager-v1.14.pdf) and [`resume-onepager-id-v1.0.pdf`](cv/resume-onepager-id-v1.0.pdf). The full mirror stays unchanged pending live LinkedIn confirmation.
 
 ## Local Development
 
@@ -133,4 +137,4 @@ source files rather than generated HTML.
 - **WhatsApp:** [+62 851-5704-3131](https://wa.me/6285157043131)
 - **LeetCode:** [leetcode.com/orion_omniscient](https://leetcode.com/orion_omniscient)
 
-Open to full-time roles, international remote opportunities, and consulting engagements.
+International remote roles preferred; open to hybrid in Jakarta and consulting. Not available for fully on-site roles.

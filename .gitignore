@@ -37,3 +37,6 @@ memory/
 !/docs/sdlc/*/test.md
 !/docs/sdlc/*/review.md
 !/docs/sdlc/*/release.md
+
+# Local implementation plans and verification artifacts
+.superpowers/

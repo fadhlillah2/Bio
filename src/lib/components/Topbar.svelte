@@ -10,7 +10,7 @@
       <span class="brand-mark" aria-hidden="true">F</span>
       <span class="brand-text">
         <span class="brand-name">Fadhlillah</span>
-        <span class="brand-role">Backend &middot; AI Native</span>
+        <span class="brand-role">Backend &middot; AI Integration</span>
       </span>
     </a>
 
@@ -30,7 +30,7 @@
     </nav>
 
     <div class="topbar-actions">
-      <a href="{base}/cv/resume-onepager-v1.13.pdf" class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV</a>
+      <a href="{base}/cv/resume-onepager-v1.14.pdf" class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV</a>
       <button class="nav-toggle" type="button" aria-label="Toggle navigation menu" aria-controls="site-nav" aria-expanded="false">
         <span class="nav-toggle-bars" aria-hidden="true"></span>
       </button>

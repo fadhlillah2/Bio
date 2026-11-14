@@ -9,9 +9,10 @@
           <p class="section-index">04 &mdash; Experience</p>
           <h2>Experience, Education, Projects, and Certifications</h2>
           <p class="section-deck cta-row">
-            <a href={base + "/cv/resume-onepager-v1.13.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
+            <a href={base + "/cv/resume-onepager-v1.14.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
+            <a href={base + "/cv/resume-onepager-id-v1.0.pdf"} class="plain-link" download="Fadhlillah - Backend Software Engineer - CV Bahasa Indonesia (1 halaman).pdf" lang="id">CV Bahasa Indonesia (PDF)</a>
             <a href={base + "/cv/resume-v8.10.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
-            <a href={base + "/cv/resume-v8.10.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
+            <a href={base + "/cv/resume-v8.10.txt"} class="plain-link" target="_blank" rel="noopener">Full CV — plain text</a>
           </p>
         </header>
 
@@ -28,9 +29,9 @@
               </summary>
               <div class="tl-body">
                 <ul>
-                  <li>Worked on document upload and structured extraction workflows for corporate onboarding.</li>
+                  <li>Worked on document upload and structured extraction workflows for corporate onboarding using Node.js, Express and MySQL.</li>
                   <li>Worked on resumable uploads, cross-document consistency checks, and corrections to extracted data. Added support for analyst review of company ownership and control.</li>
-                  <li>Worked on financial-statement collection, processing, and company and industry ratio calculations.</li>
+                  <li>Worked on financial-data pipelines for statement collection, processing, and company and industry ratio calculations.</li>
                   <li>Contributed to document summaries, Excel exports, generative insights, audit trails, and service logging.</li>
                   <li>Worked on React interfaces for document review, analytics, and account-opening workflows.</li>
                 </ul>
@@ -180,7 +181,9 @@
 
           <div class="cred-card" data-reveal>
             <h3 class="cred-title">Projects</h3>
-            <p class="cred-lead">High-Precision Contract Advisor RAG</p>
+            <p class="cred-lead">AI Integration &amp; Agent Tooling</p>
+            <p class="cred-sub">Personal project: multi-agent workflows, tool-calling and streaming adapters, and reproducible prompt evaluation for Claude Code and Codex.</p>
+            <p class="cred-lead cred-lead-2">High-Precision Contract Advisor RAG</p>
             <p class="cred-sub">Top 50 — Meta Llama Hackathon 2025 (Credential ID 032/H8/META/XI/2025)</p>
             <ul class="cred-list">
               <li><strong>Problem:</strong> contract analysis for scanned and digital documents</li>
@@ -213,10 +216,11 @@
         </div>
 
         <p class="cta-row cta-row-center">
-          <a href={base + "/cv/resume-onepager-v1.13.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
+          <a href={base + "/cv/resume-onepager-v1.14.pdf"} class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV — 1 page (PDF)</a>
+          <a href={base + "/cv/resume-onepager-id-v1.0.pdf"} class="plain-link" download="Fadhlillah - Backend Software Engineer - CV Bahasa Indonesia (1 halaman).pdf" lang="id">CV Bahasa Indonesia (PDF)</a>
           <a href={base + "/cv/resume-v8.10.pdf"} class="btn btn-ghost btn-sm" download="Fadhlillah - Backend Software Engineer - CV (full).pdf">Full CV (PDF)</a>
           <a href="#contact" class="btn btn-quiet btn-sm">Get in touch</a>
-          <a href={base + "/cv/resume-v8.10.txt"} class="plain-link" target="_blank" rel="noopener">Plain-text version</a>
+          <a href={base + "/cv/resume-v8.10.txt"} class="plain-link" target="_blank" rel="noopener">Full CV — plain text</a>
         </p>
 
       </div>

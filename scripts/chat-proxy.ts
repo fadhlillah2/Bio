@@ -87,7 +87,11 @@ export function siteFacts(repo: string): string {
     return text.indexOf(needle);
   };
 
-  const current = grab('About.svelte', read('About.svelte'), /<dt>Current<\/dt><dd>([^<]*)<\/dd>/g);
+  const about = read('About.svelte');
+  const commercial = grab('About.svelte', about, /<p class="about-commercial">([^<]*)<\/p>/g);
+  const tooling = grab('About.svelte', about, /<p class="about-tooling">([^<]*)<\/p>/g);
+  const roles = grab('About.svelte', about, /<p class="about-close">([^<]*)<\/p>/g);
+  const current = grab('About.svelte', about, /<dt>Current<\/dt><dd>([^<]*)<\/dd>/g);
 
   const resume = read('Resume.svelte');
   const org = '<span class="tl-org">Fineksi</span>';
@@ -100,10 +104,10 @@ export function siteFacts(repo: string): string {
   const dates = grab('Resume.svelte', card, /<span class="tl-dates">([^<]*)<\/span>/g);
 
   const hero = read('Hero.svelte');
-  const labelAt = anchorAt('Hero.svelte', hero, '<p class="proof-label">Production systems built at</p>');
+  const labelAt = anchorAt('Hero.svelte', hero, '<p class="proof-label">Commercial experience</p>');
   const listFrom = hero.indexOf('<ul class="proof-list">', labelAt);
   const listTo = listFrom >= 0 ? hero.indexOf('</ul>', listFrom) : -1;
-  if (listFrom < 0 || listTo < 0) throw new Error('Hero.svelte: no proof list under "Production systems built at"');
+  if (listFrom < 0 || listTo < 0) throw new Error('Hero.svelte: no proof list under "Commercial experience"');
   const heroOrg = grab('Hero.svelte', hero.slice(listFrom, listTo), /<li>(Fineksi)<\/li>/g);
 
   const flagship = grab('Portfolio.svelte', read('Portfolio.svelte'), /<h3 class="flagship-title">(Fineksi[^<]*)<\/h3>/g);
@@ -120,8 +124,11 @@ export function siteFacts(repo: string): string {
   return `SITE FACTS — statements already published on fadhlillah2.github.io/Bio, quoted from the page. Some of these are published only on the site, not in the CV document: answer from this block and do not claim where the CV shows them.
 
 - About section, "Current" fact: "${current}"
+- About section, commercial experience: "${commercial}"
+- About section, personal AI projects: "${tooling}"
+- About section, target roles and availability: "${roles}"
 - Experience timeline, Fineksi entry: "${role}", dates "${dates}"
-- Hero proof list "Production systems built at": "${heroOrg}"
+- Hero proof list "Commercial experience": "${heroOrg}"
 - Project Showcase, flagship card: "${flagship}"
 - JSON-LD "worksFor": "${worksFor}"
 - Services section: "${availability}"

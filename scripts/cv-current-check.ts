@@ -36,6 +36,7 @@ async function checkCurrent(root: string): Promise<void> {
   // shrink-to-fit scales every item.
   const contract: Record<string, { pages: number; ink: number; h1: number }> = {
     resume: { pages: 2, ink: 3.5, h1: 12.36 }, "resume-onepager": { pages: 1, ink: 5.5, h1: 15.9975 },
+    "resume-onepager-id": { pages: 1, ink: 5.5, h1: 15.9975 },
     "consulting-onepager-en": { pages: 1, ink: 4.5, h1: 24 }, "consulting-onepager-id": { pages: 1, ink: 4.5, h1: 24 } };
   assert(Bun.which("pdftoppm"), "pdftoppm (poppler-utils) is required: the ink gate rasterises every PDF");
   const files = readdirSync(join(root, "cv")).filter(n => /\.(txt|pdf)$/.test(n)).sort();
