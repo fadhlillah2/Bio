@@ -6,7 +6,7 @@
   <div class="wrap footer-inner">
     <div class="footer-brand">
       <p class="footer-name">Fadhlillah</p>
-      <p class="footer-tag">Backend Software Engineer &middot; AI Native Engineer &middot; Jakarta (UTC+7)</p>
+      <p class="footer-tag">Senior Backend Engineer &middot; AI Integration &amp; Agent Tooling &middot; Jakarta (UTC+7)</p>
     </div>
     <nav class="footer-links" aria-label="Profiles">
       <a href="https://github.com/fadhlillah2" target="_blank" rel="noopener">GitHub <svg class="ico" aria-hidden="true"><use href="#i-arrow-out"/></svg></a>

@@ -58,7 +58,7 @@
   <div class="topbar-inner">
     <a class="brand" href="{base}/">
       <span class="brand-mark" aria-hidden="true">F</span>
-      <span class="brand-text"><span class="brand-name">Fadhlillah</span><span class="brand-role">Backend &middot; AI Native</span></span>
+      <span class="brand-text"><span class="brand-name">Fadhlillah</span><span class="brand-role">Backend &middot; AI Integration</span></span>
     </a>
     <div class="topbar-actions">
       <a href="{base}/#portfolio" class="btn btn-quiet btn-sm">Back to work</a>

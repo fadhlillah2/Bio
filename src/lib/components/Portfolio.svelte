@@ -27,14 +27,24 @@
 
         <article class="flagship" data-reveal>
           <div class="flagship-body">
-            <p class="flagship-badge">Project Overview</p>
+            <p class="flagship-badge">Commercial work &middot; Software engineering</p>
             <h3 class="flagship-title">Fineksi — Financial Document Processing</h3>
-            <p class="flagship-desc">Tools for corporate document review and financial-statement analysis.</p>
-            <p class="flagship-result">Structured extraction, cross-document checks, and analyst review for corporate onboarding.</p>
+            <p class="flagship-desc">Contributed to corporate document review and financial-statement analysis with Node.js, Express, MySQL and React.</p>
+            <p class="flagship-result">Document extraction, resumable uploads, cross-document checks and analyst review for corporate onboarding.</p>
             <p class="flagship-result">Financial-statement pipelines for company and industry ratio analysis.</p>
             <ul class="tag-row">
               <li>Node.js</li><li>Express</li><li>MySQL</li><li>React</li>
             </ul>
+          </div>
+        </article>
+
+        <article class="flagship" data-reveal>
+          <div class="flagship-body">
+            <p class="flagship-badge">Personal project &middot; AI-assisted engineering</p>
+            <h3 class="flagship-title">AI Integration &amp; Agent Tooling</h3>
+            <p class="flagship-desc">I develop and maintain tooling for Claude Code and Codex: multi-agent workflows, tool-calling and streaming adapters, and reproducible prompt evaluation.</p>
+            <p class="flagship-result">The implementation includes task dependency and worktree checks, tool-schema mapping, server-sent event streaming, and prompt A/B runs with frozen snapshots and fixed seeds.</p>
+            <ul class="tag-row"><li>Python</li><li>JavaScript</li><li>Claude Code / Codex</li><li>Agent orchestration</li><li>Tool calling</li><li>SSE</li><li>Prompt evaluation</li></ul>
           </div>
         </article>
 

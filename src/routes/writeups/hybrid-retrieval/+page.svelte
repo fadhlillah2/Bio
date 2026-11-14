@@ -65,12 +65,12 @@
         <span class="brand-mark" aria-hidden="true">F</span>
         <span class="brand-text">
           <span class="brand-name">Fadhlillah</span>
-          <span class="brand-role">Backend &middot; AI Native</span>
+          <span class="brand-role">Backend &middot; AI Integration</span>
         </span>
       </a>
       <div class="topbar-actions">
         <a href="{base}/#portfolio" class="btn btn-quiet btn-sm"><svg class="ico" aria-hidden="true"><use href="#i-arrow-back"/></svg> Back to portfolio</a>
-        <a href="{base}/cv/resume-onepager-v1.13.pdf" class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV</a>
+        <a href="{base}/cv/resume-onepager-v1.14.pdf" class="btn btn-solid btn-sm" download="Fadhlillah - Backend Software Engineer - CV (1 page).pdf">Download CV</a>
       </div>
     </div>
   </header>

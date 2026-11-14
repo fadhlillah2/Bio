@@ -10,8 +10,8 @@
     <div class="stack-grid" data-reveal data-reveal-children>
 
       <div class="stack-group stack-group-lead">
-        <h3>AI / LLM</h3>
-        <ul class="tag-row"><li>RAG (LangChain, ChromaDB)</li><li>LLM integration (OpenAI, Llama, Groq)</li><li>AI chatbots</li><li>AI-augmented engineering (Cursor AI)</li></ul>
+        <h3>Backend</h3>
+        <ul class="tag-row"><li>Spring Boot</li><li>Django REST Framework</li><li>Quarkus</li><li>FastAPI</li><li>Flask</li><li>Node.js</li><li>Express.js</li></ul>
       </div>
 
       <div class="stack-group">
@@ -20,8 +20,8 @@
       </div>
 
       <div class="stack-group">
-        <h3>Backend</h3>
-        <ul class="tag-row"><li>Spring Boot</li><li>Quarkus</li><li>FastAPI</li><li>Flask</li><li>Node.js</li><li>Express.js</li></ul>
+        <h3>AI Integration &amp; Agent Tooling</h3>
+        <ul class="tag-row"><li>RAG (LangChain, ChromaDB)</li><li>LLM integration (OpenAI, Llama, Groq)</li><li>Claude Code / Codex</li><li>Agent orchestration</li><li>Tool calling &amp; streaming adapters</li><li>Prompt evaluation</li><li>Cursor AI</li></ul>
       </div>
 
       <div class="stack-group">
@@ -41,7 +41,7 @@
 
       <div class="stack-group">
         <h3>DevOps / Cloud</h3>
-        <ul class="tag-row"><li>Docker</li><li>Kubernetes</li><li>Jenkins</li><li>CI/CD</li><li>Flyway</li><li>Maven</li><li>Git</li><li>AWS (ECS, EC2, S3)</li><li>Azure</li></ul>
+        <ul class="tag-row"><li>Docker</li><li>Kubernetes</li><li>Jenkins</li><li>CI/CD</li><li>GitHub Actions</li><li>Flyway</li><li>Maven</li><li>Git</li><li>AWS (ECS, ECR, EC2, S3)</li><li>Azure</li></ul>
       </div>
 
       <div class="stack-group">

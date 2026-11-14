@@ -449,8 +449,11 @@ assert.equal(
   `SITE FACTS — statements already published on fadhlillah2.github.io/Bio, quoted from the page. Some of these are published only on the site, not in the CV document: answer from this block and do not claim where the CV shows them.
 
 - About section, "Current" fact: "Software Engineer — Fineksi"
+- About section, commercial experience: "At Danamon, I built and operated Spring Boot microservices serving 2M+ requests/day. My current work at Fineksi covers document extraction, cross-document checks and financial-data pipelines with Node.js, Express, MySQL and React. My freelance work for FOX Asset covers multi-tenant Django REST Framework backends and release safeguards."
+- About section, personal AI projects: "Alongside commercial work, I develop and maintain AI-assisted engineering tooling: multi-agent workflows, tool-calling and streaming adapters, and reproducible prompt evaluation. My project work also includes Contract Advisor RAG, a Top 50 entry at the Meta Llama Hackathon 2025."
+- About section, target roles and availability: "Targeting Senior Backend Engineer / Software Engineer roles focused on AI integration and agent tooling. International remote roles preferred; open to hybrid in Jakarta. Not available for fully on-site roles. Also open to consulting engagements."
 - Experience timeline, Fineksi entry: "Software Engineer", dates "Present"
-- Hero proof list "Production systems built at": "Fineksi"
+- Hero proof list "Commercial experience": "Fineksi"
 - Project Showcase, flagship card: "Fineksi — Financial Document Processing"
 - JSON-LD "worksFor": "Fineksi"
 - Services section: "Freelance Availability: 40–60 hours/week · Jakarta (UTC+7)."
@@ -493,6 +496,12 @@ try {
   mkdirSync(components, { recursive: true });
   const source = (name: string) => readFileSync(join(ROOT, "src", "lib", "components", name), "utf8");
   for (const name of FACT_COMPONENTS) writeFileSync(join(components, name), source(name));
+  const aboutFile = join(components, "About.svelte");
+  for (const anchor of ["about-commercial", "about-tooling", "about-close"]) {
+    writeFileSync(aboutFile, source("About.svelte").replace(`class="${anchor}"`, `class="${anchor}-missing"`));
+    assert.throws(() => siteFacts(factRepo), /About.svelte.*expected exactly 1/, `missing ${anchor} refuses stale grounding`);
+  }
+  writeFileSync(aboutFile, source("About.svelte"));
   const skills = join(components, "Skills.svelte");
   writeFileSync(skills, source("Skills.svelte").replace("<li>Kubernetes</li>", "<li>KubernetesX</li>"));
   assert.throws(() => siteFacts(factRepo), anchorRefused, "site facts extraction refuses a missing anchor");

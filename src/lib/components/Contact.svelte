@@ -8,7 +8,7 @@
           <div class="contact-prompts">
             <details>
               <summary>Hiring for a Role</summary>
-              <p>Share the role or job description, your main stack, and the location or remote working arrangement. You can review my <a href="#resume">experience and CV</a> before reaching out.</p>
+              <p>I am targeting Senior Backend Engineer / Software Engineer roles: international remote roles preferred, or hybrid in Jakarta. Not available for fully on-site roles. Share the job description, main stack and working arrangement. You can review my <a href="#resume">experience and CV</a> before reaching out.</p>
             </details>
             <details>
               <summary>Discussing a Project</summary>
@@ -40,7 +40,7 @@
             </div>
             <div class="channel channel-static">
               <span class="channel-label">Open to</span>
-              <span class="channel-value">Full-time roles &middot; international remote work &middot; consulting</span>
+              <span class="channel-value">International remote first &middot; Jakarta hybrid &middot; consulting</span>
               <span class="channel-note">Current cross-border experience: remote freelance work for Infinity Wave Sdn Bhd (Malaysia) since December 2025.</span>
             </div>
           </div>
